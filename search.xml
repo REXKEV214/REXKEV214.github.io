@@ -4,6 +4,19 @@
   
     
     <entry>
+      <title>About git</title>
+      <link href="/2023/08/23/About-git/"/>
+      <url>/2023/08/23/About-git/</url>
+      
+        <content type="html"><![CDATA[<h2 id="git-clone">git clone</h2><ul><li><code>-b</code>可以制定克隆的分支</li></ul><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git clone -b master https://github.com/jerryc127/hexo-theme-butterfly.git themes/butterfly</span><br></pre></td></tr></table></figure><h2 id="本地和远程如果发生冲突了怎么解决">本地和远程如果发生冲突了怎么解决</h2><p>1、把远程仓库master分支下载到本地并存为tmp分支</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git fetch origin master:tmp</span><br></pre></td></tr></table></figure><p>2、查看tmp分支与本地原有分支的不同</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git diff tmp</span><br></pre></td></tr></table></figure><p>这里主要是看看有没有其他的改动…</p><p>3、将tmp分支和本地的master分支合并</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git merge tmp</span><br></pre></td></tr></table></figure><p>这个时候呢,本地与远程就没有冲突了,而且还保留了我今天的代码,现在Push就OK啦！</p><p>4、最后别忘记删除tmp分支 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git branch -d tmp</span><br></pre></td></tr></table></figure></p><h2 id="撤销一个git-commit">撤销一个Git commit</h2><ol type="1"><li><p>git reset --hard HEAD~1: 这条命令会删除最后一次的commit。所有的更改（包括提交和工作目录）都会被彻底删除，就好像这次commit从未发生过一样。</p></li><li><p>git reset --soft HEAD~1: 这条命令也会撤销最后一次的commit，但是不会删除你所做的更改。这些更改会被重新放回你的工作目录中，以便你能够重新提交它们。</p></li><li><p>git revert HEAD: 这条命令会创建一个新的commit，该commit的内容与你想要撤销的commit正好相反。这意味着你的commit历史不会被更改，只会添加一个新的commit。</p></li></ol><p>在使用这些命令之前，请确保你的工作目录是清晰的，以避免任何未提交的更改被覆盖或者删除。</p>]]></content>
+      
+      
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>配置深度学习工作站</title>
       <link href="/2023/08/23/%E9%85%8D%E7%BD%AE%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E5%B7%A5%E4%BD%9C%E7%AB%99/"/>
       <url>/2023/08/23/%E9%85%8D%E7%BD%AE%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E5%B7%A5%E4%BD%9C%E7%AB%99/</url>
