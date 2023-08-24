@@ -4,11 +4,11 @@
   
     
     <entry>
-      <title>Debug macbook</title>
+      <title>Debug Macbook</title>
       <link href="/2023/08/25/debug-macbook/"/>
       <url>/2023/08/25/debug-macbook/</url>
       
-        <content type="html"><![CDATA[<h1 id="硬盘无法读取问题">硬盘无法读取问题</h1><p>如果你没有正确弹出外置移动硬盘，可以尝试：</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">➜  ~ diskutil list</span><br><span class="line">/dev/disk0 (internal):...</span><br><span class="line">/dev/disk1 (synthesized): ...</span><br><span class="line">/dev/disk2 (external, physical):   </span><br><span class="line"></span><br><span class="line">diskutil unmountDisk /dev/disk2diskutil eject /dev/disk2</span><br></pre></td></tr></table></figure>]]></content>
+        <content type="html"><![CDATA[<h1 id="硬盘无法读取问题">硬盘无法读取问题</h1><p>如果你没有正确弹出外置移动硬盘，可以尝试：</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">➜  diskutil list</span><br><span class="line">/dev/disk0 (internal):...</span><br><span class="line">/dev/disk1 (synthesized): ...</span><br><span class="line">/dev/disk2 (external, physical):   </span><br><span class="line"></span><br><span class="line">diskutil unmountDisk /dev/disk2diskutil eject /dev/disk2</span><br></pre></td></tr></table></figure>]]></content>
       
       
       
