@@ -4,6 +4,27 @@
   
     
     <entry>
+      <title>matplotlib</title>
+      <link href="/2023/10/08/matplotlib/"/>
+      <url>/2023/10/08/matplotlib/</url>
+      
+        <content type="html"><![CDATA[<h1 id="解决python里matplotlib不显示中文的问题">解决Python里matplotlib不显示中文的问题</h1><p>不显示中文只有一个原因就是他没有这个字体，虽然电脑里有这个字体但是不代表matplotlib里也有这个字体，所以解决matplotlib中的中文显示问题主要就是要找到它所内置支持的字体，那么我们首先查看一下它的内置字体，运行以下代码查看所支持的字体。</p><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 查询当前系统所有字体</span></span><br><span class="line"><span class="keyword">from</span> matplotlib.font_manager <span class="keyword">import</span> FontManager</span><br><span class="line"><span class="keyword">import</span> subprocess</span><br><span class="line"></span><br><span class="line">mpl_fonts = <span class="built_in">set</span>(f.name <span class="keyword">for</span> f <span class="keyword">in</span> FontManager().ttflist)</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&#x27;all font list get from matplotlib.font_manager:&#x27;</span>)</span><br><span class="line"><span class="keyword">for</span> f <span class="keyword">in</span> <span class="built_in">sorted</span>(mpl_fonts):</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&#x27;\t&#x27;</span> + f)</span><br><span class="line"></span><br></pre></td></tr></table></figure><p>但是你会发现这个都是英文字体啊，中文字体在哪里，其实我当时也非常困扰，但是细心的我发现了其中的奥秘，&gt;&gt;&gt;其实他是有中文的只不过是用拼音写的....&lt;&lt;&lt;</p><p>其中你会发现有如下字体：<br />- DengXian - FangSong - KaiTi - LiSu - YouYuan - Adobe Fan Heiti Std - Adobe Fangsong Std - Adobe Heiti Std - Adobe Kaiti Std</p><p>其实这些都是中文</p><p>最后通过<code>matplotlib.rc</code>来更换字体，具体代码如下</p><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">matplotlib.rc(<span class="string">&quot;font&quot;</span>,family=<span class="string">&#x27;MicroSoft YaHei&#x27;</span>,weight=<span class="string">&quot;bold&quot;</span>)</span><br></pre></td></tr></table></figure>]]></content>
+      
+      
+      
+        <tags>
+            
+            <tag> Python </tag>
+            
+            <tag> Grammar </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>用PyTorch和BERT进行文本分类</title>
       <link href="/2023/09/23/%E7%94%A8PyTorch%E5%92%8CBERT%E8%BF%9B%E8%A1%8C%E6%96%87%E6%9C%AC%E5%88%86%E7%B1%BB/"/>
       <url>/2023/09/23/%E7%94%A8PyTorch%E5%92%8CBERT%E8%BF%9B%E8%A1%8C%E6%96%87%E6%9C%AC%E5%88%86%E7%B1%BB/</url>
