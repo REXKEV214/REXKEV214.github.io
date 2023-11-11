@@ -4,7 +4,7 @@
   
     
     <entry>
-      <title>注意事项.md</title>
+      <title>注意事项</title>
       <link href="/2023/11/11/%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9/"/>
       <url>/2023/11/11/%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9/</url>
       
@@ -14,9 +14,9 @@
       
         <tags>
             
-            <tag> Python </tag>
-            
             <tag> Linux </tag>
+            
+            <tag> Python </tag>
             
             <tag> Network </tag>
             
