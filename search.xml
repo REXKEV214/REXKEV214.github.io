@@ -235,49 +235,6 @@ pip 下载慢
       </tags>
   </entry>
   <entry>
-    <title>Hexo 启用数学公式的正确姿势</title>
-    <url>/2023/08/13/2023-08-13-Hexo%E6%95%B0%E5%AD%A6%E5%85%AC%E5%BC%8F%E6%94%AF%E6%8C%81%E6%8C%87%E5%8D%97/</url>
-    <content><![CDATA[Hexo 默认的 hexo-renderer-marked 对 LaTeX 支持不够友好，公式容易被吞。我的做法是换用 Pandoc 渲染器，并解决因多个 Pandoc 共存而引起的“Unknown extension: smart” 报错。
-1. 切换渲染器
-先卸载原有的数学插件与默认渲染器：
-npm uninstall hexo-mathnpm uninstall hexo-renderer-marked
-安装 Pandoc 渲染器：
-npm install hexo-renderer-pandoc --save
-Pandoc 支持更多 Markdown 扩展，KaTeX/MathJax 在 Markdown 中的 $$ ... $$、\( ... \) 语法都能正常渲染。
-2. 安装 Pandoc
-Hexo 会调用系统中的 pandoc，需要确保命令存在且版本 ≥ 2.0。
-sudo apt install pandoc     # Ubuntu / Debianpandoc -v                   # 检查版本
-macOS 可以使用 brew install pandoc，Windows 则到官网下载安装包。
-3. 解决 Unknown extension: smart
-如果看到错误：
-pandoc exited with code 9: pandoc: Unknown extension: smart
-说明实际被调用的 Pandoc 版本过低（&lt; 2.0）。如果机器上装了 Anaconda / Miniconda，很可能使用的是环境自带的 pandoc。
-排查步骤：
-which pandoc         # 或 where pandoc (Windows)
-若路径指向 Anaconda 目录，可直接用新版可执行文件覆盖：
-
-从 Pandoc 官网下载最新 pandoc.exe（Windows）或对应二进制。
-替换 ${CONDA_PREFIX}/Library/bin/pandoc。
-重新运行 hexo clean &amp;&amp; hexo generate 检查是否消失。
-
-4. 写作建议
-
-写公式时优先使用 align、pmatrix 等 LaTeX 环境，Hexo + Butterfly 默认的 KaTeX 不需要额外包裹 $$。
-如果需要全局关闭/开启数学渲染，可在 _config.yml 或主题配置里设置 mathjax: true。
-
-
-换成 Pandoc 以后，数学公式渲染稳定多了，也能同时享受脚注、自动目录等高级 Markdown 特性。记得同步升级 pandoc，否则默认调用到旧版本就会再次踩雷。*** End Patch
-]]></content>
-      <categories>
-        <category>博客搭建</category>
-      </categories>
-      <tags>
-        <tag>Hexo</tag>
-        <tag>MathJax</tag>
-        <tag>Pandoc</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Markdown 公式与矩阵速查</title>
     <url>/2023/08/13/2023-08-13-Markdown%E5%85%AC%E5%BC%8F%E4%B8%8E%E7%9F%A9%E9%98%B5%E9%80%9F%E6%9F%A5/</url>
     <content><![CDATA[记录几个写作中最常用的矩阵与公式排版方式，直接复制即可在支持 KaTeX/MathJax 的博客里使用。
@@ -390,59 +347,46 @@ CR &lt; 0.1（有时取 0.08）认为判断可接受；
       </tags>
   </entry>
   <entry>
-    <title>网络代理与 GitHub 连接策略</title>
-    <url>/2023/08/13/2023-08-13-%E7%BD%91%E7%BB%9C%E4%BB%A3%E7%90%86%E4%B8%8EGitHub%E8%BF%9E%E6%8E%A5%E7%AD%96%E7%95%A5/</url>
-    <content><![CDATA[与 GitHub 建立稳定的 SSH 连接是折腾服务器的基础。这里整理了我在 Windows 和 Ubuntu 下的几套代理配置方案，并附上包管理器与 Python 的常用加速方式。
-1. Windows：给 GitHub 换端口并走代理
-如果直接使用 git@github.com 出现 kex_exchange_identification: Connection closed by remote host，多数情况是 22 端口被代理软件拦截。把 SSH 连接改到 443 即可。
-编辑 C:\Users\&lt;username&gt;\.ssh\config，没有就新建：
-Host github.com    HostName ssh.github.com    User git    Port 443    ProxyCommand connect -H 127.0.0.1:7890 %h %p   # 根据实际代理端口调整
-说明：
+    <title>Hexo 启用数学公式的正确姿势</title>
+    <url>/2023/08/13/2023-08-13-Hexo%E6%95%B0%E5%AD%A6%E5%85%AC%E5%BC%8F%E6%94%AF%E6%8C%81%E6%8C%87%E5%8D%97/</url>
+    <content><![CDATA[Hexo 默认的 hexo-renderer-marked 对 LaTeX 支持不够友好，公式容易被吞。我的做法是换用 Pandoc 渲染器，并解决因多个 Pandoc 共存而引起的“Unknown extension: smart” 报错。
+1. 切换渲染器
+先卸载原有的数学插件与默认渲染器：
+npm uninstall hexo-mathnpm uninstall hexo-renderer-marked
+安装 Pandoc 渲染器：
+npm install hexo-renderer-pandoc --save
+Pandoc 支持更多 Markdown 扩展，KaTeX/MathJax 在 Markdown 中的 $$ ... $$、\( ... \) 语法都能正常渲染。
+2. 安装 Pandoc
+Hexo 会调用系统中的 pandoc，需要确保命令存在且版本 ≥ 2.0。
+sudo apt install pandoc     # Ubuntu / Debianpandoc -v                   # 检查版本
+macOS 可以使用 brew install pandoc，Windows 则到官网下载安装包。
+3. 解决 Unknown extension: smart
+如果看到错误：
+pandoc exited with code 9: pandoc: Unknown extension: smart
+说明实际被调用的 Pandoc 版本过低（&lt; 2.0）。如果机器上装了 Anaconda / Miniconda，很可能使用的是环境自带的 pandoc。
+排查步骤：
+which pandoc         # 或 where pandoc (Windows)
+若路径指向 Anaconda 目录，可直接用新版可执行文件覆盖：
 
-HostName ssh.github.com：GitHub 针对 443 端口提供的 SSH 网关。
-ProxyCommand connect ...：借助代理工具（如 Clash、Surge）转发流量。
+从 Pandoc 官网下载最新 pandoc.exe（Windows）或对应二进制。
+替换 ${CONDA_PREFIX}/Library/bin/pandoc。
+重新运行 hexo clean &amp;&amp; hexo generate 检查是否消失。
 
-保存后执行 ssh -T git@github.com 测试，如果返回 Hi xxx! You've successfully authenticated 即表示成功。
-2. Ubuntu：SSH 代理配置
-Ubuntu 同样可以把 22 改成 443，同时通过 nc 或 connect-proxy 走本机代理端口（默认 7890）。
-vi ~/.ssh/config
-追加：
-ProxyCommand nc -X 5 -x 127.0.0.1:7890 %h %pHost github.com    Hostname ssh.github.com    User git    Port 443    IdentityFile /home/&lt;user&gt;/.ssh/id_rsa    TCPKeepAlive yes
-最后确保权限正确：
-chmod 600 ~/.ssh/configssh -T git@github.com
-若仍旧失败，可以尝试临时断开/重连网络后再次测试。
-3. Apt 代理
-当服务器在受限网络下更新软件包时，需要为 Apt 指定代理：
-sudo nano /etc/apt/apt.conf
-写入：
-Acquire::http::Proxy  &quot;http://127.0.0.1:7890&quot;;Acquire::https::Proxy &quot;http://127.0.0.1:7890&quot;;
-保存后执行：
-sudo apt updatesudo apt upgrade
-4. Python 与 pip
-4.1 在代码里指定代理
-import osos.environ[&quot;http_proxy&quot;] = &quot;http://127.0.0.1:7890&quot;os.environ[&quot;https_proxy&quot;] = &quot;http://127.0.0.1:7890&quot;
-若要全局生效，可写入虚拟环境激活脚本。
-4.2 pip 加速
+4. 写作建议
+
+写公式时优先使用 align、pmatrix 等 LaTeX 环境，Hexo + Butterfly 默认的 KaTeX 不需要额外包裹 $$。
+如果需要全局关闭/开启数学渲染，可在 _config.yml 或主题配置里设置 mathjax: true。
 
 
-单次安装：
-pip install -i https://pypi.tuna.tsinghua.edu.cn/simple torch
-
-
-全局配置：
-pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simplepip config set install.trusted-host mirrors.aliyun.com
-
-
-
-通过以上设置，GitHub 拉代码、系统更新以及 Python 依赖安装都能在代理环境中保持高速稳定。建议把这些配置写进 dotfiles 或自动化脚本，换设备时直接复用。*** End Patch
+换成 Pandoc 以后，数学公式渲染稳定多了，也能同时享受脚注、自动目录等高级 Markdown 特性。记得同步升级 pandoc，否则默认调用到旧版本就会再次踩雷。*** End Patch
 ]]></content>
       <categories>
-        <category>网络排障</category>
+        <category>博客搭建</category>
       </categories>
       <tags>
-        <tag>SSH</tag>
-        <tag>Proxy</tag>
-        <tag>GitHub</tag>
+        <tag>Hexo</tag>
+        <tag>MathJax</tag>
+        <tag>Pandoc</tag>
       </tags>
   </entry>
   <entry>
@@ -738,6 +682,62 @@ sed -i &#x27;1i\Title: Linux Guide&#x27; README.mdsed -e &#x27;1,3s/foo/bar/g&#x
       </tags>
   </entry>
   <entry>
+    <title>网络代理与 GitHub 连接策略</title>
+    <url>/2023/08/13/2023-08-13-%E7%BD%91%E7%BB%9C%E4%BB%A3%E7%90%86%E4%B8%8EGitHub%E8%BF%9E%E6%8E%A5%E7%AD%96%E7%95%A5/</url>
+    <content><![CDATA[与 GitHub 建立稳定的 SSH 连接是折腾服务器的基础。这里整理了我在 Windows 和 Ubuntu 下的几套代理配置方案，并附上包管理器与 Python 的常用加速方式。
+1. Windows：给 GitHub 换端口并走代理
+如果直接使用 git@github.com 出现 kex_exchange_identification: Connection closed by remote host，多数情况是 22 端口被代理软件拦截。把 SSH 连接改到 443 即可。
+编辑 C:\Users\&lt;username&gt;\.ssh\config，没有就新建：
+Host github.com    HostName ssh.github.com    User git    Port 443    ProxyCommand connect -H 127.0.0.1:7890 %h %p   # 根据实际代理端口调整
+说明：
+
+HostName ssh.github.com：GitHub 针对 443 端口提供的 SSH 网关。
+ProxyCommand connect ...：借助代理工具（如 Clash、Surge）转发流量。
+
+保存后执行 ssh -T git@github.com 测试，如果返回 Hi xxx! You've successfully authenticated 即表示成功。
+2. Ubuntu：SSH 代理配置
+Ubuntu 同样可以把 22 改成 443，同时通过 nc 或 connect-proxy 走本机代理端口（默认 7890）。
+vi ~/.ssh/config
+追加：
+ProxyCommand nc -X 5 -x 127.0.0.1:7890 %h %pHost github.com    Hostname ssh.github.com    User git    Port 443    IdentityFile /home/&lt;user&gt;/.ssh/id_rsa    TCPKeepAlive yes
+最后确保权限正确：
+chmod 600 ~/.ssh/configssh -T git@github.com
+若仍旧失败，可以尝试临时断开/重连网络后再次测试。
+3. Apt 代理
+当服务器在受限网络下更新软件包时，需要为 Apt 指定代理：
+sudo nano /etc/apt/apt.conf
+写入：
+Acquire::http::Proxy  &quot;http://127.0.0.1:7890&quot;;Acquire::https::Proxy &quot;http://127.0.0.1:7890&quot;;
+保存后执行：
+sudo apt updatesudo apt upgrade
+4. Python 与 pip
+4.1 在代码里指定代理
+import osos.environ[&quot;http_proxy&quot;] = &quot;http://127.0.0.1:7890&quot;os.environ[&quot;https_proxy&quot;] = &quot;http://127.0.0.1:7890&quot;
+若要全局生效，可写入虚拟环境激活脚本。
+4.2 pip 加速
+
+
+单次安装：
+pip install -i https://pypi.tuna.tsinghua.edu.cn/simple torch
+
+
+全局配置：
+pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simplepip config set install.trusted-host mirrors.aliyun.com
+
+
+
+通过以上设置，GitHub 拉代码、系统更新以及 Python 依赖安装都能在代理环境中保持高速稳定。建议把这些配置写进 dotfiles 或自动化脚本，换设备时直接复用。*** End Patch
+]]></content>
+      <categories>
+        <category>网络排障</category>
+      </categories>
+      <tags>
+        <tag>SSH</tag>
+        <tag>Proxy</tag>
+        <tag>GitHub</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>用 `@property` 优雅管理 Python 属性</title>
     <url>/2023/08/19/2023-08-19-Python%E5%B1%9E%E6%80%A7%E8%A3%85%E9%A5%B0%E5%99%A8%E5%AE%9E%E8%B7%B5/</url>
     <content><![CDATA[@property 让方法看起来像属性，既保留了封装性，又能提供校验逻辑。下面分三部分介绍它的基本概念、两种写法以及常见使用场景。
@@ -779,47 +779,6 @@ class Modern:    def __init__(self, price):        self.price = price   # 直接
       <tags>
         <tag>property</tag>
         <tag>封装</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>深度学习工作站配置笔记</title>
-    <url>/2023/08/23/2023-08-23-%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E5%B7%A5%E4%BD%9C%E7%AB%99%E9%85%8D%E7%BD%AE%E7%AC%94%E8%AE%B0/</url>
-    <content><![CDATA[在 Ubuntu 上搭建深度学习工作站时，把系统、驱动、输入法、加速库一次性调通能省掉大量踩坑时间。以下是我的实操笔记。
-1. 系统基础配置
-
-输入法：推荐 Fcitx5 + 搜狗 / RIME，安装后在「语言支持」里设置默认输入法。参考：在 Ubuntu 安装配置 Fcitx5。
-网络问题：如果装完系统后发现无线网卡/有线网卡不工作，可按主板型号寻找驱动，或参考 这篇视频教程。很多时候只需要安装额外的固件包。
-
-2. GPU 驱动与 CUDA/cuDNN
-
-驱动选择：优先使用 Ubuntu 自带的「其他驱动」图形界面安装对应的 NVIDIA 驱动。如果黑屏，可进入恢复模式卸载后换版本，或参考“黑屏 99% 解决方案”。
-CUDA 与 cuDNN：按官方流程逐步安装，注意 CUDA 版本要与驱动兼容。推荐参考 B 站这篇教程。
-验证：nvidia-sminvcc -V
-
-
-3. TensorRT
-安装 TensorRT Python Wheel：
-python -m pip install --upgrade tensorrtpython -m pip install --upgrade tensorrt_leanpython -m pip install --upgrade tensorrt_dispatch
-验证：
-import tensorrtprint(tensorrt.__version__)assert tensorrt.Builder(tensorrt.Logger())
-如果断言失败，检查 CUDA/cuDNN 是否对应 TensorRT 支持的版本。
-4. 常见问题集合
-
-Ubuntu 黑屏：多数是因为旧版本驱动残留或 Secure Boot 未关闭。进入 TTY (Ctrl+Alt+F3) 后运行 sudo apt purge nvidia* 清理，再重新安装。
-TensorFlow 在 Windows 上安装失败：从 2.10 起官方不再提供 Windows GPU 版，建议改用 WSL2 或直接在 Linux 环境下运行。
-国内镜像加速：pip 安装大型包时，可以设置清华镜像：pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
-
-
-
-搭建深度学习环境本质是兼容性游戏：驱动 ↔ CUDA ↔ cuDNN ↔ 框架 ↔ TensorRT。建议提前确认项目所需版本，再统一安装，后续维护成本会低很多。*** End Patch
-]]></content>
-      <categories>
-        <category>深度学习</category>
-      </categories>
-      <tags>
-        <tag>CUDA</tag>
-        <tag>TensorRT</tag>
-        <tag>Ubuntu</tag>
       </tags>
   </entry>
   <entry>
@@ -886,38 +845,6 @@ git log --oneline --graph --decorate：快速查看提交历史。
       <tags>
         <tag>Git</tag>
         <tag>工作流</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Mac 外置硬盘无法弹出的排查手记</title>
-    <url>/2023/08/25/2023-08-25-Mac%E5%A4%96%E7%BD%AE%E7%A1%AC%E7%9B%98%E6%8E%92%E6%9F%A5%E6%89%8B%E8%AE%B0/</url>
-    <content><![CDATA[某次直接拔掉移动硬盘后，再次连接就一直提示“无法正确弹出”。以下是我整理的排查步骤。
-1. 在终端查看磁盘挂载情况
-diskutil list
-输出大致如下：
-/dev/disk0 (internal)/dev/disk1 (synthesized)/dev/disk2 (external, physical)
-记住外置磁盘的标识（此处为 /dev/disk2）。
-2. 强制卸载 + 弹出
-diskutil unmountDisk /dev/disk2diskutil eject /dev/disk2
-如果提示某个进程占用，先关闭 Finder 中的所有标签页或重新登录，再执行一次。
-3. 使用磁盘工具修复
-在「磁盘工具」中选择外置磁盘，点击「急救」进行修复。它会自动执行 fsck 检查文件系统错误。
-4. 预防建议
-
-习惯使用 Command+E 或 Finder 的「推出」按钮；
-备份关键数据，外置盘建议配置 Time Machine；
-长时间传输大文件时避免直接休眠。
-
-
-掌握 diskutil 的基本命令后，macOS 上的大部分移动磁盘问题都能自己解决。如果命令与磁盘工具都无法修复，记得及时备份并考虑重新格式化。*** End Patch
-]]></content>
-      <categories>
-        <category>故障排查</category>
-      </categories>
-      <tags>
-        <tag>macOS</tag>
-        <tag>外置硬盘</tag>
-        <tag>diskutil</tag>
       </tags>
   </entry>
   <entry>
@@ -1002,6 +929,47 @@ max_length 过长会显著降低训练速度，建议结合文本长度分布调
       </tags>
   </entry>
   <entry>
+    <title>深度学习工作站配置笔记</title>
+    <url>/2023/08/23/2023-08-23-%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E5%B7%A5%E4%BD%9C%E7%AB%99%E9%85%8D%E7%BD%AE%E7%AC%94%E8%AE%B0/</url>
+    <content><![CDATA[在 Ubuntu 上搭建深度学习工作站时，把系统、驱动、输入法、加速库一次性调通能省掉大量踩坑时间。以下是我的实操笔记。
+1. 系统基础配置
+
+输入法：推荐 Fcitx5 + 搜狗 / RIME，安装后在「语言支持」里设置默认输入法。参考：在 Ubuntu 安装配置 Fcitx5。
+网络问题：如果装完系统后发现无线网卡/有线网卡不工作，可按主板型号寻找驱动，或参考 这篇视频教程。很多时候只需要安装额外的固件包。
+
+2. GPU 驱动与 CUDA/cuDNN
+
+驱动选择：优先使用 Ubuntu 自带的「其他驱动」图形界面安装对应的 NVIDIA 驱动。如果黑屏，可进入恢复模式卸载后换版本，或参考“黑屏 99% 解决方案”。
+CUDA 与 cuDNN：按官方流程逐步安装，注意 CUDA 版本要与驱动兼容。推荐参考 B 站这篇教程。
+验证：nvidia-sminvcc -V
+
+
+3. TensorRT
+安装 TensorRT Python Wheel：
+python -m pip install --upgrade tensorrtpython -m pip install --upgrade tensorrt_leanpython -m pip install --upgrade tensorrt_dispatch
+验证：
+import tensorrtprint(tensorrt.__version__)assert tensorrt.Builder(tensorrt.Logger())
+如果断言失败，检查 CUDA/cuDNN 是否对应 TensorRT 支持的版本。
+4. 常见问题集合
+
+Ubuntu 黑屏：多数是因为旧版本驱动残留或 Secure Boot 未关闭。进入 TTY (Ctrl+Alt+F3) 后运行 sudo apt purge nvidia* 清理，再重新安装。
+TensorFlow 在 Windows 上安装失败：从 2.10 起官方不再提供 Windows GPU 版，建议改用 WSL2 或直接在 Linux 环境下运行。
+国内镜像加速：pip 安装大型包时，可以设置清华镜像：pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
+
+
+
+搭建深度学习环境本质是兼容性游戏：驱动 ↔ CUDA ↔ cuDNN ↔ 框架 ↔ TensorRT。建议提前确认项目所需版本，再统一安装，后续维护成本会低很多。*** End Patch
+]]></content>
+      <categories>
+        <category>深度学习</category>
+      </categories>
+      <tags>
+        <tag>CUDA</tag>
+        <tag>TensorRT</tag>
+        <tag>Ubuntu</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Matplotlib 中文字体配置指南</title>
     <url>/2023/10/08/2023-10-08-Matplotlib%E4%B8%AD%E6%96%87%E5%AD%97%E4%BD%93%E9%85%8D%E7%BD%AE/</url>
     <content><![CDATA[Matplotlib 不显示中文通常是因为找不到相应字体。虽然系统已经安装了微软雅黑、黑体等字体，但 Matplotlib 的字体缓存里未必包含它们。以下是检查和设置中文字体的步骤。
@@ -1039,6 +1007,38 @@ import matplotlibmatplotlib.rc(&quot;font&quot;, family=&quot;Microsoft YaHei&qu
       <tags>
         <tag>Matplotlib</tag>
         <tag>字体</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Mac 外置硬盘无法弹出的排查手记</title>
+    <url>/2023/08/25/2023-08-25-Mac%E5%A4%96%E7%BD%AE%E7%A1%AC%E7%9B%98%E6%8E%92%E6%9F%A5%E6%89%8B%E8%AE%B0/</url>
+    <content><![CDATA[某次直接拔掉移动硬盘后，再次连接就一直提示“无法正确弹出”。以下是我整理的排查步骤。
+1. 在终端查看磁盘挂载情况
+diskutil list
+输出大致如下：
+/dev/disk0 (internal)/dev/disk1 (synthesized)/dev/disk2 (external, physical)
+记住外置磁盘的标识（此处为 /dev/disk2）。
+2. 强制卸载 + 弹出
+diskutil unmountDisk /dev/disk2diskutil eject /dev/disk2
+如果提示某个进程占用，先关闭 Finder 中的所有标签页或重新登录，再执行一次。
+3. 使用磁盘工具修复
+在「磁盘工具」中选择外置磁盘，点击「急救」进行修复。它会自动执行 fsck 检查文件系统错误。
+4. 预防建议
+
+习惯使用 Command+E 或 Finder 的「推出」按钮；
+备份关键数据，外置盘建议配置 Time Machine；
+长时间传输大文件时避免直接休眠。
+
+
+掌握 diskutil 的基本命令后，macOS 上的大部分移动磁盘问题都能自己解决。如果命令与磁盘工具都无法修复，记得及时备份并考虑重新格式化。*** End Patch
+]]></content>
+      <categories>
+        <category>故障排查</category>
+      </categories>
+      <tags>
+        <tag>macOS</tag>
+        <tag>外置硬盘</tag>
+        <tag>diskutil</tag>
       </tags>
   </entry>
   <entry>
