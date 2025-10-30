@@ -109,80 +109,45 @@ home = Path.home()list(home.glob(&quot;*.txt&quot;))      # 当前目录下的 t
       </tags>
   </entry>
   <entry>
-    <title>Python `collections` 工具箱</title>
-    <url>/2023/08/08/2023-08-08-Python%E9%9B%86%E5%90%88%E5%B7%A5%E5%85%B7%E7%AE%B1/</url>
-    <content><![CDATA[collections 模块提供了比内置字典更智能的容器。最常出场的两个武器是 defaultdict 和 Counter：一个负责兜底，一个负责计数。我把常用场景拆成三部分，顺手附上一个工作中经常用到的「多模型投票合并 CSV」脚本。
-1. defaultdict：让 Key 默认存在defaultdict 会在访问缺失的键时自动创建默认值，不再抛出 KeyError。使用时要指定一个「工厂函数」——也就是默认值的类型。
-from collections import defaultdictcount_by_id = defaultdict(int)      # 默认 0tags_by_user = defaultdict(set)     # 默认空集合records = defaultdict(list)         # 默认空列表names = defaultdict(str)            # 默认空字符串count_by_id[&quot;a&quot;] += 1               # 不存在时会自动补 0 再自增print(count_by_id[&quot;missing&quot;])       # 输出 0，不报错
+    <title>PaddleOCR 快捷截图流程</title>
+    <url>/2023/08/12/2023-08-12-PaddleOCR%E5%BF%AB%E6%8D%B7%E6%88%AA%E5%9B%BE%E6%B5%81%E7%A8%8B/</url>
+    <content><![CDATA[在 Linux 桌面上频繁做 OCR 抄录太费劲，于是写了一个「截图 → 识别 → 自动打开结果 → 复制到剪贴板」的一键脚本组合。核心拆成三个部分：Python 识别脚本、Shell 自动化脚本、系统快捷键。
+1. Python 识别脚本ocr.py 负责调用 PaddleOCR，并把识别内容保存为文本与标注图。
+#!/usr/bin/env python3# -*- coding: utf-8 -*-import sysimport getoptfrom pathlib import Pathfrom paddleocr import PaddleOCR, draw_ocrfrom PIL import Imagedef run_ocr(image_path: Path, text_path: Path, marked_path: Path):    ocr = PaddleOCR(use_angle_cls=False, lang=&quot;ch&quot;)    result = ocr.ocr(str(image_path), cls=False)[0]    boxes = [line[0] for line in result]    text = &quot;\n&quot;.join(line[1][0] for line in result)    text_path.write_text(text, encoding=&quot;utf-8&quot;)    image = Image.open(image_path).convert(&quot;RGB&quot;)    marked = Image.fromarray(draw_ocr(image, boxes))    marked.save(marked_path)def main(argv):    opts, _ = getopt.getopt(argv[1:], &quot;hi:o:&quot;, [&quot;help&quot;, &quot;input_file=&quot;, &quot;output_file=&quot;])    image_path, text_path = None, Path(&quot;result.txt&quot;)    for opt, arg in opts:        if opt in (&quot;-h&quot;, &quot;--help&quot;):            print(&quot;python3 ocr.py -i capture.png -o result.txt&quot;)            return        if opt in (&quot;-i&quot;, &quot;--input_file&quot;):            image_path = Path(arg)        if opt in (&quot;-o&quot;, &quot;--output_file&quot;):            text_path = Path(arg)    if not image_path:        sys.exit(&quot;必须指定输入图片 (-i)&quot;)    marked_path = text_path.with_suffix(&quot;.jpg&quot;)    run_ocr(image_path, text_path, marked_path)if __name__ == &quot;__main__&quot;:    main(sys.argv)
 
-常见工厂函数对照：
+2. Shell 自动化脚本ocr.sh 完成截图、放大、OCR、打开结果到复制剪贴板的一条龙：
+#!/usr/bin/env bashWORKDIR=&quot;$HOME/ocrtemp&quot;TARGET=&quot;$WORKDIR/ocr_image&quot;source &quot;$HOME/miniconda3/etc/profile.d/conda.sh&quot;conda activate ocrmkdir -p &quot;$WORKDIR&quot;cd &quot;$WORKDIR&quot;gnome-screenshot -a -f &quot;$&#123;TARGET&#125;.png&quot;mogrify -modulate 100,0 -resize 400% &quot;$&#123;TARGET&#125;.png&quot;python3 ocr.py -i &quot;$&#123;TARGET&#125;.png&quot; -o &quot;$&#123;TARGET&#125;.txt&quot;xdg-open &quot;$&#123;TARGET&#125;.png&quot;xdg-open &quot;$&#123;TARGET&#125;.jpg&quot;xdg-open &quot;$&#123;TARGET&#125;.txt&quot;command -v xclip &gt;/dev/null &amp;&amp; \  xclip -selection clipboard &lt; &quot;$&#123;TARGET&#125;.txt&quot;
 
+依赖列表：
+sudo apt install gnome-screenshot imagemagick xclippip install paddlepaddle paddleocr pillow
 
+3. 绑定全局快捷键
+mkdir ~/ocrtemp，将 ocr.py、ocr.sh 放入该目录。
+Ubuntu 系统设置 → 键盘快捷键 → 自定义 → 新建。
+名称自取，命令填写 /home/&lt;user&gt;/ocrtemp/ocr.sh，组合键建议设为 Ctrl+Alt+O。
 
-工厂函数
-默认值示例
+之后按下快捷键即可完成「截图 → OCR → 打开结果 → 自动复制」的全流程。
+4. 常见问题
+Ubuntu 22.04 缺少 libssl1.1  
+echo &quot;deb http://security.ubuntu.com/ubuntu focal-security main&quot; \  | sudo tee /etc/apt/sources.list.d/focal-security.listsudo apt-get updatesudo apt-get install libssl1.1
 
+pip 下载慢  
 
-
-int
-0
-
-
-list
-[]
-
-
-set
-set()
-
-
-str
-&quot;&quot;
-
-
-2. Counter：一行搞定频次统计Counter 是专门的计数器，天生擅长做词频、投票、补集等任务，同样继承自字典。
-from collections import Countercolors = Counter([&quot;red&quot;, &quot;blue&quot;, &quot;red&quot;, &quot;green&quot;, &quot;blue&quot;, &quot;blue&quot;])print(colors)                 # Counter(&#123;&#x27;blue&#x27;: 3, &#x27;red&#x27;: 2, &#x27;green&#x27;: 1&#125;)
-
-常用方法备忘：
+临时镜像：pip install -i https://pypi.tuna.tsinghua.edu.cn/simple torch
+全局配置：  pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simplepip config set install.trusted-host mirrors.aliyun.com
 
 
 
-方法 &#x2F; 属性
-用途
 
-
-
-Counter(iterable)
-从序列、字典或关键字参数快速构造计数器
-
-
-.elements()
-按计数重复返回所有元素，适合还原序列
-
-
-.most_common(n)
-返回出现次数最高的前 n 个元素 (item, cnt)
-
-
-加减法 &#x2F; 集合运算
-可以直接对 Counter 做加减、交集、并集等操作
-
-
-示例：
-letters = Counter(&quot;abracadabra&quot;)print(letters.most_common(3))  # [(&#x27;a&#x27;, 5), (&#x27;b&#x27;, 2), (&#x27;r&#x27;, 2)]for ch in letters.elements():    ...
-
-3. 实战：CSV 投票合并器场景：有 7 个模型分别输出 name,label 两列，想用投票找到每个样本出现次数最多的标签。
-import csvfrom collections import defaultdict, Countername_labels = defaultdict(list)for i in range(1, 8):    with open(f&quot;&#123;i&#125;.csv&quot;) as csvfile:        for row in csv.DictReader(csvfile):            name_labels[row[&quot;name&quot;]].append(row[&quot;label&quot;])result = &#123;&#125;for name, labels in name_labels.items():    result[name] = Counter(labels).most_common(1)[0][0]with open(&quot;result.csv&quot;, &quot;w&quot;, newline=&quot;&quot;) as csvfile:    writer = csv.DictWriter(csvfile, fieldnames=[&quot;name&quot;, &quot;label&quot;])    writer.writeheader()    for name, label in result.items():        writer.writerow(&#123;&quot;name&quot;: name, &quot;label&quot;: label&#125;)
-
-相比手动判断「键存不存在」，defaultdict 和 Counter 让代码更简洁、更不易出错。下次再碰到计数和聚合任务，别忘了把它们从工具箱里拿出来用。*** End Patch
+这个组合脚本把零碎的截图+识别流程压缩成一次敲击，特别适合整理 PDF、录屏或无法复制的界面内容。后续可以继续改进，比如自动丢进 Notion、Obsidian，或者替换成其它 OCR 模型。*** End Patch
 ]]></content>
       <categories>
-        <category>Python笔记</category>
+        <category>自动化脚本</category>
       </categories>
       <tags>
-        <tag>collections</tag>
-        <tag>defaultdict</tag>
-        <tag>Counter</tag>
+        <tag>PaddleOCR</tag>
+        <tag>Linux</tag>
+        <tag>Shell</tag>
       </tags>
   </entry>
   <entry>
@@ -227,48 +192,6 @@ which pandoc         # 或 where pandoc (Windows)
         <tag>Hexo</tag>
         <tag>MathJax</tag>
         <tag>Pandoc</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>PaddleOCR 快捷截图流程</title>
-    <url>/2023/08/12/2023-08-12-PaddleOCR%E5%BF%AB%E6%8D%B7%E6%88%AA%E5%9B%BE%E6%B5%81%E7%A8%8B/</url>
-    <content><![CDATA[在 Linux 桌面上频繁做 OCR 抄录太费劲，于是写了一个「截图 → 识别 → 自动打开结果 → 复制到剪贴板」的一键脚本组合。核心拆成三个部分：Python 识别脚本、Shell 自动化脚本、系统快捷键。
-1. Python 识别脚本ocr.py 负责调用 PaddleOCR，并把识别内容保存为文本与标注图。
-#!/usr/bin/env python3# -*- coding: utf-8 -*-import sysimport getoptfrom pathlib import Pathfrom paddleocr import PaddleOCR, draw_ocrfrom PIL import Imagedef run_ocr(image_path: Path, text_path: Path, marked_path: Path):    ocr = PaddleOCR(use_angle_cls=False, lang=&quot;ch&quot;)    result = ocr.ocr(str(image_path), cls=False)[0]    boxes = [line[0] for line in result]    text = &quot;\n&quot;.join(line[1][0] for line in result)    text_path.write_text(text, encoding=&quot;utf-8&quot;)    image = Image.open(image_path).convert(&quot;RGB&quot;)    marked = Image.fromarray(draw_ocr(image, boxes))    marked.save(marked_path)def main(argv):    opts, _ = getopt.getopt(argv[1:], &quot;hi:o:&quot;, [&quot;help&quot;, &quot;input_file=&quot;, &quot;output_file=&quot;])    image_path, text_path = None, Path(&quot;result.txt&quot;)    for opt, arg in opts:        if opt in (&quot;-h&quot;, &quot;--help&quot;):            print(&quot;python3 ocr.py -i capture.png -o result.txt&quot;)            return        if opt in (&quot;-i&quot;, &quot;--input_file&quot;):            image_path = Path(arg)        if opt in (&quot;-o&quot;, &quot;--output_file&quot;):            text_path = Path(arg)    if not image_path:        sys.exit(&quot;必须指定输入图片 (-i)&quot;)    marked_path = text_path.with_suffix(&quot;.jpg&quot;)    run_ocr(image_path, text_path, marked_path)if __name__ == &quot;__main__&quot;:    main(sys.argv)
-
-2. Shell 自动化脚本ocr.sh 完成截图、放大、OCR、打开结果到复制剪贴板的一条龙：
-#!/usr/bin/env bashWORKDIR=&quot;$HOME/ocrtemp&quot;TARGET=&quot;$WORKDIR/ocr_image&quot;source &quot;$HOME/miniconda3/etc/profile.d/conda.sh&quot;conda activate ocrmkdir -p &quot;$WORKDIR&quot;cd &quot;$WORKDIR&quot;gnome-screenshot -a -f &quot;$&#123;TARGET&#125;.png&quot;mogrify -modulate 100,0 -resize 400% &quot;$&#123;TARGET&#125;.png&quot;python3 ocr.py -i &quot;$&#123;TARGET&#125;.png&quot; -o &quot;$&#123;TARGET&#125;.txt&quot;xdg-open &quot;$&#123;TARGET&#125;.png&quot;xdg-open &quot;$&#123;TARGET&#125;.jpg&quot;xdg-open &quot;$&#123;TARGET&#125;.txt&quot;command -v xclip &gt;/dev/null &amp;&amp; \  xclip -selection clipboard &lt; &quot;$&#123;TARGET&#125;.txt&quot;
-
-依赖列表：
-sudo apt install gnome-screenshot imagemagick xclippip install paddlepaddle paddleocr pillow
-
-3. 绑定全局快捷键
-mkdir ~/ocrtemp，将 ocr.py、ocr.sh 放入该目录。
-Ubuntu 系统设置 → 键盘快捷键 → 自定义 → 新建。
-名称自取，命令填写 /home/&lt;user&gt;/ocrtemp/ocr.sh，组合键建议设为 Ctrl+Alt+O。
-
-之后按下快捷键即可完成「截图 → OCR → 打开结果 → 自动复制」的全流程。
-4. 常见问题
-Ubuntu 22.04 缺少 libssl1.1  
-echo &quot;deb http://security.ubuntu.com/ubuntu focal-security main&quot; \  | sudo tee /etc/apt/sources.list.d/focal-security.listsudo apt-get updatesudo apt-get install libssl1.1
-
-pip 下载慢  
-
-临时镜像：pip install -i https://pypi.tuna.tsinghua.edu.cn/simple torch
-全局配置：  pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simplepip config set install.trusted-host mirrors.aliyun.com
-
-
-
-
-这个组合脚本把零碎的截图+识别流程压缩成一次敲击，特别适合整理 PDF、录屏或无法复制的界面内容。后续可以继续改进，比如自动丢进 Notion、Obsidian，或者替换成其它 OCR 模型。*** End Patch
-]]></content>
-      <categories>
-        <category>自动化脚本</category>
-      </categories>
-      <tags>
-        <tag>PaddleOCR</tag>
-        <tag>Linux</tag>
-        <tag>Shell</tag>
       </tags>
   </entry>
   <entry>
@@ -354,6 +277,182 @@ CR &lt; 0.1（有时取 0.08）认为判断可接受；
       <tags>
         <tag>AHP</tag>
         <tag>决策分析</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>网络代理与 GitHub 连接策略</title>
+    <url>/2023/08/13/2023-08-13-%E7%BD%91%E7%BB%9C%E4%BB%A3%E7%90%86%E4%B8%8EGitHub%E8%BF%9E%E6%8E%A5%E7%AD%96%E7%95%A5/</url>
+    <content><![CDATA[与 GitHub 建立稳定的 SSH 连接是折腾服务器的基础。这里整理了我在 Windows 和 Ubuntu 下的几套代理配置方案，并附上包管理器与 Python 的常用加速方式。
+1. Windows：给 GitHub 换端口并走代理如果直接使用 git@github.com 出现 kex_exchange_identification: Connection closed by remote host，多数情况是 22 端口被代理软件拦截。把 SSH 连接改到 443 即可。
+编辑 C:\Users\&lt;username&gt;\.ssh\config，没有就新建：
+Host github.com    HostName ssh.github.com    User git    Port 443    ProxyCommand connect -H 127.0.0.1:7890 %h %p   # 根据实际代理端口调整
+
+说明：
+
+HostName ssh.github.com：GitHub 针对 443 端口提供的 SSH 网关。
+ProxyCommand connect ...：借助代理工具（如 Clash、Surge）转发流量。
+
+保存后执行 ssh -T git@github.com 测试，如果返回 Hi xxx! You&#39;ve successfully authenticated 即表示成功。
+2. Ubuntu：SSH 代理配置Ubuntu 同样可以把 22 改成 443，同时通过 nc 或 connect-proxy 走本机代理端口（默认 7890）。
+vi ~/.ssh/config
+
+追加：
+ProxyCommand nc -X 5 -x 127.0.0.1:7890 %h %pHost github.com    Hostname ssh.github.com    User git    Port 443    IdentityFile /home/&lt;user&gt;/.ssh/id_rsa    TCPKeepAlive yes
+
+最后确保权限正确：
+chmod 600 ~/.ssh/configssh -T git@github.com
+
+若仍旧失败，可以尝试临时断开&#x2F;重连网络后再次测试。
+3. Apt 代理当服务器在受限网络下更新软件包时，需要为 Apt 指定代理：
+sudo nano /etc/apt/apt.conf
+
+写入：
+Acquire::http::Proxy  &quot;http://127.0.0.1:7890&quot;;Acquire::https::Proxy &quot;http://127.0.0.1:7890&quot;;
+
+保存后执行：
+sudo apt updatesudo apt upgrade
+
+4. Python 与 pip4.1 在代码里指定代理import osos.environ[&quot;http_proxy&quot;] = &quot;http://127.0.0.1:7890&quot;os.environ[&quot;https_proxy&quot;] = &quot;http://127.0.0.1:7890&quot;
+
+若要全局生效，可写入虚拟环境激活脚本。
+4.2 pip 加速
+单次安装：
+pip install -i https://pypi.tuna.tsinghua.edu.cn/simple torch
+
+全局配置：
+pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simplepip config set install.trusted-host mirrors.aliyun.com
+
+
+通过以上设置，GitHub 拉代码、系统更新以及 Python 依赖安装都能在代理环境中保持高速稳定。建议把这些配置写进 dotfiles 或自动化脚本，换设备时直接复用。*** End Patch
+]]></content>
+      <categories>
+        <category>网络排障</category>
+      </categories>
+      <tags>
+        <tag>SSH</tag>
+        <tag>Proxy</tag>
+        <tag>GitHub</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Python `collections` 工具箱</title>
+    <url>/2023/08/08/2023-08-08-Python%E9%9B%86%E5%90%88%E5%B7%A5%E5%85%B7%E7%AE%B1/</url>
+    <content><![CDATA[collections 模块提供了比内置字典更智能的容器。最常出场的两个武器是 defaultdict 和 Counter：一个负责兜底，一个负责计数。我把常用场景拆成三部分，顺手附上一个工作中经常用到的「多模型投票合并 CSV」脚本。
+1. defaultdict：让 Key 默认存在defaultdict 会在访问缺失的键时自动创建默认值，不再抛出 KeyError。使用时要指定一个「工厂函数」——也就是默认值的类型。
+from collections import defaultdictcount_by_id = defaultdict(int)      # 默认 0tags_by_user = defaultdict(set)     # 默认空集合records = defaultdict(list)         # 默认空列表names = defaultdict(str)            # 默认空字符串count_by_id[&quot;a&quot;] += 1               # 不存在时会自动补 0 再自增print(count_by_id[&quot;missing&quot;])       # 输出 0，不报错
+
+常见工厂函数对照：
+
+
+
+工厂函数
+默认值示例
+
+
+
+int
+0
+
+
+list
+[]
+
+
+set
+set()
+
+
+str
+&quot;&quot;
+
+
+2. Counter：一行搞定频次统计Counter 是专门的计数器，天生擅长做词频、投票、补集等任务，同样继承自字典。
+from collections import Countercolors = Counter([&quot;red&quot;, &quot;blue&quot;, &quot;red&quot;, &quot;green&quot;, &quot;blue&quot;, &quot;blue&quot;])print(colors)                 # Counter(&#123;&#x27;blue&#x27;: 3, &#x27;red&#x27;: 2, &#x27;green&#x27;: 1&#125;)
+
+常用方法备忘：
+
+
+
+方法 &#x2F; 属性
+用途
+
+
+
+Counter(iterable)
+从序列、字典或关键字参数快速构造计数器
+
+
+.elements()
+按计数重复返回所有元素，适合还原序列
+
+
+.most_common(n)
+返回出现次数最高的前 n 个元素 (item, cnt)
+
+
+加减法 &#x2F; 集合运算
+可以直接对 Counter 做加减、交集、并集等操作
+
+
+示例：
+letters = Counter(&quot;abracadabra&quot;)print(letters.most_common(3))  # [(&#x27;a&#x27;, 5), (&#x27;b&#x27;, 2), (&#x27;r&#x27;, 2)]for ch in letters.elements():    ...
+
+3. 实战：CSV 投票合并器场景：有 7 个模型分别输出 name,label 两列，想用投票找到每个样本出现次数最多的标签。
+import csvfrom collections import defaultdict, Countername_labels = defaultdict(list)for i in range(1, 8):    with open(f&quot;&#123;i&#125;.csv&quot;) as csvfile:        for row in csv.DictReader(csvfile):            name_labels[row[&quot;name&quot;]].append(row[&quot;label&quot;])result = &#123;&#125;for name, labels in name_labels.items():    result[name] = Counter(labels).most_common(1)[0][0]with open(&quot;result.csv&quot;, &quot;w&quot;, newline=&quot;&quot;) as csvfile:    writer = csv.DictWriter(csvfile, fieldnames=[&quot;name&quot;, &quot;label&quot;])    writer.writeheader()    for name, label in result.items():        writer.writerow(&#123;&quot;name&quot;: name, &quot;label&quot;: label&#125;)
+
+相比手动判断「键存不存在」，defaultdict 和 Counter 让代码更简洁、更不易出错。下次再碰到计数和聚合任务，别忘了把它们从工具箱里拿出来用。*** End Patch
+]]></content>
+      <categories>
+        <category>Python笔记</category>
+      </categories>
+      <tags>
+        <tag>collections</tag>
+        <tag>defaultdict</tag>
+        <tag>Counter</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>用 `@property` 优雅管理 Python 属性</title>
+    <url>/2023/08/19/2023-08-19-Python%E5%B1%9E%E6%80%A7%E8%A3%85%E9%A5%B0%E5%99%A8%E5%AE%9E%E8%B7%B5/</url>
+    <content><![CDATA[@property 让方法看起来像属性，既保留了封装性，又能提供校验逻辑。下面分三部分介绍它的基本概念、两种写法以及常见使用场景。
+1. 为什么要用 @property一个方法一旦加上 @property，就可以在外部通过「属性访问」的语法调用：
+class Goods:    def __init__(self, unit_price, weight):        self.unit_price = unit_price        self.weight = weight    @property    def price(self):        return self.unit_price * self.weightitem = Goods(7, 4)print(item.price)    # 28
+
+注意：被装饰的方法只能接收 self 一个参数，外部访问时不需要加括号。
+2. 两种定义方式2.1 装饰器写法（推荐）class Watermelon:    def __init__(self, price):        self._price = price    @property    def price(self):        return self._price    @price.setter    def price(self, new_price):        if new_price &lt;= 0:            raise ValueError(&quot;价格必须大于 0&quot;)        self._price = new_price    @price.deleter    def price(self):        del self._price
+
+装饰器套装包括：
+
+@property：读取属性时调用；
+@price.setter：赋值时调用；
+@price.deleter：删除属性时调用；
+price.__doc__：可以写描述字符串，作为文档输出。
+
+2.2 类属性写法（较少用）早期写法是显式创建 property 对象：
+class Lemons:    def __init__(self, unit_price=7):        self._unit_price = unit_price    def get_unit_price(self):        return self._unit_price    def set_unit_price(self, new_unit_price):        self._unit_price = new_unit_price    def del_unit_price(self):        del self._unit_price    unit_price = property(get_unit_price, set_unit_price, del_unit_price,                          doc=&quot;柠檬单价&quot;)
+
+这种形式相当于把 getter / setter / deleter 分别传给 property() 构造函数，不如装饰器直观，但在需要动态创建属性时仍然有用。
+3. 取代传统 getter&#x2F;setter相比手写 get_ &#x2F; set_ 方法，@property 的优势在于：
+
+外部 API 更简洁（obj.price 而不是 obj.get_price()）。  
+可以在 setter 里做合法性校验，保证数据安全。  
+随时可以把内部实现换成计算属性，对使用者透明。
+
+示例对比：
+class Legacy:    def __init__(self, price):        self._price = price    def get_price(self):        return self._price    def set_price(self, new_price):        if new_price &lt;= 0:            raise ValueError        self._price = new_price
+
+vs.
+class Modern:    def __init__(self, price):        self.price = price   # 直接复用 setter 校验    @property    def price(self):        return self._price    @price.setter    def price(self, value):        if value &lt;= 0:            raise ValueError(&quot;价格必须大于 0&quot;)        self._price = value
+
+
+当你需要在属性赋值时加入校验、懒加载或缓存逻辑时，记得优先考虑 @property。它让类的外部接口保持简单，同时保留了内部实现调整的自由度。*** End Patch
+]]></content>
+      <categories>
+        <category>Python笔记</category>
+      </categories>
+      <tags>
+        <tag>property</tag>
+        <tag>封装</tag>
       </tags>
   </entry>
   <entry>
@@ -630,105 +729,6 @@ sed -i &#x27;1i\Title: Linux Guide&#x27; README.mdsed -e &#x27;1,3s/foo/bar/g&#x
         <tag>Linux</tag>
         <tag>Shell</tag>
         <tag>命令行</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>网络代理与 GitHub 连接策略</title>
-    <url>/2023/08/13/2023-08-13-%E7%BD%91%E7%BB%9C%E4%BB%A3%E7%90%86%E4%B8%8EGitHub%E8%BF%9E%E6%8E%A5%E7%AD%96%E7%95%A5/</url>
-    <content><![CDATA[与 GitHub 建立稳定的 SSH 连接是折腾服务器的基础。这里整理了我在 Windows 和 Ubuntu 下的几套代理配置方案，并附上包管理器与 Python 的常用加速方式。
-1. Windows：给 GitHub 换端口并走代理如果直接使用 git@github.com 出现 kex_exchange_identification: Connection closed by remote host，多数情况是 22 端口被代理软件拦截。把 SSH 连接改到 443 即可。
-编辑 C:\Users\&lt;username&gt;\.ssh\config，没有就新建：
-Host github.com    HostName ssh.github.com    User git    Port 443    ProxyCommand connect -H 127.0.0.1:7890 %h %p   # 根据实际代理端口调整
-
-说明：
-
-HostName ssh.github.com：GitHub 针对 443 端口提供的 SSH 网关。
-ProxyCommand connect ...：借助代理工具（如 Clash、Surge）转发流量。
-
-保存后执行 ssh -T git@github.com 测试，如果返回 Hi xxx! You&#39;ve successfully authenticated 即表示成功。
-2. Ubuntu：SSH 代理配置Ubuntu 同样可以把 22 改成 443，同时通过 nc 或 connect-proxy 走本机代理端口（默认 7890）。
-vi ~/.ssh/config
-
-追加：
-ProxyCommand nc -X 5 -x 127.0.0.1:7890 %h %pHost github.com    Hostname ssh.github.com    User git    Port 443    IdentityFile /home/&lt;user&gt;/.ssh/id_rsa    TCPKeepAlive yes
-
-最后确保权限正确：
-chmod 600 ~/.ssh/configssh -T git@github.com
-
-若仍旧失败，可以尝试临时断开&#x2F;重连网络后再次测试。
-3. Apt 代理当服务器在受限网络下更新软件包时，需要为 Apt 指定代理：
-sudo nano /etc/apt/apt.conf
-
-写入：
-Acquire::http::Proxy  &quot;http://127.0.0.1:7890&quot;;Acquire::https::Proxy &quot;http://127.0.0.1:7890&quot;;
-
-保存后执行：
-sudo apt updatesudo apt upgrade
-
-4. Python 与 pip4.1 在代码里指定代理import osos.environ[&quot;http_proxy&quot;] = &quot;http://127.0.0.1:7890&quot;os.environ[&quot;https_proxy&quot;] = &quot;http://127.0.0.1:7890&quot;
-
-若要全局生效，可写入虚拟环境激活脚本。
-4.2 pip 加速
-单次安装：
-pip install -i https://pypi.tuna.tsinghua.edu.cn/simple torch
-
-全局配置：
-pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simplepip config set install.trusted-host mirrors.aliyun.com
-
-
-通过以上设置，GitHub 拉代码、系统更新以及 Python 依赖安装都能在代理环境中保持高速稳定。建议把这些配置写进 dotfiles 或自动化脚本，换设备时直接复用。*** End Patch
-]]></content>
-      <categories>
-        <category>网络排障</category>
-      </categories>
-      <tags>
-        <tag>SSH</tag>
-        <tag>Proxy</tag>
-        <tag>GitHub</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>用 `@property` 优雅管理 Python 属性</title>
-    <url>/2023/08/19/2023-08-19-Python%E5%B1%9E%E6%80%A7%E8%A3%85%E9%A5%B0%E5%99%A8%E5%AE%9E%E8%B7%B5/</url>
-    <content><![CDATA[@property 让方法看起来像属性，既保留了封装性，又能提供校验逻辑。下面分三部分介绍它的基本概念、两种写法以及常见使用场景。
-1. 为什么要用 @property一个方法一旦加上 @property，就可以在外部通过「属性访问」的语法调用：
-class Goods:    def __init__(self, unit_price, weight):        self.unit_price = unit_price        self.weight = weight    @property    def price(self):        return self.unit_price * self.weightitem = Goods(7, 4)print(item.price)    # 28
-
-注意：被装饰的方法只能接收 self 一个参数，外部访问时不需要加括号。
-2. 两种定义方式2.1 装饰器写法（推荐）class Watermelon:    def __init__(self, price):        self._price = price    @property    def price(self):        return self._price    @price.setter    def price(self, new_price):        if new_price &lt;= 0:            raise ValueError(&quot;价格必须大于 0&quot;)        self._price = new_price    @price.deleter    def price(self):        del self._price
-
-装饰器套装包括：
-
-@property：读取属性时调用；
-@price.setter：赋值时调用；
-@price.deleter：删除属性时调用；
-price.__doc__：可以写描述字符串，作为文档输出。
-
-2.2 类属性写法（较少用）早期写法是显式创建 property 对象：
-class Lemons:    def __init__(self, unit_price=7):        self._unit_price = unit_price    def get_unit_price(self):        return self._unit_price    def set_unit_price(self, new_unit_price):        self._unit_price = new_unit_price    def del_unit_price(self):        del self._unit_price    unit_price = property(get_unit_price, set_unit_price, del_unit_price,                          doc=&quot;柠檬单价&quot;)
-
-这种形式相当于把 getter / setter / deleter 分别传给 property() 构造函数，不如装饰器直观，但在需要动态创建属性时仍然有用。
-3. 取代传统 getter&#x2F;setter相比手写 get_ &#x2F; set_ 方法，@property 的优势在于：
-
-外部 API 更简洁（obj.price 而不是 obj.get_price()）。  
-可以在 setter 里做合法性校验，保证数据安全。  
-随时可以把内部实现换成计算属性，对使用者透明。
-
-示例对比：
-class Legacy:    def __init__(self, price):        self._price = price    def get_price(self):        return self._price    def set_price(self, new_price):        if new_price &lt;= 0:            raise ValueError        self._price = new_price
-
-vs.
-class Modern:    def __init__(self, price):        self.price = price   # 直接复用 setter 校验    @property    def price(self):        return self._price    @price.setter    def price(self, value):        if value &lt;= 0:            raise ValueError(&quot;价格必须大于 0&quot;)        self._price = value
-
-
-当你需要在属性赋值时加入校验、懒加载或缓存逻辑时，记得优先考虑 @property。它让类的外部接口保持简单，同时保留了内部实现调整的自由度。*** End Patch
-]]></content>
-      <categories>
-        <category>Python笔记</category>
-      </categories>
-      <tags>
-        <tag>property</tag>
-        <tag>封装</tag>
       </tags>
   </entry>
   <entry>

@@ -1,35 +1,202 @@
-extends includes/layout.pug
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>层次分析法（AHP）快速入门 | REXKEV'S BLOG</title><meta name="author" content="Kevin Tu"><meta name="copyright" content="Kevin Tu"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="梳理层次分析法的典型应用、思维流程以及一致性检验，让复杂决策问题可以拆解成可比较的层次结构。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="层次分析法（AHP）快速入门">
+<meta property="og:url" content="https://rexkev214.github.io/2023/08/13/2023-08-13-%E5%B1%82%E6%AC%A1%E5%88%86%E6%9E%90%E6%B3%95%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/index.html">
+<meta property="og:site_name" content="REXKEV&#39;S BLOG">
+<meta property="og:description" content="梳理层次分析法的典型应用、思维流程以及一致性检验，让复杂决策问题可以拆解成可比较的层次结构。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://c-ssl.duitang.com/uploads/item/202003/13/20200313165624_qycwp.jpeg">
+<meta property="article:published_time" content="2023-08-12T16:00:00.000Z">
+<meta property="article:modified_time" content="2025-10-29T16:00:00.000Z">
+<meta property="article:author" content="Kevin Tu">
+<meta property="article:tag" content="AHP">
+<meta property="article:tag" content="决策分析">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://c-ssl.duitang.com/uploads/item/202003/13/20200313165624_qycwp.jpeg"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "层次分析法（AHP）快速入门",
+  "url": "https://rexkev214.github.io/2023/08/13/2023-08-13-%E5%B1%82%E6%AC%A1%E5%88%86%E6%9E%90%E6%B3%95%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/",
+  "image": "https://c-ssl.duitang.com/uploads/item/202003/13/20200313165624_qycwp.jpeg",
+  "datePublished": "2023-08-12T16:00:00.000Z",
+  "dateModified": "2025-10-29T16:00:00.000Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "Kevin Tu",
+      "url": "https://rexkev214.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/%5Bobject%20Object%5D"><link rel="canonical" href="https://rexkev214.github.io/2023/08/13/2023-08-13-%E5%B1%82%E6%AC%A1%E5%88%86%E6%9E%90%E6%B3%95%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.1"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
 
-block content
-  #post
-    if top_img === false
-      include includes/header/post-info.pug
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
 
-    article#article-container.container.post-content
-      if theme.noticeOutdate.enable && page.noticeOutdate !== false
-        include includes/post/outdate-notice.pug
-      else
-        !=page.content
-    include includes/post/post-copyright.pug
-    .tag_share
-      if (page.tags.length > 0 && theme.post_meta.post.tags)
-        .post-meta__tag-list
-          each item, index in page.tags.data
-            a(href=url_for(item.path)).post-meta__tags #[=item.name]
-      include includes/third-party/share/index.pug
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
 
-    if theme.reward.enable && theme.reward.QR_code
-      !=partial('includes/post/reward', {}, {cache: true})
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.12.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '层次分析法（AHP）快速入门',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><meta name="generator" content="Hexo 8.1.0"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="https://c-ssl.duitang.com/uploads/item/202003/13/20200313165624_qycwp.jpeg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">17</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">40</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">12</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><span> Links</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">REXKEV'S BLOG</span></a><a class="nav-page-title" href="/"><span class="site-name">层次分析法（AHP）快速入门</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><span> Links</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">层次分析法（AHP）快速入门</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2023-08-12T16:00:00.000Z" title="发表于 2023-08-13 00:00:00">2023-08-13</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-10-29T16:00:00.000Z" title="更新于 2025-10-30 00:00:00">2025-10-30</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1/">数学建模</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><p>层次分析法（Analytic Hierarchy Process，AHP）擅长解决「难以直接量化、却需要做选择」的问题，例如：选校、选址、评估环境指标权重等。要用好 AHP，可以按「建立层次 → 构造判断矩阵 → 做一致性检验 → 得到最终权重」的节奏来推进。</p>
+<h2 id="1-哪些问题适合用-AHP？"><a href="#1-哪些问题适合用-AHP？" class="headerlink" title="1. 哪些问题适合用 AHP？"></a>1. 哪些问题适合用 AHP？</h2><ol>
+<li><strong>选优类</strong>：在多个方案中选最优（优秀运动员、最合适的办公地址）。  </li>
+<li><strong>评价类</strong>：评价某个对象的优劣程度（水质、环境、客户满意度）。  </li>
+<li><strong>指标优选</strong>：建立权重体系，让指标既科学又易操作。</li>
+</ol>
+<h2 id="2-搭建层次结构"><a href="#2-搭建层次结构" class="headerlink" title="2. 搭建层次结构"></a>2. 搭建层次结构</h2><p>通常包含三层：</p>
+<ul>
+<li><strong>目标层（Top）</strong>：最终要达成的目的，只保留一个总体目标。</li>
+<li><strong>准则层 &#x2F; 指标层（Middle）</strong>：影响目标的关键因素，可以按准则、策略、约束等再细分。</li>
+<li><strong>方案层（Bottom）</strong>：待比较的候选方案，往往有多个。</li>
+</ul>
+<p>层次图示例如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">       目标</span><br><span class="line">     /  |  \</span><br><span class="line">  准则1 准则2 ...</span><br><span class="line"> /  |  \        \</span><br><span class="line">方案A 方案B ... 方案N</span><br></pre></td></tr></table></figure>
 
-    //- ad
-    if theme.ad && theme.ad.post
-      .ads-wrap!=theme.ad.post
-
-    if theme.post_pagination
-      include includes/pagination.pug
-    if theme.related_post && theme.related_post.enable
-      != related_posts(page,site.posts)
-
-    if page.comments !== false && theme.comments.use
-      - var commentsJsLoad = true
-      !=partial('includes/third-party/comments/index', {}, {cache: true})
+<h2 id="3-构造判断矩阵"><a href="#3-构造判断矩阵" class="headerlink" title="3. 构造判断矩阵"></a>3. 构造判断矩阵</h2><p>针对同一层中的因素，两两比较其对上一层目标的相对重要性。比较结果用 Saaty 1–9 标度填写矩阵：</p>
+<p>[<br>A &#x3D;<br>\begin{bmatrix}<br>1 &amp; \tfrac{1}{2} &amp; 4 &amp; 3 &amp; 3 \<br>2 &amp; 1 &amp; 7 &amp; 5 &amp; 5 \<br>\tfrac{1}{4} &amp; \tfrac{1}{7} &amp; 1 &amp; \tfrac{1}{2} &amp; \tfrac{1}{3} \<br>\tfrac{1}{3} &amp; \tfrac{1}{5} &amp; 2 &amp; 1 &amp; 1 \<br>\tfrac{1}{3} &amp; \tfrac{1}{5} &amp; 3 &amp; 1 &amp; 1<br>\end{bmatrix},<br>\quad a_{ji} &#x3D; \frac{1}{a_{ij}}<br>]</p>
+<p>注意：矩阵允许存在一定程度的不一致（例如 <code>C₂:C₁ = 2</code>，<code>C₁:C₃ = 4</code>，理论上 <code>C₂:C₃</code> 应为 8，但实际可能不一致），但必须通过一致性检验控制误差。</p>
+<h2 id="4-一致性检验"><a href="#4-一致性检验" class="headerlink" title="4. 一致性检验"></a>4. 一致性检验</h2><p>求出判断矩阵的最大特征值 (\lambda_\text{max}) 及对应特征向量（即各因素权重），然后计算一致性指标：</p>
+<p>[<br>CI &#x3D; \frac{\lambda_\text{max} - n}{n - 1}<br>]</p>
+<ul>
+<li>当 <code>CI = 0</code> 时，完全一致。</li>
+<li><code>CI</code> 越接近 0，判断越可靠；越大代表矛盾越严重。</li>
+</ul>
+<p>为衡量 <code>CI</code> 是否足够小，引入随机一致性指标 <code>RI</code>（根据大量随机矩阵统计得到）：</p>
+<p>[<br>RI &#x3D;<br>\begin{array}{c|ccccccccccc}<br>n &amp; 1 &amp; 2 &amp; 3 &amp; 4 &amp; 5 &amp; 6 &amp; 7 &amp; 8 &amp; 9 &amp; 10 &amp; 11 \<br>\hline<br>RI &amp; 0 &amp; 0 &amp; 0.58 &amp; 0.90 &amp; 1.12 &amp; 1.24 &amp; 1.32 &amp; 1.41 &amp; 1.45 &amp; 1.49 &amp; 1.51<br>\end{array}<br>]</p>
+<p>最终计算一致性比率：</p>
+<p>[<br>CR &#x3D; \frac{CI}{RI}<br>]</p>
+<ul>
+<li><code>CR &lt; 0.1</code>（有时取 0.08）认为判断可接受；</li>
+<li>如果 <code>CR</code> 超过阈值，则需回头调整判断矩阵中的对比值。</li>
+</ul>
+<h2 id="5-小结"><a href="#5-小结" class="headerlink" title="5. 小结"></a>5. 小结</h2><ol>
+<li>明确目标，搭建三层结构；</li>
+<li>使用 1–9 标度两两比较，构造判断矩阵；</li>
+<li>算出特征向量并进行一致性检验，保证 <code>CR &lt; 0.1</code>；</li>
+<li>结合权重得到最终方案排序。</li>
+</ol>
+<p>这种结构化思考方式可以把“拍脑袋”变成“有依据的主观判断”，特别适合决策前期需要拉通多方意见的场景。*** End Patch</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://rexkev214.github.io">Kevin Tu</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://rexkev214.github.io/2023/08/13/2023-08-13-%E5%B1%82%E6%AC%A1%E5%88%86%E6%9E%90%E6%B3%95%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/">https://rexkev214.github.io/2023/08/13/2023-08-13-%E5%B1%82%E6%AC%A1%E5%88%86%E6%9E%90%E6%B3%95%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://rexkev214.github.io" target="_blank">REXKEV'S BLOG</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/AHP/">AHP</a><a class="post-meta__tags" href="/tags/%E5%86%B3%E7%AD%96%E5%88%86%E6%9E%90/">决策分析</a></div><div class="post-share"><div class="social-share" data-image="https://c-ssl.duitang.com/uploads/item/202003/13/20200313165624_qycwp.jpeg" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2023/08/13/2023-08-13-%E7%BD%91%E7%BB%9C%E4%BB%A3%E7%90%86%E4%B8%8EGitHub%E8%BF%9E%E6%8E%A5%E7%AD%96%E7%95%A5/" title="网络代理与 GitHub 连接策略"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">网络代理与 GitHub 连接策略</div></div><div class="info-2"><div class="info-item-1">与 GitHub 建立稳定的 SSH 连接是折腾服务器的基础。这里整理了我在 Windows 和 Ubuntu 下的几套代理配置方案，并附上包管理器与 Python 的常用加速方式。 1. Windows：给 GitHub 换端口并走代理如果直接使用 git@github.com 出现 kex_exchange_identification: Connection closed by remote host，多数情况是 22 端口被代理软件拦截。把 SSH 连接改到 443 即可。 编辑 C:\Users\&lt;username&gt;\.ssh\config，没有就新建： 12345Host github.com    HostName ssh.github.com    User git    Port 443    ProxyCommand connect -H 127.0.0.1:7890 %h %p   # 根据实际代理端口调整  说明：  HostName ssh.github.com：GitHub 针对 443 端口提供的 SSH 网关。 ProxyCommand...</div></div></div></a><a class="pagination-related" href="/2023/08/13/2023-08-13-Markdown%E5%85%AC%E5%BC%8F%E4%B8%8E%E7%9F%A9%E9%98%B5%E9%80%9F%E6%9F%A5/" title="Markdown 公式与矩阵速查"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">Markdown 公式与矩阵速查</div></div><div class="info-2"><div class="info-item-1">记录几个写作中最常用的矩阵与公式排版方式，直接复制即可在支持 KaTeX&#x2F;MathJax 的博客里使用。 1. 基础矩阵1234\begin&#123;matrix&#125; a &amp; b \\ c &amp; d\end&#123;matrix&#125;  效果： [\begin{matrix} a &amp; b \ c &amp; d\end{matrix}] 2. 带分隔符的矩阵1234\begin&#123;bmatrix&#125; a &amp; b \\ c &amp; d\end&#123;bmatrix&#125;  1234\begin&#123;pmatrix&#125; a &amp; b \\ c &amp; d\end&#123;pmatrix&#125;  1234\begin&#123;Bmatrix&#125; a &amp; b \\ c &amp; d\end&#123;Bmatrix&#125;  1234\begin&#123;vmatrix&#125; a &amp; b \\ c &amp; d\end&#123...</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="https://c-ssl.duitang.com/uploads/item/202003/13/20200313165624_qycwp.jpeg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Kevin Tu</div><div class="author-info-description"></div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">17</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">40</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">12</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/REXKEV214" target="_blank" title="fab fa-github"><i class="Github"></i></a><a class="social-icon" href="mailto:k15257703775@gmail.com" target="_blank" title="fas fa-envelope"><i class="Email"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E5%93%AA%E4%BA%9B%E9%97%AE%E9%A2%98%E9%80%82%E5%90%88%E7%94%A8-AHP%EF%BC%9F"><span class="toc-number">1.</span> <span class="toc-text">1. 哪些问题适合用 AHP？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E6%90%AD%E5%BB%BA%E5%B1%82%E6%AC%A1%E7%BB%93%E6%9E%84"><span class="toc-number">2.</span> <span class="toc-text">2. 搭建层次结构</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E6%9E%84%E9%80%A0%E5%88%A4%E6%96%AD%E7%9F%A9%E9%98%B5"><span class="toc-number">3.</span> <span class="toc-text">3. 构造判断矩阵</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E4%B8%80%E8%87%B4%E6%80%A7%E6%A3%80%E9%AA%8C"><span class="toc-number">4.</span> <span class="toc-text">4. 一致性检验</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-%E5%B0%8F%E7%BB%93"><span class="toc-number">5.</span> <span class="toc-text">5. 小结</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/11/11/2023-11-11-%E5%B7%A5%E4%BD%9C%E7%8E%AF%E5%A2%83%E5%B8%B8%E5%A4%87%E6%B8%85%E5%8D%95/" title="工作环境常备清单">工作环境常备清单</a><time datetime="2023-11-10T16:00:00.000Z" title="发表于 2023-11-11 00:00:00">2023-11-11</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/10/28/2023-10-28-PyTorch%E6%A8%A1%E5%9E%8B%E4%BF%9D%E5%AD%98%E4%B8%8E%E5%8A%A0%E8%BD%BD%E6%8C%87%E5%8D%97/" title="PyTorch 模型保存与加载指南">PyTorch 模型保存与加载指南</a><time datetime="2023-10-27T16:00:00.000Z" title="发表于 2023-10-28 00:00:00">2023-10-28</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/10/08/2023-10-08-Matplotlib%E4%B8%AD%E6%96%87%E5%AD%97%E4%BD%93%E9%85%8D%E7%BD%AE/" title="Matplotlib 中文字体配置指南">Matplotlib 中文字体配置指南</a><time datetime="2023-10-07T16:00:00.000Z" title="发表于 2023-10-08 00:00:00">2023-10-08</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/09/23/2023-09-23-PyTorch-BERT%E6%96%87%E6%9C%AC%E5%88%86%E7%B1%BB%E5%AE%9E%E8%B7%B5%E8%AE%B0%E5%BD%95/" title="PyTorch + BERT 文本分类实践记录">PyTorch + BERT 文本分类实践记录</a><time datetime="2023-09-22T16:00:00.000Z" title="发表于 2023-09-23 00:00:00">2023-09-23</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/08/25/2023-08-25-Mac%E5%A4%96%E7%BD%AE%E7%A1%AC%E7%9B%98%E6%8E%92%E6%9F%A5%E6%89%8B%E8%AE%B0/" title="Mac 外置硬盘无法弹出的排查手记">Mac 外置硬盘无法弹出的排查手记</a><time datetime="2023-08-24T16:00:00.000Z" title="发表于 2023-08-25 00:00:00">2023-08-25</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 By Kevin Tu</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 8.1.0</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.1</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.1"></script><script src="/js/main.js?v=5.5.1"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
