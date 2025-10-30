@@ -1,6 +1,85 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>从零搭建 Hexo 博客</title>
+    <url>/2023/08/06/2023-08-06-%E4%BB%8E%E9%9B%B6%E6%90%AD%E5%BB%BAHexo%E5%8D%9A%E5%AE%A2/</url>
+    <content><![CDATA[构建一个稳定的写作环境并不难，关键是把「环境准备 → 本地预览 → 部署上线 → 问题排查」这四个环节串起来。下面是我整理的完整流程，照着做就能在一小时内把 Hexo 博客搭起来。
+1. 环境准备
+1.1 安装 Node.js
+Hexo 基于 Node.js 运行，版本至少要 12。可以通过包管理器直接安装：
+# macOS / Linuxnode -v              # 检查是否已安装sudo apt-get install nodejs npm# Windows 推荐使用 nvm-windows
+升级 Node.js 时可以借助 n 工具：
+sudo npm install -g nsudo n stable         # 升级到最新稳定版sudo n 18.17.1        # 或者指定版本hash -r               # zsh/bash 需要刷新缓存
+1.2 安装 Git
+Git 负责把静态资源推送到 GitHub Pages：
+# macOSbrew install git# Ubuntu / Debiansudo apt-get install git
+配置基本信息：
+git config --global user.name &quot;Kevin Tu&quot;git config --global user.email &quot;k15257703775@gmail.com&quot;
+2. 初始化 Hexo 项目
+npm install -g hexo-cli     # 安装脚手架hexo init my-blog           # 初始化项目cd my-blognpm install                 # 安装依赖
+常用脚本梳理如下：
+
+
+
+命令
+作用
+
+
+
+
+hexo clean
+清缓存、清理 public/
+
+
+hexo generate
+生成静态文件
+
+
+hexo server
+启动本地预览（默认 4000）
+
+
+hexo deploy
+部署到远程（需配置 deploy）
+
+
+
+本地开发时建议使用组合命令：
+hexo clean &amp;&amp; hexo generate &amp;&amp; hexo server
+3. 部署到 GitHub Pages
+3.1 准备仓库
+
+在 GitHub 创建名为 username.github.io 的仓库。
+配置 SSH 公钥，确保可以通过 git@github.com:username/username.github.io.git 推送。
+
+3.2 修改 Hexo 配置
+在根目录的 _config.yml 中追加：
+deploy:  type: git  repo: git@github.com:REXKEV214/REXKEV214.github.io.git  branch: master
+若是第一次部署，请先安装部署插件：
+npm install hexo-deployer-git --save
+3.3 正式部署
+hexo cleanhexo generatehexo deploy
+部署过程中一定不要加 sudo，否则会切换到 root 用户导致 Git 凭证丢失。如果遇到权限报错，可以用下列命令修复所有权：
+sudo chown -R &quot;$USER&quot;:&quot;$USER&quot; /path/to/your/blog
+4. 常见问题速查
+
+Permission denied (publickey)：确认 SSH 公钥已经添加到 GitHub，并在当前终端中能通过 ssh -T git@github.com 成功握手。
+部署后页面不更新：检查是否执行了 hexo clean，以及 GitHub Pages 是否仍指向正确的分支。
+Hexo 命令失效或版本不对：使用 npm ls -g --depth=0 检查是否存在多个 Hexo 版本，必要时卸载重装。
+
+
+做到这里，一个可写、可预览、可部署的博客就准备就绪了。后续可以继续折腾主题（比如 Butterfly）、CDN、评论系统等扩展功能，但核心流程就是上面这套。祝写作顺利。*** End Patch Wait: Need to ensure patch ending. Need to correct apply_patch syntax. We have to ensure patch ends with `*** End Patch`. The posted patch has trailing `***`? we already had &quot;—&quot; etc. Need to ensure not messing. Let's re-run with proper patch. Copy patch but start again paying attention to `*** Begin Patch` etc. We'll run command. to=functions.apply_patch to=functions.apply_patch code? above attempt may have error due to ***? we need to check output. We’ll run actual apply patch. We’ll include entire patch again. Let’s re-run.》
+]]></content>
+      <categories>
+        <category>博客搭建</category>
+      </categories>
+      <tags>
+        <tag>Hexo</tag>
+        <tag>Node.js</tag>
+        <tag>GitHub Pages</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Pathlib 路径管理指南</title>
     <url>/2023/08/08/2023-08-08-Pathlib%E8%B7%AF%E5%BE%84%E7%AE%A1%E7%90%86%E6%8C%87%E5%8D%97/</url>
     <content><![CDATA[pathlib 是 Python 3 自带的现代化路径库，它把路径当成对象来操作，比 os.path 少了很多字符串拼接的心智负担。下面分三块整理：创建与判断、常用属性、文件/目录操作。
@@ -27,52 +106,6 @@ home = Path.home()list(home.glob(&quot;*.txt&quot;))      # 当前目录下的 t
       <tags>
         <tag>pathlib</tag>
         <tag>文件操作</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>PaddleOCR 快捷截图流程</title>
-    <url>/2023/08/12/2023-08-12-PaddleOCR%E5%BF%AB%E6%8D%B7%E6%88%AA%E5%9B%BE%E6%B5%81%E7%A8%8B/</url>
-    <content><![CDATA[在 Linux 桌面上频繁做 OCR 抄录太费劲，于是写了一个「截图 → 识别 → 自动打开结果 → 复制到剪贴板」的一键脚本组合。核心拆成三个部分：Python 识别脚本、Shell 自动化脚本、系统快捷键。
-1. Python 识别脚本
-ocr.py 负责调用 PaddleOCR，并把识别内容保存为文本与标注图。
-#!/usr/bin/env python3# -*- coding: utf-8 -*-import sysimport getoptfrom pathlib import Pathfrom paddleocr import PaddleOCR, draw_ocrfrom PIL import Imagedef run_ocr(image_path: Path, text_path: Path, marked_path: Path):    ocr = PaddleOCR(use_angle_cls=False, lang=&quot;ch&quot;)    result = ocr.ocr(str(image_path), cls=False)[0]    boxes = [line[0] for line in result]    text = &quot;\n&quot;.join(line[1][0] for line in result)    text_path.write_text(text, encoding=&quot;utf-8&quot;)    image = Image.open(image_path).convert(&quot;RGB&quot;)    marked = Image.fromarray(draw_ocr(image, boxes))    marked.save(marked_path)def main(argv):    opts, _ = getopt.getopt(argv[1:], &quot;hi:o:&quot;, [&quot;help&quot;, &quot;input_file=&quot;, &quot;output_file=&quot;])    image_path, text_path = None, Path(&quot;result.txt&quot;)    for opt, arg in opts:        if opt in (&quot;-h&quot;, &quot;--help&quot;):            print(&quot;python3 ocr.py -i capture.png -o result.txt&quot;)            return        if opt in (&quot;-i&quot;, &quot;--input_file&quot;):            image_path = Path(arg)        if opt in (&quot;-o&quot;, &quot;--output_file&quot;):            text_path = Path(arg)    if not image_path:        sys.exit(&quot;必须指定输入图片 (-i)&quot;)    marked_path = text_path.with_suffix(&quot;.jpg&quot;)    run_ocr(image_path, text_path, marked_path)if __name__ == &quot;__main__&quot;:    main(sys.argv)
-2. Shell 自动化脚本
-ocr.sh 完成截图、放大、OCR、打开结果到复制剪贴板的一条龙：
-#!/usr/bin/env bashWORKDIR=&quot;$HOME/ocrtemp&quot;TARGET=&quot;$WORKDIR/ocr_image&quot;source &quot;$HOME/miniconda3/etc/profile.d/conda.sh&quot;conda activate ocrmkdir -p &quot;$WORKDIR&quot;cd &quot;$WORKDIR&quot;gnome-screenshot -a -f &quot;$&#123;TARGET&#125;.png&quot;mogrify -modulate 100,0 -resize 400% &quot;$&#123;TARGET&#125;.png&quot;python3 ocr.py -i &quot;$&#123;TARGET&#125;.png&quot; -o &quot;$&#123;TARGET&#125;.txt&quot;xdg-open &quot;$&#123;TARGET&#125;.png&quot;xdg-open &quot;$&#123;TARGET&#125;.jpg&quot;xdg-open &quot;$&#123;TARGET&#125;.txt&quot;command -v xclip &gt;/dev/null &amp;&amp; \  xclip -selection clipboard &lt; &quot;$&#123;TARGET&#125;.txt&quot;
-依赖列表：
-sudo apt install gnome-screenshot imagemagick xclippip install paddlepaddle paddleocr pillow
-3. 绑定全局快捷键
-
-mkdir ~/ocrtemp，将 ocr.py、ocr.sh 放入该目录。
-Ubuntu 系统设置 → 键盘快捷键 → 自定义 → 新建。
-名称自取，命令填写 /home/&lt;user&gt;/ocrtemp/ocr.sh，组合键建议设为 Ctrl+Alt+O。
-
-之后按下快捷键即可完成「截图 → OCR → 打开结果 → 自动复制」的全流程。
-4. 常见问题
-
-
-Ubuntu 22.04 缺少 libssl1.1
-echo &quot;deb http://security.ubuntu.com/ubuntu focal-security main&quot; \  | sudo tee /etc/apt/sources.list.d/focal-security.listsudo apt-get updatesudo apt-get install libssl1.1
-
-
-pip 下载慢
-
-临时镜像：pip install -i https://pypi.tuna.tsinghua.edu.cn/simple torch
-全局配置：pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simplepip config set install.trusted-host mirrors.aliyun.com
-
-
-
-
-
-这个组合脚本把零碎的截图+识别流程压缩成一次敲击，特别适合整理 PDF、录屏或无法复制的界面内容。后续可以继续改进，比如自动丢进 Notion、Obsidian，或者替换成其它 OCR 模型。*** End Patch
-]]></content>
-      <categories>
-        <category>自动化脚本</category>
-      </categories>
-      <tags>
-        <tag>PaddleOCR</tag>
-        <tag>Linux</tag>
-        <tag>Shell</tag>
       </tags>
   </entry>
   <entry>
@@ -156,82 +189,49 @@ import csvfrom collections import defaultdict, Countername_labels = defaultdict(
       </tags>
   </entry>
   <entry>
-    <title>从零搭建 Hexo 博客</title>
-    <url>/2023/08/06/2023-08-06-%E4%BB%8E%E9%9B%B6%E6%90%AD%E5%BB%BAHexo%E5%8D%9A%E5%AE%A2/</url>
-    <content><![CDATA[构建一个稳定的写作环境并不难，关键是把「环境准备 → 本地预览 → 部署上线 → 问题排查」这四个环节串起来。下面是我整理的完整流程，照着做就能在一小时内把 Hexo 博客搭起来。
-1. 环境准备
-1.1 安装 Node.js
-Hexo 基于 Node.js 运行，版本至少要 12。可以通过包管理器直接安装：
-# macOS / Linuxnode -v              # 检查是否已安装sudo apt-get install nodejs npm# Windows 推荐使用 nvm-windows
-升级 Node.js 时可以借助 n 工具：
-sudo npm install -g nsudo n stable         # 升级到最新稳定版sudo n 18.17.1        # 或者指定版本hash -r               # zsh/bash 需要刷新缓存
-1.2 安装 Git
-Git 负责把静态资源推送到 GitHub Pages：
-# macOSbrew install git# Ubuntu / Debiansudo apt-get install git
-配置基本信息：
-git config --global user.name &quot;Kevin Tu&quot;git config --global user.email &quot;k15257703775@gmail.com&quot;
-2. 初始化 Hexo 项目
-npm install -g hexo-cli     # 安装脚手架hexo init my-blog           # 初始化项目cd my-blognpm install                 # 安装依赖
-常用脚本梳理如下：
+    <title>PaddleOCR 快捷截图流程</title>
+    <url>/2023/08/12/2023-08-12-PaddleOCR%E5%BF%AB%E6%8D%B7%E6%88%AA%E5%9B%BE%E6%B5%81%E7%A8%8B/</url>
+    <content><![CDATA[在 Linux 桌面上频繁做 OCR 抄录太费劲，于是写了一个「截图 → 识别 → 自动打开结果 → 复制到剪贴板」的一键脚本组合。核心拆成三个部分：Python 识别脚本、Shell 自动化脚本、系统快捷键。
+1. Python 识别脚本
+ocr.py 负责调用 PaddleOCR，并把识别内容保存为文本与标注图。
+#!/usr/bin/env python3# -*- coding: utf-8 -*-import sysimport getoptfrom pathlib import Pathfrom paddleocr import PaddleOCR, draw_ocrfrom PIL import Imagedef run_ocr(image_path: Path, text_path: Path, marked_path: Path):    ocr = PaddleOCR(use_angle_cls=False, lang=&quot;ch&quot;)    result = ocr.ocr(str(image_path), cls=False)[0]    boxes = [line[0] for line in result]    text = &quot;\n&quot;.join(line[1][0] for line in result)    text_path.write_text(text, encoding=&quot;utf-8&quot;)    image = Image.open(image_path).convert(&quot;RGB&quot;)    marked = Image.fromarray(draw_ocr(image, boxes))    marked.save(marked_path)def main(argv):    opts, _ = getopt.getopt(argv[1:], &quot;hi:o:&quot;, [&quot;help&quot;, &quot;input_file=&quot;, &quot;output_file=&quot;])    image_path, text_path = None, Path(&quot;result.txt&quot;)    for opt, arg in opts:        if opt in (&quot;-h&quot;, &quot;--help&quot;):            print(&quot;python3 ocr.py -i capture.png -o result.txt&quot;)            return        if opt in (&quot;-i&quot;, &quot;--input_file&quot;):            image_path = Path(arg)        if opt in (&quot;-o&quot;, &quot;--output_file&quot;):            text_path = Path(arg)    if not image_path:        sys.exit(&quot;必须指定输入图片 (-i)&quot;)    marked_path = text_path.with_suffix(&quot;.jpg&quot;)    run_ocr(image_path, text_path, marked_path)if __name__ == &quot;__main__&quot;:    main(sys.argv)
+2. Shell 自动化脚本
+ocr.sh 完成截图、放大、OCR、打开结果到复制剪贴板的一条龙：
+#!/usr/bin/env bashWORKDIR=&quot;$HOME/ocrtemp&quot;TARGET=&quot;$WORKDIR/ocr_image&quot;source &quot;$HOME/miniconda3/etc/profile.d/conda.sh&quot;conda activate ocrmkdir -p &quot;$WORKDIR&quot;cd &quot;$WORKDIR&quot;gnome-screenshot -a -f &quot;$&#123;TARGET&#125;.png&quot;mogrify -modulate 100,0 -resize 400% &quot;$&#123;TARGET&#125;.png&quot;python3 ocr.py -i &quot;$&#123;TARGET&#125;.png&quot; -o &quot;$&#123;TARGET&#125;.txt&quot;xdg-open &quot;$&#123;TARGET&#125;.png&quot;xdg-open &quot;$&#123;TARGET&#125;.jpg&quot;xdg-open &quot;$&#123;TARGET&#125;.txt&quot;command -v xclip &gt;/dev/null &amp;&amp; \  xclip -selection clipboard &lt; &quot;$&#123;TARGET&#125;.txt&quot;
+依赖列表：
+sudo apt install gnome-screenshot imagemagick xclippip install paddlepaddle paddleocr pillow
+3. 绑定全局快捷键
+
+mkdir ~/ocrtemp，将 ocr.py、ocr.sh 放入该目录。
+Ubuntu 系统设置 → 键盘快捷键 → 自定义 → 新建。
+名称自取，命令填写 /home/&lt;user&gt;/ocrtemp/ocr.sh，组合键建议设为 Ctrl+Alt+O。
+
+之后按下快捷键即可完成「截图 → OCR → 打开结果 → 自动复制」的全流程。
+4. 常见问题
+
+
+Ubuntu 22.04 缺少 libssl1.1
+echo &quot;deb http://security.ubuntu.com/ubuntu focal-security main&quot; \  | sudo tee /etc/apt/sources.list.d/focal-security.listsudo apt-get updatesudo apt-get install libssl1.1
+
+
+pip 下载慢
+
+临时镜像：pip install -i https://pypi.tuna.tsinghua.edu.cn/simple torch
+全局配置：pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simplepip config set install.trusted-host mirrors.aliyun.com
 
 
 
-命令
-作用
 
 
-
-
-hexo clean
-清缓存、清理 public/
-
-
-hexo generate
-生成静态文件
-
-
-hexo server
-启动本地预览（默认 4000）
-
-
-hexo deploy
-部署到远程（需配置 deploy）
-
-
-
-本地开发时建议使用组合命令：
-hexo clean &amp;&amp; hexo generate &amp;&amp; hexo server
-3. 部署到 GitHub Pages
-3.1 准备仓库
-
-在 GitHub 创建名为 username.github.io 的仓库。
-配置 SSH 公钥，确保可以通过 git@github.com:username/username.github.io.git 推送。
-
-3.2 修改 Hexo 配置
-在根目录的 _config.yml 中追加：
-deploy:  type: git  repo: git@github.com:REXKEV214/REXKEV214.github.io.git  branch: master
-若是第一次部署，请先安装部署插件：
-npm install hexo-deployer-git --save
-3.3 正式部署
-hexo cleanhexo generatehexo deploy
-部署过程中一定不要加 sudo，否则会切换到 root 用户导致 Git 凭证丢失。如果遇到权限报错，可以用下列命令修复所有权：
-sudo chown -R &quot;$USER&quot;:&quot;$USER&quot; /path/to/your/blog
-4. 常见问题速查
-
-Permission denied (publickey)：确认 SSH 公钥已经添加到 GitHub，并在当前终端中能通过 ssh -T git@github.com 成功握手。
-部署后页面不更新：检查是否执行了 hexo clean，以及 GitHub Pages 是否仍指向正确的分支。
-Hexo 命令失效或版本不对：使用 npm ls -g --depth=0 检查是否存在多个 Hexo 版本，必要时卸载重装。
-
-
-做到这里，一个可写、可预览、可部署的博客就准备就绪了。后续可以继续折腾主题（比如 Butterfly）、CDN、评论系统等扩展功能，但核心流程就是上面这套。祝写作顺利。*** End Patch Wait: Need to ensure patch ending. Need to correct apply_patch syntax. We have to ensure patch ends with `*** End Patch`. The posted patch has trailing `***`? we already had &quot;—&quot; etc. Need to ensure not messing. Let's re-run with proper patch. Copy patch but start again paying attention to `*** Begin Patch` etc. We'll run command. to=functions.apply_patch to=functions.apply_patch code? above attempt may have error due to ***? we need to check output. We’ll run actual apply patch. We’ll include entire patch again. Let’s re-run.》
+这个组合脚本把零碎的截图+识别流程压缩成一次敲击，特别适合整理 PDF、录屏或无法复制的界面内容。后续可以继续改进，比如自动丢进 Notion、Obsidian，或者替换成其它 OCR 模型。*** End Patch
 ]]></content>
       <categories>
-        <category>博客搭建</category>
+        <category>自动化脚本</category>
       </categories>
       <tags>
-        <tag>Hexo</tag>
-        <tag>Node.js</tag>
-        <tag>GitHub Pages</tag>
+        <tag>PaddleOCR</tag>
+        <tag>Linux</tag>
+        <tag>Shell</tag>
       </tags>
   </entry>
   <entry>
@@ -726,6 +726,72 @@ class Modern:    def __init__(self, price):        self.price = price   # 直接
       </tags>
   </entry>
   <entry>
+    <title>Git 冲突处理与回滚手册</title>
+    <url>/2023/08/23/2023-08-23-Git%E5%86%B2%E7%AA%81%E4%B8%8E%E5%9B%9E%E6%BB%9A%E6%89%8B%E5%86%8C/</url>
+    <content><![CDATA[Git 的硬核操作其实就几个关键步骤：解决冲突、回滚、修订提交。这里整理我日常最常用的命令，基本能覆盖 80% 的突发状况。
+1. SSH 加速克隆
+默认 22 端口常被墙，推荐把 GitHub 的 SSH 改到 443：
+Host github.com    HostName ssh.github.com    User git    Port 443
+若需要走代理，可在后面加上 ProxyCommand connect -H 127.0.0.1:7890 %h %p。
+2. 解决本地与远程的冲突
+场景：服务器上有人提交了新代码，而我本地也改动了同一个分支。
+
+拉取远程 master 并存到 tmp 分支：git fetch origin master:tmp
+
+查看差异：git diff tmp
+
+合并到当前分支（例如 master）：git merge tmp
+
+处理完冲突后删除临时分支：git branch -d tmp
+
+
+这样既能保留本地改动，也能同步远程最新内容。
+3. 三种常用回滚方式
+
+
+
+命令
+行为描述
+适用场景
+
+
+
+
+git reset --hard HEAD~1
+丢弃最近一次提交及所有改动
+确定不要那次提交
+
+
+git reset --soft HEAD~1
+保留改动，撤销最近一次提交，改动回到暂存区
+提交信息写错、想重组提交
+
+
+git revert HEAD
+创建新的反向提交，保留历史记录
+已推送到远程，需要可追踪
+
+
+
+使用 reset 前务必确认工作区干净，避免把未保存内容也回滚掉。
+4. 小技巧
+
+git stash：遇到紧急切分支时，把当前改动存起来再恢复。
+git log --oneline --graph --decorate：快速查看提交历史。
+提交前习惯 git status → git diff → git diff --cached 三连，让历史更干净。
+
+
+掌握这几个操作之后，不管是冲突、误提交还是需要回滚，都能在三分钟内恢复状态，不必再恐慌地重建仓库。*** End Patch
+]]></content>
+      <categories>
+        <category>开发工具</category>
+      </categories>
+      <tags>
+        <tag>Git</tag>
+        <tag>工作流</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>网络代理与 GitHub 连接策略</title>
     <url>/2023/08/13/2023-08-13-%E7%BD%91%E7%BB%9C%E4%BB%A3%E7%90%86%E4%B8%8EGitHub%E8%BF%9E%E6%8E%A5%E7%AD%96%E7%95%A5/</url>
     <content><![CDATA[与 GitHub 建立稳定的 SSH 连接是折腾服务器的基础。这里整理了我在 Windows 和 Ubuntu 下的几套代理配置方案，并附上包管理器与 Python 的常用加速方式。
@@ -823,6 +889,38 @@ TensorFlow 在 Windows 上安装失败：从 2.10 起官方不再提供 Windows 
       </tags>
   </entry>
   <entry>
+    <title>Mac 外置硬盘无法弹出的排查手记</title>
+    <url>/2023/08/25/2023-08-25-Mac%E5%A4%96%E7%BD%AE%E7%A1%AC%E7%9B%98%E6%8E%92%E6%9F%A5%E6%89%8B%E8%AE%B0/</url>
+    <content><![CDATA[某次直接拔掉移动硬盘后，再次连接就一直提示“无法正确弹出”。以下是我整理的排查步骤。
+1. 在终端查看磁盘挂载情况
+diskutil list
+输出大致如下：
+/dev/disk0 (internal)/dev/disk1 (synthesized)/dev/disk2 (external, physical)
+记住外置磁盘的标识（此处为 /dev/disk2）。
+2. 强制卸载 + 弹出
+diskutil unmountDisk /dev/disk2diskutil eject /dev/disk2
+如果提示某个进程占用，先关闭 Finder 中的所有标签页或重新登录，再执行一次。
+3. 使用磁盘工具修复
+在「磁盘工具」中选择外置磁盘，点击「急救」进行修复。它会自动执行 fsck 检查文件系统错误。
+4. 预防建议
+
+习惯使用 Command+E 或 Finder 的「推出」按钮；
+备份关键数据，外置盘建议配置 Time Machine；
+长时间传输大文件时避免直接休眠。
+
+
+掌握 diskutil 的基本命令后，macOS 上的大部分移动磁盘问题都能自己解决。如果命令与磁盘工具都无法修复，记得及时备份并考虑重新格式化。*** End Patch
+]]></content>
+      <categories>
+        <category>故障排查</category>
+      </categories>
+      <tags>
+        <tag>macOS</tag>
+        <tag>外置硬盘</tag>
+        <tag>diskutil</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>PyTorch + BERT 文本分类实践记录</title>
     <url>/2023/09/23/2023-09-23-PyTorch-BERT%E6%96%87%E6%9C%AC%E5%88%86%E7%B1%BB%E5%AE%9E%E8%B7%B5%E8%AE%B0%E5%BD%95/</url>
     <content><![CDATA[这是一份把 Hugging Face transformers 与 PyTorch 结合起来做新闻分类的实战记录，包含了数据预处理、模型结构、训练循环和一些调参心得。
@@ -904,72 +1002,6 @@ max_length 过长会显著降低训练速度，建议结合文本长度分布调
       </tags>
   </entry>
   <entry>
-    <title>Git 冲突处理与回滚手册</title>
-    <url>/2023/08/23/2023-08-23-Git%E5%86%B2%E7%AA%81%E4%B8%8E%E5%9B%9E%E6%BB%9A%E6%89%8B%E5%86%8C/</url>
-    <content><![CDATA[Git 的硬核操作其实就几个关键步骤：解决冲突、回滚、修订提交。这里整理我日常最常用的命令，基本能覆盖 80% 的突发状况。
-1. SSH 加速克隆
-默认 22 端口常被墙，推荐把 GitHub 的 SSH 改到 443：
-Host github.com    HostName ssh.github.com    User git    Port 443
-若需要走代理，可在后面加上 ProxyCommand connect -H 127.0.0.1:7890 %h %p。
-2. 解决本地与远程的冲突
-场景：服务器上有人提交了新代码，而我本地也改动了同一个分支。
-
-拉取远程 master 并存到 tmp 分支：git fetch origin master:tmp
-
-查看差异：git diff tmp
-
-合并到当前分支（例如 master）：git merge tmp
-
-处理完冲突后删除临时分支：git branch -d tmp
-
-
-这样既能保留本地改动，也能同步远程最新内容。
-3. 三种常用回滚方式
-
-
-
-命令
-行为描述
-适用场景
-
-
-
-
-git reset --hard HEAD~1
-丢弃最近一次提交及所有改动
-确定不要那次提交
-
-
-git reset --soft HEAD~1
-保留改动，撤销最近一次提交，改动回到暂存区
-提交信息写错、想重组提交
-
-
-git revert HEAD
-创建新的反向提交，保留历史记录
-已推送到远程，需要可追踪
-
-
-
-使用 reset 前务必确认工作区干净，避免把未保存内容也回滚掉。
-4. 小技巧
-
-git stash：遇到紧急切分支时，把当前改动存起来再恢复。
-git log --oneline --graph --decorate：快速查看提交历史。
-提交前习惯 git status → git diff → git diff --cached 三连，让历史更干净。
-
-
-掌握这几个操作之后，不管是冲突、误提交还是需要回滚，都能在三分钟内恢复状态，不必再恐慌地重建仓库。*** End Patch
-]]></content>
-      <categories>
-        <category>开发工具</category>
-      </categories>
-      <tags>
-        <tag>Git</tag>
-        <tag>工作流</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>PyTorch 模型保存与加载指南</title>
     <url>/2023/10/28/2023-10-28-PyTorch%E6%A8%A1%E5%9E%8B%E4%BF%9D%E5%AD%98%E4%B8%8E%E5%8A%A0%E8%BD%BD%E6%8C%87%E5%8D%97/</url>
     <content><![CDATA[state_dict 是 PyTorch 中保存模型参数的核心。本笔记整理了常见的保存/加载方式、只保存部分参数的技巧，以及 state_dict()、named_parameters() 等 API 的区别。
@@ -1047,78 +1079,6 @@ import collectionsisinstance(model.state_dict(), collections.OrderedDict)  # Tru
       </tags>
   </entry>
   <entry>
-    <title>Matplotlib 中文字体配置指南</title>
-    <url>/2023/10/08/2023-10-08-Matplotlib%E4%B8%AD%E6%96%87%E5%AD%97%E4%BD%93%E9%85%8D%E7%BD%AE/</url>
-    <content><![CDATA[Matplotlib 不显示中文通常是因为找不到相应字体。虽然系统已经安装了微软雅黑、黑体等字体，但 Matplotlib 的字体缓存里未必包含它们。以下是检查和设置中文字体的步骤。
-1. 查看 Matplotlib 支持的字体
-from matplotlib.font_manager import FontManagerfonts = sorted(&#123;f.name for f in FontManager().ttflist&#125;)print(&quot;Matplotlib 当前可用字体：&quot;)for f in fonts:    print(f&quot;  &#123;f&#125;&quot;)
-列表中的字体名称多为拼音或英文。例如：
-
-DengXian（等线）
-FangSong（仿宋）
-KaiTi（楷体）
-LiSu（隶书）
-YouYuan（幼圆）
-
-只要 Matplotlib 能识别这些名称，就可以直接设置。
-2. 全局设置中文字体
-import matplotlibmatplotlib.rc(&quot;font&quot;, family=&quot;Microsoft YaHei&quot;, weight=&quot;bold&quot;)matplotlib.rc(&quot;axes&quot;, unicode_minus=False)   # 解决坐标轴负号显示问题
-若在列表中找不到对应字体，可以尝试以下方法：
-
-使用系统路径指定字体文件：from matplotlib import font_managerfont_manager.fontManager.addfont(&quot;/Library/Fonts/Arial Unicode.ttf&quot;)matplotlib.rc(&quot;font&quot;, family=&quot;Arial Unicode MS&quot;)
-
-删除 Matplotlib 字体缓存（如 ~/.matplotlib/fontlist-v310.json），重新运行脚本让 Matplotlib 重新扫描字体。
-
-3. 小结
-
-先确认 Matplotlib 字体列表中是否包含中文字体；
-使用 matplotlib.rc 设置 family，同时关闭 unicode_minus 处理负号；
-新字体无法识别时，把字体文件添加到 Matplotlib 的字体管理器中即可。
-
-
-设置好字体后，中文标题、标签和注释就能正常显示了，也无需在每张图里重复指定。*** End Patch
-]]></content>
-      <categories>
-        <category>可视化</category>
-      </categories>
-      <tags>
-        <tag>Matplotlib</tag>
-        <tag>字体</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Mac 外置硬盘无法弹出的排查手记</title>
-    <url>/2023/08/25/2023-08-25-Mac%E5%A4%96%E7%BD%AE%E7%A1%AC%E7%9B%98%E6%8E%92%E6%9F%A5%E6%89%8B%E8%AE%B0/</url>
-    <content><![CDATA[某次直接拔掉移动硬盘后，再次连接就一直提示“无法正确弹出”。以下是我整理的排查步骤。
-1. 在终端查看磁盘挂载情况
-diskutil list
-输出大致如下：
-/dev/disk0 (internal)/dev/disk1 (synthesized)/dev/disk2 (external, physical)
-记住外置磁盘的标识（此处为 /dev/disk2）。
-2. 强制卸载 + 弹出
-diskutil unmountDisk /dev/disk2diskutil eject /dev/disk2
-如果提示某个进程占用，先关闭 Finder 中的所有标签页或重新登录，再执行一次。
-3. 使用磁盘工具修复
-在「磁盘工具」中选择外置磁盘，点击「急救」进行修复。它会自动执行 fsck 检查文件系统错误。
-4. 预防建议
-
-习惯使用 Command+E 或 Finder 的「推出」按钮；
-备份关键数据，外置盘建议配置 Time Machine；
-长时间传输大文件时避免直接休眠。
-
-
-掌握 diskutil 的基本命令后，macOS 上的大部分移动磁盘问题都能自己解决。如果命令与磁盘工具都无法修复，记得及时备份并考虑重新格式化。*** End Patch
-]]></content>
-      <categories>
-        <category>故障排查</category>
-      </categories>
-      <tags>
-        <tag>macOS</tag>
-        <tag>外置硬盘</tag>
-        <tag>diskutil</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>工作环境常备清单</title>
     <url>/2023/11/11/2023-11-11-%E5%B7%A5%E4%BD%9C%E7%8E%AF%E5%A2%83%E5%B8%B8%E5%A4%87%E6%B8%85%E5%8D%95/</url>
     <content><![CDATA[写代码时常遇到“网络慢、权限不够、库安装失败”之类的小坑。这里整理我常用的速查清单，包含代理、pip 镜像、环境管理、文件权限以及应急命令。
@@ -1177,6 +1137,46 @@ Ubuntu 22.04 安装 libssl1.1：echo &quot;deb http://security.ubuntu.com/ubuntu
         <tag>Ubuntu</tag>
         <tag>Python</tag>
         <tag>环境配置</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Matplotlib 中文字体配置指南</title>
+    <url>/2023/10/08/2023-10-08-Matplotlib%E4%B8%AD%E6%96%87%E5%AD%97%E4%BD%93%E9%85%8D%E7%BD%AE/</url>
+    <content><![CDATA[Matplotlib 不显示中文通常是因为找不到相应字体。虽然系统已经安装了微软雅黑、黑体等字体，但 Matplotlib 的字体缓存里未必包含它们。以下是检查和设置中文字体的步骤。
+1. 查看 Matplotlib 支持的字体
+from matplotlib.font_manager import FontManagerfonts = sorted(&#123;f.name for f in FontManager().ttflist&#125;)print(&quot;Matplotlib 当前可用字体：&quot;)for f in fonts:    print(f&quot;  &#123;f&#125;&quot;)
+列表中的字体名称多为拼音或英文。例如：
+
+DengXian（等线）
+FangSong（仿宋）
+KaiTi（楷体）
+LiSu（隶书）
+YouYuan（幼圆）
+
+只要 Matplotlib 能识别这些名称，就可以直接设置。
+2. 全局设置中文字体
+import matplotlibmatplotlib.rc(&quot;font&quot;, family=&quot;Microsoft YaHei&quot;, weight=&quot;bold&quot;)matplotlib.rc(&quot;axes&quot;, unicode_minus=False)   # 解决坐标轴负号显示问题
+若在列表中找不到对应字体，可以尝试以下方法：
+
+使用系统路径指定字体文件：from matplotlib import font_managerfont_manager.fontManager.addfont(&quot;/Library/Fonts/Arial Unicode.ttf&quot;)matplotlib.rc(&quot;font&quot;, family=&quot;Arial Unicode MS&quot;)
+
+删除 Matplotlib 字体缓存（如 ~/.matplotlib/fontlist-v310.json），重新运行脚本让 Matplotlib 重新扫描字体。
+
+3. 小结
+
+先确认 Matplotlib 字体列表中是否包含中文字体；
+使用 matplotlib.rc 设置 family，同时关闭 unicode_minus 处理负号；
+新字体无法识别时，把字体文件添加到 Matplotlib 的字体管理器中即可。
+
+
+设置好字体后，中文标题、标签和注释就能正常显示了，也无需在每张图里重复指定。*** End Patch
+]]></content>
+      <categories>
+        <category>可视化</category>
+      </categories>
+      <tags>
+        <tag>Matplotlib</tag>
+        <tag>字体</tag>
       </tags>
   </entry>
 </search>
