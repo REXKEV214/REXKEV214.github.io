@@ -1,102 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>从零搭建 Hexo 博客</title>
-    <url>/2023/08/06/2023-08-06-%E4%BB%8E%E9%9B%B6%E6%90%AD%E5%BB%BAHexo%E5%8D%9A%E5%AE%A2/</url>
-    <content><![CDATA[构建一个稳定的写作环境并不难，关键是把「环境准备 → 本地预览 → 部署上线 → 问题排查」这四个环节串起来。下面是我整理的完整流程，照着做就能在一小时内把 Hexo 博客搭起来。
-1. 环境准备1.1 安装 Node.jsHexo 基于 Node.js 运行，版本至少要 12。可以通过包管理器直接安装：
-# macOS / Linuxnode -v              # 检查是否已安装sudo apt-get install nodejs npm# Windows 推荐使用 nvm-windows
-
-升级 Node.js 时可以借助 n 工具：
-sudo npm install -g nsudo n stable         # 升级到最新稳定版sudo n 18.17.1        # 或者指定版本hash -r               # zsh/bash 需要刷新缓存
-
-1.2 安装 GitGit 负责把静态资源推送到 GitHub Pages：
-# macOSbrew install git# Ubuntu / Debiansudo apt-get install git
-
-配置基本信息：
-git config --global user.name &quot;Kevin Tu&quot;git config --global user.email &quot;k15257703775@gmail.com&quot;
-
-2. 初始化 Hexo 项目npm install -g hexo-cli     # 安装脚手架hexo init my-blog           # 初始化项目cd my-blognpm install                 # 安装依赖
-
-常用脚本梳理如下：
-
-
-
-命令
-作用
-
-
-
-hexo clean
-清缓存、清理 public/
-
-
-hexo generate
-生成静态文件
-
-
-hexo server
-启动本地预览（默认 4000）
-
-
-hexo deploy
-部署到远程（需配置 deploy）
-
-
-本地开发时建议使用组合命令：
-hexo clean &amp;&amp; hexo generate &amp;&amp; hexo server
-
-3. 部署到 GitHub Pages3.1 准备仓库
-在 GitHub 创建名为 username.github.io 的仓库。
-配置 SSH 公钥，确保可以通过 git@github.com:username/username.github.io.git 推送。
-
-3.2 修改 Hexo 配置在根目录的 _config.yml 中追加：
-deploy:  type: git  repo: git@github.com:REXKEV214/REXKEV214.github.io.git  branch: master
-
-若是第一次部署，请先安装部署插件：
-npm install hexo-deployer-git --save
-
-3.3 正式部署hexo cleanhexo generatehexo deploy
-
-部署过程中一定不要加 sudo，否则会切换到 root 用户导致 Git 凭证丢失。如果遇到权限报错，可以用下列命令修复所有权：
-sudo chown -R &quot;$USER&quot;:&quot;$USER&quot; /path/to/your/blog
-
-4. 常见问题速查
-Permission denied (publickey)：确认 SSH 公钥已经添加到 GitHub，并在当前终端中能通过 ssh -T git@github.com 成功握手。
-部署后页面不更新：检查是否执行了 hexo clean，以及 GitHub Pages 是否仍指向正确的分支。
-Hexo 命令失效或版本不对：使用 npm ls -g --depth=0 检查是否存在多个 Hexo 版本，必要时卸载重装。
-
-
-做到这里，一个可写、可预览、可部署的博客就准备就绪了。后续可以继续折腾主题（比如 Butterfly）、CDN、评论系统等扩展功能，但核心流程就是上面这套。祝写作顺利。*** End Patch Wait: Need to ensure patch ending. Need to correct apply_patch syntax. We have to ensure patch ends with `*** End Patch`. The posted patch has trailing `***`? we already had &quot;—&quot; etc. Need to ensure not messing. Let&#39;s re-run with proper patch. Copy patch but start again paying attention to `*** Begin Patch` etc. We&#39;ll run command. to&#x3D;functions.apply_patch to&#x3D;functions.apply_patch code? above attempt may have error due to ***? we need to check output. We’ll run actual apply patch. We’ll include entire patch again. Let’s re-run.》
-]]></content>
-      <categories>
-        <category>博客搭建</category>
-      </categories>
-      <tags>
-        <tag>Hexo</tag>
-        <tag>Node.js</tag>
-        <tag>GitHub Pages</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Pathlib 路径管理指南</title>
     <url>/2023/08/08/2023-08-08-Pathlib%E8%B7%AF%E5%BE%84%E7%AE%A1%E7%90%86%E6%8C%87%E5%8D%97/</url>
-    <content><![CDATA[pathlib 是 Python 3 自带的现代化路径库，它把路径当成对象来操作，比 os.path 少了很多字符串拼接的心智负担。下面分三块整理：创建与判断、常用属性、文件&#x2F;目录操作。
-1. 创建路径与基本判断from pathlib import PathPath.cwd()          # 当期工作目录Path.home()         # 用户主目录，例如 /Users/kevintuPath(&quot;documents&quot;)   # 相对路径# 使用 / 连接路径data_dir = Path(&quot;.&quot;) / &quot;data&quot;csv_file = data_dir / &quot;file.csv&quot;data_dir.exists()   # True / Falsedata_dir.is_dir()csv_file.is_file()csv_file.absolute() # 返回绝对路径
-
-2. 常用属性一览image_file = Path(&quot;images/midjourney.png&quot;).absolute()image_file.parent   # 父级目录image_file.name     # 文件名 + 后缀 =&gt; midjourney.pngimage_file.stem     # 主体 =&gt; midjourneyimage_file.suffix   # 后缀 =&gt; .pngimage_file.parts    # 元组形式的路径片段
-
+    <content><![CDATA[pathlib 是 Python 3 自带的现代化路径库，它把路径当成对象来操作，比 os.path 少了很多字符串拼接的心智负担。下面分三块整理：创建与判断、常用属性、文件/目录操作。
+1. 创建路径与基本判断
+from pathlib import PathPath.cwd()          # 当期工作目录Path.home()         # 用户主目录，例如 /Users/kevintuPath(&quot;documents&quot;)   # 相对路径# 使用 / 连接路径data_dir = Path(&quot;.&quot;) / &quot;data&quot;csv_file = data_dir / &quot;file.csv&quot;data_dir.exists()   # True / Falsedata_dir.is_dir()csv_file.is_file()csv_file.absolute() # 返回绝对路径
+2. 常用属性一览
+image_file = Path(&quot;images/midjourney.png&quot;).absolute()image_file.parent   # 父级目录image_file.name     # 文件名 + 后缀 =&gt; midjourney.pngimage_file.stem     # 主体 =&gt; midjourneyimage_file.suffix   # 后缀 =&gt; .pngimage_file.parts    # 元组形式的路径片段
 想逆向遍历父级目录，可以使用 parents 生成器：
 for p in image_file.parents:    print(p)
-
-3. 文件与目录操作3.1 读写文件markdown = Path(&quot;docs/note.md&quot;)# 覆盖写入文本 / 二进制markdown.write_text(&quot;Hello Pathlib&quot;)markdown.write_bytes(b&quot;binary&quot;)# 读取markdown.read_text()len(markdown.read_bytes())# 追加写with markdown.open(mode=&quot;a&quot;, encoding=&quot;utf-8&quot;) as fp:    fp.write(&quot;\nNew line&quot;)
-
+3. 文件与目录操作
+3.1 读写文件
+markdown = Path(&quot;docs/note.md&quot;)# 覆盖写入文本 / 二进制markdown.write_text(&quot;Hello Pathlib&quot;)markdown.write_bytes(b&quot;binary&quot;)# 读取markdown.read_text()len(markdown.read_bytes())# 追加写with markdown.open(mode=&quot;a&quot;, encoding=&quot;utf-8&quot;) as fp:    fp.write(&quot;\nNew line&quot;)
 重命名、文件信息、删除同样有方法可用：
 renamed = markdown.with_stem(&quot;note_refined&quot;)markdown.rename(renamed)size = renamed.stat().st_sizemtime = renamed.stat().st_mtimerenamed.unlink(missing_ok=True)   # 删除时允许文件不存在
-
-3.2 批量遍历目录glob 和 rglob 支持通配符匹配，处理批量文件非常方便：
+3.2 批量遍历目录
+glob 和 rglob 支持通配符匹配，处理批量文件非常方便：
 home = Path.home()list(home.glob(&quot;*.txt&quot;))      # 当前目录下的 txt[p for p in home.rglob(&quot;*.txt&quot;)]   # 递归子目录# 找到目录中所有 CSV 并读取for csv_path in Path(&quot;data&quot;).rglob(&quot;*.csv&quot;):    process(csv_path)
-
 
 把 pathlib 当平台层，配合 glob、write_text、stat 等 API，就能把路径、文件操作写得既优雅又安全。推荐在新项目里完全替换掉 os.path 与字符串拼接式的路径写法。*** End Patch
 ]]></content>
@@ -109,18 +30,65 @@ home = Path.home()list(home.glob(&quot;*.txt&quot;))      # 当前目录下的 t
       </tags>
   </entry>
   <entry>
+    <title>PaddleOCR 快捷截图流程</title>
+    <url>/2023/08/12/2023-08-12-PaddleOCR%E5%BF%AB%E6%8D%B7%E6%88%AA%E5%9B%BE%E6%B5%81%E7%A8%8B/</url>
+    <content><![CDATA[在 Linux 桌面上频繁做 OCR 抄录太费劲，于是写了一个「截图 → 识别 → 自动打开结果 → 复制到剪贴板」的一键脚本组合。核心拆成三个部分：Python 识别脚本、Shell 自动化脚本、系统快捷键。
+1. Python 识别脚本
+ocr.py 负责调用 PaddleOCR，并把识别内容保存为文本与标注图。
+#!/usr/bin/env python3# -*- coding: utf-8 -*-import sysimport getoptfrom pathlib import Pathfrom paddleocr import PaddleOCR, draw_ocrfrom PIL import Imagedef run_ocr(image_path: Path, text_path: Path, marked_path: Path):    ocr = PaddleOCR(use_angle_cls=False, lang=&quot;ch&quot;)    result = ocr.ocr(str(image_path), cls=False)[0]    boxes = [line[0] for line in result]    text = &quot;\n&quot;.join(line[1][0] for line in result)    text_path.write_text(text, encoding=&quot;utf-8&quot;)    image = Image.open(image_path).convert(&quot;RGB&quot;)    marked = Image.fromarray(draw_ocr(image, boxes))    marked.save(marked_path)def main(argv):    opts, _ = getopt.getopt(argv[1:], &quot;hi:o:&quot;, [&quot;help&quot;, &quot;input_file=&quot;, &quot;output_file=&quot;])    image_path, text_path = None, Path(&quot;result.txt&quot;)    for opt, arg in opts:        if opt in (&quot;-h&quot;, &quot;--help&quot;):            print(&quot;python3 ocr.py -i capture.png -o result.txt&quot;)            return        if opt in (&quot;-i&quot;, &quot;--input_file&quot;):            image_path = Path(arg)        if opt in (&quot;-o&quot;, &quot;--output_file&quot;):            text_path = Path(arg)    if not image_path:        sys.exit(&quot;必须指定输入图片 (-i)&quot;)    marked_path = text_path.with_suffix(&quot;.jpg&quot;)    run_ocr(image_path, text_path, marked_path)if __name__ == &quot;__main__&quot;:    main(sys.argv)
+2. Shell 自动化脚本
+ocr.sh 完成截图、放大、OCR、打开结果到复制剪贴板的一条龙：
+#!/usr/bin/env bashWORKDIR=&quot;$HOME/ocrtemp&quot;TARGET=&quot;$WORKDIR/ocr_image&quot;source &quot;$HOME/miniconda3/etc/profile.d/conda.sh&quot;conda activate ocrmkdir -p &quot;$WORKDIR&quot;cd &quot;$WORKDIR&quot;gnome-screenshot -a -f &quot;$&#123;TARGET&#125;.png&quot;mogrify -modulate 100,0 -resize 400% &quot;$&#123;TARGET&#125;.png&quot;python3 ocr.py -i &quot;$&#123;TARGET&#125;.png&quot; -o &quot;$&#123;TARGET&#125;.txt&quot;xdg-open &quot;$&#123;TARGET&#125;.png&quot;xdg-open &quot;$&#123;TARGET&#125;.jpg&quot;xdg-open &quot;$&#123;TARGET&#125;.txt&quot;command -v xclip &gt;/dev/null &amp;&amp; \  xclip -selection clipboard &lt; &quot;$&#123;TARGET&#125;.txt&quot;
+依赖列表：
+sudo apt install gnome-screenshot imagemagick xclippip install paddlepaddle paddleocr pillow
+3. 绑定全局快捷键
+
+mkdir ~/ocrtemp，将 ocr.py、ocr.sh 放入该目录。
+Ubuntu 系统设置 → 键盘快捷键 → 自定义 → 新建。
+名称自取，命令填写 /home/&lt;user&gt;/ocrtemp/ocr.sh，组合键建议设为 Ctrl+Alt+O。
+
+之后按下快捷键即可完成「截图 → OCR → 打开结果 → 自动复制」的全流程。
+4. 常见问题
+
+
+Ubuntu 22.04 缺少 libssl1.1
+echo &quot;deb http://security.ubuntu.com/ubuntu focal-security main&quot; \  | sudo tee /etc/apt/sources.list.d/focal-security.listsudo apt-get updatesudo apt-get install libssl1.1
+
+
+pip 下载慢
+
+临时镜像：pip install -i https://pypi.tuna.tsinghua.edu.cn/simple torch
+全局配置：pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simplepip config set install.trusted-host mirrors.aliyun.com
+
+
+
+
+
+这个组合脚本把零碎的截图+识别流程压缩成一次敲击，特别适合整理 PDF、录屏或无法复制的界面内容。后续可以继续改进，比如自动丢进 Notion、Obsidian，或者替换成其它 OCR 模型。*** End Patch
+]]></content>
+      <categories>
+        <category>自动化脚本</category>
+      </categories>
+      <tags>
+        <tag>PaddleOCR</tag>
+        <tag>Linux</tag>
+        <tag>Shell</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Python `collections` 工具箱</title>
     <url>/2023/08/08/2023-08-08-Python%E9%9B%86%E5%90%88%E5%B7%A5%E5%85%B7%E7%AE%B1/</url>
     <content><![CDATA[collections 模块提供了比内置字典更智能的容器。最常出场的两个武器是 defaultdict 和 Counter：一个负责兜底，一个负责计数。我把常用场景拆成三部分，顺手附上一个工作中经常用到的「多模型投票合并 CSV」脚本。
-1. defaultdict：让 Key 默认存在defaultdict 会在访问缺失的键时自动创建默认值，不再抛出 KeyError。使用时要指定一个「工厂函数」——也就是默认值的类型。
+1. defaultdict：让 Key 默认存在
+defaultdict 会在访问缺失的键时自动创建默认值，不再抛出 KeyError。使用时要指定一个「工厂函数」——也就是默认值的类型。
 from collections import defaultdictcount_by_id = defaultdict(int)      # 默认 0tags_by_user = defaultdict(set)     # 默认空集合records = defaultdict(list)         # 默认空列表names = defaultdict(str)            # 默认空字符串count_by_id[&quot;a&quot;] += 1               # 不存在时会自动补 0 再自增print(count_by_id[&quot;missing&quot;])       # 输出 0，不报错
-
 常见工厂函数对照：
 
 
 
 工厂函数
 默认值示例
+
 
 
 
@@ -140,15 +108,17 @@ str
 &quot;&quot;
 
 
-2. Counter：一行搞定频次统计Counter 是专门的计数器，天生擅长做词频、投票、补集等任务，同样继承自字典。
-from collections import Countercolors = Counter([&quot;red&quot;, &quot;blue&quot;, &quot;red&quot;, &quot;green&quot;, &quot;blue&quot;, &quot;blue&quot;])print(colors)                 # Counter(&#123;&#x27;blue&#x27;: 3, &#x27;red&#x27;: 2, &#x27;green&#x27;: 1&#125;)
 
+2. Counter：一行搞定频次统计
+Counter 是专门的计数器，天生擅长做词频、投票、补集等任务，同样继承自字典。
+from collections import Countercolors = Counter([&quot;red&quot;, &quot;blue&quot;, &quot;red&quot;, &quot;green&quot;, &quot;blue&quot;, &quot;blue&quot;])print(colors)                 # Counter(&#123;&#x27;blue&#x27;: 3, &#x27;red&#x27;: 2, &#x27;green&#x27;: 1&#125;)
 常用方法备忘：
 
 
 
-方法 &#x2F; 属性
+方法 / 属性
 用途
+
 
 
 
@@ -164,16 +134,16 @@ Counter(iterable)
 返回出现次数最高的前 n 个元素 (item, cnt)
 
 
-加减法 &#x2F; 集合运算
+加减法 / 集合运算
 可以直接对 Counter 做加减、交集、并集等操作
+
 
 
 示例：
 letters = Counter(&quot;abracadabra&quot;)print(letters.most_common(3))  # [(&#x27;a&#x27;, 5), (&#x27;b&#x27;, 2), (&#x27;r&#x27;, 2)]for ch in letters.elements():    ...
-
-3. 实战：CSV 投票合并器场景：有 7 个模型分别输出 name,label 两列，想用投票找到每个样本出现次数最多的标签。
+3. 实战：CSV 投票合并器
+场景：有 7 个模型分别输出 name,label 两列，想用投票找到每个样本出现次数最多的标签。
 import csvfrom collections import defaultdict, Countername_labels = defaultdict(list)for i in range(1, 8):    with open(f&quot;&#123;i&#125;.csv&quot;) as csvfile:        for row in csv.DictReader(csvfile):            name_labels[row[&quot;name&quot;]].append(row[&quot;label&quot;])result = &#123;&#125;for name, labels in name_labels.items():    result[name] = Counter(labels).most_common(1)[0][0]with open(&quot;result.csv&quot;, &quot;w&quot;, newline=&quot;&quot;) as csvfile:    writer = csv.DictWriter(csvfile, fieldnames=[&quot;name&quot;, &quot;label&quot;])    writer.writeheader()    for name, label in result.items():        writer.writerow(&#123;&quot;name&quot;: name, &quot;label&quot;: label&#125;)
-
 相比手动判断「键存不存在」，defaultdict 和 Counter 让代码更简洁、更不易出错。下次再碰到计数和聚合任务，别忘了把它们从工具箱里拿出来用。*** End Patch
 ]]></content>
       <categories>
@@ -186,103 +156,104 @@ import csvfrom collections import defaultdict, Countername_labels = defaultdict(
       </tags>
   </entry>
   <entry>
-    <title>PaddleOCR 快捷截图流程</title>
-    <url>/2023/08/12/2023-08-12-PaddleOCR%E5%BF%AB%E6%8D%B7%E6%88%AA%E5%9B%BE%E6%B5%81%E7%A8%8B/</url>
-    <content><![CDATA[在 Linux 桌面上频繁做 OCR 抄录太费劲，于是写了一个「截图 → 识别 → 自动打开结果 → 复制到剪贴板」的一键脚本组合。核心拆成三个部分：Python 识别脚本、Shell 自动化脚本、系统快捷键。
-1. Python 识别脚本ocr.py 负责调用 PaddleOCR，并把识别内容保存为文本与标注图。
-#!/usr/bin/env python3# -*- coding: utf-8 -*-import sysimport getoptfrom pathlib import Pathfrom paddleocr import PaddleOCR, draw_ocrfrom PIL import Imagedef run_ocr(image_path: Path, text_path: Path, marked_path: Path):    ocr = PaddleOCR(use_angle_cls=False, lang=&quot;ch&quot;)    result = ocr.ocr(str(image_path), cls=False)[0]    boxes = [line[0] for line in result]    text = &quot;\n&quot;.join(line[1][0] for line in result)    text_path.write_text(text, encoding=&quot;utf-8&quot;)    image = Image.open(image_path).convert(&quot;RGB&quot;)    marked = Image.fromarray(draw_ocr(image, boxes))    marked.save(marked_path)def main(argv):    opts, _ = getopt.getopt(argv[1:], &quot;hi:o:&quot;, [&quot;help&quot;, &quot;input_file=&quot;, &quot;output_file=&quot;])    image_path, text_path = None, Path(&quot;result.txt&quot;)    for opt, arg in opts:        if opt in (&quot;-h&quot;, &quot;--help&quot;):            print(&quot;python3 ocr.py -i capture.png -o result.txt&quot;)            return        if opt in (&quot;-i&quot;, &quot;--input_file&quot;):            image_path = Path(arg)        if opt in (&quot;-o&quot;, &quot;--output_file&quot;):            text_path = Path(arg)    if not image_path:        sys.exit(&quot;必须指定输入图片 (-i)&quot;)    marked_path = text_path.with_suffix(&quot;.jpg&quot;)    run_ocr(image_path, text_path, marked_path)if __name__ == &quot;__main__&quot;:    main(sys.argv)
+    <title>从零搭建 Hexo 博客</title>
+    <url>/2023/08/06/2023-08-06-%E4%BB%8E%E9%9B%B6%E6%90%AD%E5%BB%BAHexo%E5%8D%9A%E5%AE%A2/</url>
+    <content><![CDATA[构建一个稳定的写作环境并不难，关键是把「环境准备 → 本地预览 → 部署上线 → 问题排查」这四个环节串起来。下面是我整理的完整流程，照着做就能在一小时内把 Hexo 博客搭起来。
+1. 环境准备
+1.1 安装 Node.js
+Hexo 基于 Node.js 运行，版本至少要 12。可以通过包管理器直接安装：
+# macOS / Linuxnode -v              # 检查是否已安装sudo apt-get install nodejs npm# Windows 推荐使用 nvm-windows
+升级 Node.js 时可以借助 n 工具：
+sudo npm install -g nsudo n stable         # 升级到最新稳定版sudo n 18.17.1        # 或者指定版本hash -r               # zsh/bash 需要刷新缓存
+1.2 安装 Git
+Git 负责把静态资源推送到 GitHub Pages：
+# macOSbrew install git# Ubuntu / Debiansudo apt-get install git
+配置基本信息：
+git config --global user.name &quot;Kevin Tu&quot;git config --global user.email &quot;k15257703775@gmail.com&quot;
+2. 初始化 Hexo 项目
+npm install -g hexo-cli     # 安装脚手架hexo init my-blog           # 初始化项目cd my-blognpm install                 # 安装依赖
+常用脚本梳理如下：
 
-2. Shell 自动化脚本ocr.sh 完成截图、放大、OCR、打开结果到复制剪贴板的一条龙：
-#!/usr/bin/env bashWORKDIR=&quot;$HOME/ocrtemp&quot;TARGET=&quot;$WORKDIR/ocr_image&quot;source &quot;$HOME/miniconda3/etc/profile.d/conda.sh&quot;conda activate ocrmkdir -p &quot;$WORKDIR&quot;cd &quot;$WORKDIR&quot;gnome-screenshot -a -f &quot;$&#123;TARGET&#125;.png&quot;mogrify -modulate 100,0 -resize 400% &quot;$&#123;TARGET&#125;.png&quot;python3 ocr.py -i &quot;$&#123;TARGET&#125;.png&quot; -o &quot;$&#123;TARGET&#125;.txt&quot;xdg-open &quot;$&#123;TARGET&#125;.png&quot;xdg-open &quot;$&#123;TARGET&#125;.jpg&quot;xdg-open &quot;$&#123;TARGET&#125;.txt&quot;command -v xclip &gt;/dev/null &amp;&amp; \  xclip -selection clipboard &lt; &quot;$&#123;TARGET&#125;.txt&quot;
 
-依赖列表：
-sudo apt install gnome-screenshot imagemagick xclippip install paddlepaddle paddleocr pillow
 
-3. 绑定全局快捷键
-mkdir ~/ocrtemp，将 ocr.py、ocr.sh 放入该目录。
-Ubuntu 系统设置 → 键盘快捷键 → 自定义 → 新建。
-名称自取，命令填写 /home/&lt;user&gt;/ocrtemp/ocr.sh，组合键建议设为 Ctrl+Alt+O。
-
-之后按下快捷键即可完成「截图 → OCR → 打开结果 → 自动复制」的全流程。
-4. 常见问题
-Ubuntu 22.04 缺少 libssl1.1  
-echo &quot;deb http://security.ubuntu.com/ubuntu focal-security main&quot; \  | sudo tee /etc/apt/sources.list.d/focal-security.listsudo apt-get updatesudo apt-get install libssl1.1
-
-pip 下载慢  
-
-临时镜像：pip install -i https://pypi.tuna.tsinghua.edu.cn/simple torch
-全局配置：  pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simplepip config set install.trusted-host mirrors.aliyun.com
+命令
+作用
 
 
 
 
-这个组合脚本把零碎的截图+识别流程压缩成一次敲击，特别适合整理 PDF、录屏或无法复制的界面内容。后续可以继续改进，比如自动丢进 Notion、Obsidian，或者替换成其它 OCR 模型。*** End Patch
+hexo clean
+清缓存、清理 public/
+
+
+hexo generate
+生成静态文件
+
+
+hexo server
+启动本地预览（默认 4000）
+
+
+hexo deploy
+部署到远程（需配置 deploy）
+
+
+
+本地开发时建议使用组合命令：
+hexo clean &amp;&amp; hexo generate &amp;&amp; hexo server
+3. 部署到 GitHub Pages
+3.1 准备仓库
+
+在 GitHub 创建名为 username.github.io 的仓库。
+配置 SSH 公钥，确保可以通过 git@github.com:username/username.github.io.git 推送。
+
+3.2 修改 Hexo 配置
+在根目录的 _config.yml 中追加：
+deploy:  type: git  repo: git@github.com:REXKEV214/REXKEV214.github.io.git  branch: master
+若是第一次部署，请先安装部署插件：
+npm install hexo-deployer-git --save
+3.3 正式部署
+hexo cleanhexo generatehexo deploy
+部署过程中一定不要加 sudo，否则会切换到 root 用户导致 Git 凭证丢失。如果遇到权限报错，可以用下列命令修复所有权：
+sudo chown -R &quot;$USER&quot;:&quot;$USER&quot; /path/to/your/blog
+4. 常见问题速查
+
+Permission denied (publickey)：确认 SSH 公钥已经添加到 GitHub，并在当前终端中能通过 ssh -T git@github.com 成功握手。
+部署后页面不更新：检查是否执行了 hexo clean，以及 GitHub Pages 是否仍指向正确的分支。
+Hexo 命令失效或版本不对：使用 npm ls -g --depth=0 检查是否存在多个 Hexo 版本，必要时卸载重装。
+
+
+做到这里，一个可写、可预览、可部署的博客就准备就绪了。后续可以继续折腾主题（比如 Butterfly）、CDN、评论系统等扩展功能，但核心流程就是上面这套。祝写作顺利。*** End Patch Wait: Need to ensure patch ending. Need to correct apply_patch syntax. We have to ensure patch ends with `*** End Patch`. The posted patch has trailing `***`? we already had &quot;—&quot; etc. Need to ensure not messing. Let's re-run with proper patch. Copy patch but start again paying attention to `*** Begin Patch` etc. We'll run command. to=functions.apply_patch to=functions.apply_patch code? above attempt may have error due to ***? we need to check output. We’ll run actual apply patch. We’ll include entire patch again. Let’s re-run.》
 ]]></content>
       <categories>
-        <category>自动化脚本</category>
+        <category>博客搭建</category>
       </categories>
       <tags>
-        <tag>PaddleOCR</tag>
-        <tag>Linux</tag>
-        <tag>Shell</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Markdown 公式与矩阵速查</title>
-    <url>/2023/08/13/2023-08-13-Markdown%E5%85%AC%E5%BC%8F%E4%B8%8E%E7%9F%A9%E9%98%B5%E9%80%9F%E6%9F%A5/</url>
-    <content><![CDATA[记录几个写作中最常用的矩阵与公式排版方式，直接复制即可在支持 KaTeX&#x2F;MathJax 的博客里使用。
-1. 基础矩阵\begin&#123;matrix&#125; a &amp; b \\ c &amp; d\end&#123;matrix&#125;
-
-效果：
-[\begin{matrix} a &amp; b \ c &amp; d\end{matrix}]
-2. 带分隔符的矩阵\begin&#123;bmatrix&#125; a &amp; b \\ c &amp; d\end&#123;bmatrix&#125;
-
-\begin&#123;pmatrix&#125; a &amp; b \\ c &amp; d\end&#123;pmatrix&#125;
-
-\begin&#123;Bmatrix&#125; a &amp; b \\ c &amp; d\end&#123;Bmatrix&#125;
-
-\begin&#123;vmatrix&#125; a &amp; b \\ c &amp; d\end&#123;vmatrix&#125;
-
-分别对应中括号、圆括号、大括号和行列式格式。
-3. array 自定义列样式\begin&#123;array&#125;&#123;cc&#125; a &amp; b \\ c &amp; d\end&#123;array&#125;
-
-{cc} 表示两列均居中；可改为 {lc}、{rr} 等组合。
-4. 多行公式排版在 Hexo + Butterfly 中无需额外添加 $$ 符号，直接用 align 环境即可：
-\begin&#123;align*&#125;f(x) &amp;= ax^2 + bx + c \\f&#x27;(x) &amp;= 2ax + b\end&#123;align*&#125;
-
-
-建议把这些片段收藏进代码片段工具（如 Raycast、Espanso），写数学公式时就能直接插入，效率大幅提升。*** End Patch
-]]></content>
-      <categories>
-        <category>写作格式</category>
-      </categories>
-      <tags>
-        <tag>Markdown</tag>
-        <tag>LaTeX</tag>
+        <tag>Hexo</tag>
+        <tag>Node.js</tag>
+        <tag>GitHub Pages</tag>
       </tags>
   </entry>
   <entry>
     <title>Hexo 启用数学公式的正确姿势</title>
     <url>/2023/08/13/2023-08-13-Hexo%E6%95%B0%E5%AD%A6%E5%85%AC%E5%BC%8F%E6%94%AF%E6%8C%81%E6%8C%87%E5%8D%97/</url>
     <content><![CDATA[Hexo 默认的 hexo-renderer-marked 对 LaTeX 支持不够友好，公式容易被吞。我的做法是换用 Pandoc 渲染器，并解决因多个 Pandoc 共存而引起的“Unknown extension: smart” 报错。
-1. 切换渲染器先卸载原有的数学插件与默认渲染器：
+1. 切换渲染器
+先卸载原有的数学插件与默认渲染器：
 npm uninstall hexo-mathnpm uninstall hexo-renderer-marked
-
 安装 Pandoc 渲染器：
 npm install hexo-renderer-pandoc --save
-
-Pandoc 支持更多 Markdown 扩展，KaTeX&#x2F;MathJax 在 Markdown 中的 $$ ... $$、\( ... \) 语法都能正常渲染。
-2. 安装 PandocHexo 会调用系统中的 pandoc，需要确保命令存在且版本 ≥ 2.0。
+Pandoc 支持更多 Markdown 扩展，KaTeX/MathJax 在 Markdown 中的 $$ ... $$、\( ... \) 语法都能正常渲染。
+2. 安装 Pandoc
+Hexo 会调用系统中的 pandoc，需要确保命令存在且版本 ≥ 2.0。
 sudo apt install pandoc     # Ubuntu / Debianpandoc -v                   # 检查版本
-
 macOS 可以使用 brew install pandoc，Windows 则到官网下载安装包。
-3. 解决 Unknown extension: smart如果看到错误：
+3. 解决 Unknown extension: smart
+如果看到错误：
 pandoc exited with code 9: pandoc: Unknown extension: smart
-
-说明实际被调用的 Pandoc 版本过低（&lt; 2.0）。如果机器上装了 Anaconda &#x2F; Miniconda，很可能使用的是环境自带的 pandoc。
+说明实际被调用的 Pandoc 版本过低（&lt; 2.0）。如果机器上装了 Anaconda / Miniconda，很可能使用的是环境自带的 pandoc。
 排查步骤：
 which pandoc         # 或 where pandoc (Windows)
-
 若路径指向 Anaconda 目录，可直接用新版可执行文件覆盖：
 
 从 Pandoc 官网下载最新 pandoc.exe（Windows）或对应二进制。
@@ -290,8 +261,9 @@ which pandoc         # 或 where pandoc (Windows)
 重新运行 hexo clean &amp;&amp; hexo generate 检查是否消失。
 
 4. 写作建议
+
 写公式时优先使用 align、pmatrix 等 LaTeX 环境，Hexo + Butterfly 默认的 KaTeX 不需要额外包裹 $$。
-如果需要全局关闭&#x2F;开启数学渲染，可在 _config.yml 或主题配置里设置 mathjax: true。
+如果需要全局关闭/开启数学渲染，可在 _config.yml 或主题配置里设置 mathjax: true。
 
 
 换成 Pandoc 以后，数学公式渲染稳定多了，也能同时享受脚注、自动目录等高级 Markdown 特性。记得同步升级 pandoc，否则默认调用到旧版本就会再次踩雷。*** End Patch
@@ -310,37 +282,62 @@ which pandoc         # 或 where pandoc (Windows)
     <url>/2023/08/13/2023-08-13-%E5%B1%82%E6%AC%A1%E5%88%86%E6%9E%90%E6%B3%95%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/</url>
     <content><![CDATA[层次分析法（Analytic Hierarchy Process，AHP）擅长解决「难以直接量化、却需要做选择」的问题，例如：选校、选址、评估环境指标权重等。要用好 AHP，可以按「建立层次 → 构造判断矩阵 → 做一致性检验 → 得到最终权重」的节奏来推进。
 1. 哪些问题适合用 AHP？
-选优类：在多个方案中选最优（优秀运动员、最合适的办公地址）。  
-评价类：评价某个对象的优劣程度（水质、环境、客户满意度）。  
+
+选优类：在多个方案中选最优（优秀运动员、最合适的办公地址）。
+评价类：评价某个对象的优劣程度（水质、环境、客户满意度）。
 指标优选：建立权重体系，让指标既科学又易操作。
 
-2. 搭建层次结构通常包含三层：
+2. 搭建层次结构
+通常包含三层：
 
 目标层（Top）：最终要达成的目的，只保留一个总体目标。
-准则层 &#x2F; 指标层（Middle）：影响目标的关键因素，可以按准则、策略、约束等再细分。
+准则层 / 指标层（Middle）：影响目标的关键因素，可以按准则、策略、约束等再细分。
 方案层（Bottom）：待比较的候选方案，往往有多个。
 
 层次图示例如下：
        目标     /  |  \  准则1 准则2 ... /  |  \        \方案A 方案B ... 方案N
-
-3. 构造判断矩阵针对同一层中的因素，两两比较其对上一层目标的相对重要性。比较结果用 Saaty 1–9 标度填写矩阵：
-[A &#x3D;\begin{bmatrix}1 &amp; \tfrac{1}{2} &amp; 4 &amp; 3 &amp; 3 \2 &amp; 1 &amp; 7 &amp; 5 &amp; 5 \\tfrac{1}{4} &amp; \tfrac{1}{7} &amp; 1 &amp; \tfrac{1}{2} &amp; \tfrac{1}{3} \\tfrac{1}{3} &amp; \tfrac{1}{5} &amp; 2 &amp; 1 &amp; 1 \\tfrac{1}{3} &amp; \tfrac{1}{5} &amp; 3 &amp; 1 &amp; 1\end{bmatrix},\quad a_{ji} &#x3D; \frac{1}{a_{ij}}]
+3. 构造判断矩阵
+针对同一层中的因素，两两比较其对上一层目标的相对重要性。比较结果用 Saaty 1–9 标度填写矩阵：
+[
+A =
+\begin{bmatrix}
+1 &amp; \tfrac{1}{2} &amp; 4 &amp; 3 &amp; 3 \
+2 &amp; 1 &amp; 7 &amp; 5 &amp; 5 \
+\tfrac{1}{4} &amp; \tfrac{1}{7} &amp; 1 &amp; \tfrac{1}{2} &amp; \tfrac{1}{3} \
+\tfrac{1}{3} &amp; \tfrac{1}{5} &amp; 2 &amp; 1 &amp; 1 \
+\tfrac{1}{3} &amp; \tfrac{1}{5} &amp; 3 &amp; 1 &amp; 1
+\end{bmatrix},
+\quad a_{ji} = \frac{1}{a_{ij}}
+]
 注意：矩阵允许存在一定程度的不一致（例如 C₂:C₁ = 2，C₁:C₃ = 4，理论上 C₂:C₃ 应为 8，但实际可能不一致），但必须通过一致性检验控制误差。
-4. 一致性检验求出判断矩阵的最大特征值 (\lambda_\text{max}) 及对应特征向量（即各因素权重），然后计算一致性指标：
-[CI &#x3D; \frac{\lambda_\text{max} - n}{n - 1}]
+4. 一致性检验
+求出判断矩阵的最大特征值 (\lambda_\text{max}) 及对应特征向量（即各因素权重），然后计算一致性指标：
+[
+CI = \frac{\lambda_\text{max} - n}{n - 1}
+]
 
 当 CI = 0 时，完全一致。
 CI 越接近 0，判断越可靠；越大代表矛盾越严重。
 
 为衡量 CI 是否足够小，引入随机一致性指标 RI（根据大量随机矩阵统计得到）：
-[RI &#x3D;\begin{array}{c|ccccccccccc}n &amp; 1 &amp; 2 &amp; 3 &amp; 4 &amp; 5 &amp; 6 &amp; 7 &amp; 8 &amp; 9 &amp; 10 &amp; 11 \\hlineRI &amp; 0 &amp; 0 &amp; 0.58 &amp; 0.90 &amp; 1.12 &amp; 1.24 &amp; 1.32 &amp; 1.41 &amp; 1.45 &amp; 1.49 &amp; 1.51\end{array}]
+[
+RI =
+\begin{array}{c|ccccccccccc}
+n &amp; 1 &amp; 2 &amp; 3 &amp; 4 &amp; 5 &amp; 6 &amp; 7 &amp; 8 &amp; 9 &amp; 10 &amp; 11 \
+\hline
+RI &amp; 0 &amp; 0 &amp; 0.58 &amp; 0.90 &amp; 1.12 &amp; 1.24 &amp; 1.32 &amp; 1.41 &amp; 1.45 &amp; 1.49 &amp; 1.51
+\end{array}
+]
 最终计算一致性比率：
-[CR &#x3D; \frac{CI}{RI}]
+[
+CR = \frac{CI}{RI}
+]
 
 CR &lt; 0.1（有时取 0.08）认为判断可接受；
 如果 CR 超过阈值，则需回头调整判断矩阵中的对比值。
 
 5. 小结
+
 明确目标，搭建三层结构；
 使用 1–9 标度两两比较，构造判断矩阵；
 算出特征向量并进行一致性检验，保证 CR &lt; 0.1；
@@ -357,71 +354,17 @@ CR &lt; 0.1（有时取 0.08）认为判断可接受；
       </tags>
   </entry>
   <entry>
-    <title>网络代理与 GitHub 连接策略</title>
-    <url>/2023/08/13/2023-08-13-%E7%BD%91%E7%BB%9C%E4%BB%A3%E7%90%86%E4%B8%8EGitHub%E8%BF%9E%E6%8E%A5%E7%AD%96%E7%95%A5/</url>
-    <content><![CDATA[与 GitHub 建立稳定的 SSH 连接是折腾服务器的基础。这里整理了我在 Windows 和 Ubuntu 下的几套代理配置方案，并附上包管理器与 Python 的常用加速方式。
-1. Windows：给 GitHub 换端口并走代理如果直接使用 git@github.com 出现 kex_exchange_identification: Connection closed by remote host，多数情况是 22 端口被代理软件拦截。把 SSH 连接改到 443 即可。
-编辑 C:\Users\&lt;username&gt;\.ssh\config，没有就新建：
-Host github.com    HostName ssh.github.com    User git    Port 443    ProxyCommand connect -H 127.0.0.1:7890 %h %p   # 根据实际代理端口调整
-
-说明：
-
-HostName ssh.github.com：GitHub 针对 443 端口提供的 SSH 网关。
-ProxyCommand connect ...：借助代理工具（如 Clash、Surge）转发流量。
-
-保存后执行 ssh -T git@github.com 测试，如果返回 Hi xxx! You&#39;ve successfully authenticated 即表示成功。
-2. Ubuntu：SSH 代理配置Ubuntu 同样可以把 22 改成 443，同时通过 nc 或 connect-proxy 走本机代理端口（默认 7890）。
-vi ~/.ssh/config
-
-追加：
-ProxyCommand nc -X 5 -x 127.0.0.1:7890 %h %pHost github.com    Hostname ssh.github.com    User git    Port 443    IdentityFile /home/&lt;user&gt;/.ssh/id_rsa    TCPKeepAlive yes
-
-最后确保权限正确：
-chmod 600 ~/.ssh/configssh -T git@github.com
-
-若仍旧失败，可以尝试临时断开&#x2F;重连网络后再次测试。
-3. Apt 代理当服务器在受限网络下更新软件包时，需要为 Apt 指定代理：
-sudo nano /etc/apt/apt.conf
-
-写入：
-Acquire::http::Proxy  &quot;http://127.0.0.1:7890&quot;;Acquire::https::Proxy &quot;http://127.0.0.1:7890&quot;;
-
-保存后执行：
-sudo apt updatesudo apt upgrade
-
-4. Python 与 pip4.1 在代码里指定代理import osos.environ[&quot;http_proxy&quot;] = &quot;http://127.0.0.1:7890&quot;os.environ[&quot;https_proxy&quot;] = &quot;http://127.0.0.1:7890&quot;
-
-若要全局生效，可写入虚拟环境激活脚本。
-4.2 pip 加速
-单次安装：
-pip install -i https://pypi.tuna.tsinghua.edu.cn/simple torch
-
-全局配置：
-pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simplepip config set install.trusted-host mirrors.aliyun.com
-
-
-通过以上设置，GitHub 拉代码、系统更新以及 Python 依赖安装都能在代理环境中保持高速稳定。建议把这些配置写进 dotfiles 或自动化脚本，换设备时直接复用。*** End Patch
-]]></content>
-      <categories>
-        <category>网络排障</category>
-      </categories>
-      <tags>
-        <tag>SSH</tag>
-        <tag>Proxy</tag>
-        <tag>GitHub</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Linux 常用命令清单（附实际案例）</title>
     <url>/2023/08/19/2023-08-19-Linux%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4%E6%B8%85%E5%8D%95/</url>
     <content><![CDATA[整理我日常最常用的命令行工具，每个命令都包含「作用说明 → 常用参数 → 示例」。一篇搞定统计、压缩、文件尾部监控、权限修改、文本搜索与替换。
-1. wc：文件统计wc file.txt
-
+1. wc：文件统计
+wc file.txt
 
 
 
 参数
 说明
+
 
 
 
@@ -441,14 +384,16 @@ pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simplepip conf
 统计字符数
 
 
-示例：cat access.log | wc -l → 统计日志行数。
-2. tar：打包与解压tar -zcf archive.tar.gz target_dirtar -zxvf archive.tar.gz
 
+示例：cat access.log | wc -l → 统计日志行数。
+2. tar：打包与解压
+tar -zcf archive.tar.gz target_dirtar -zxvf archive.tar.gz
 
 
 
 参数
 含义
+
 
 
 
@@ -472,13 +417,15 @@ pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simplepip conf
 指定文件名（必须紧跟在参数后）
 
 
-3. tail &#x2F; head：查看文件头尾tail -f app.log          # 实时追踪日志tail -n 50 app.log       # 查看最后 50 行head -n 20 config.yaml   # 查看前 20 行
 
+3. tail / head：查看文件头尾
+tail -f app.log          # 实时追踪日志tail -n 50 app.log       # 查看最后 50 行head -n 20 config.yaml   # 查看前 20 行
 
 tail -F：持续监控文件（日志轮转后依旧有效）
 head -n -5 file：输出到倒数第 5 行为止
 
 4. vim 常用快捷键
+
 
 
 模式
@@ -487,24 +434,25 @@ head -n -5 file：输出到倒数第 5 行为止
 
 
 
+
 普通模式
 Ctrl+f / Ctrl+b
-向前&#x2F;向后翻页
+向前/向后翻页
 
 
 普通模式
 Ctrl+d / Ctrl+u
-向下&#x2F;向上半页
+向下/向上半页
 
 
 普通模式
-yy &#x2F; p &#x2F; P
-复制当前行 &#x2F; 粘贴
+yy / p / P
+复制当前行 / 粘贴
 
 
 普通模式
-$ &#x2F; 0 &#x2F; gg &#x2F; G
-行尾 &#x2F; 行首 &#x2F; 文首 &#x2F; 文末
+$ / 0 / gg / G
+行尾 / 行首 / 文首 / 文末
 
 
 命令行模式 :
@@ -513,17 +461,20 @@ set number
 
 
 命令行模式 :
-/keyword &#x2F; ?keyword
-向下 &#x2F; 向上搜索
+/keyword / ?keyword
+向下 / 向上搜索
+
 
 
 温馨提示：任何命令前都可以加数字（例如 3yy 连续复制 3 行）。
 5. chmod：权限设置
 
 
+
 符号
 意义
 数字值
+
 
 
 
@@ -562,17 +513,18 @@ x
 1
 
 
+
 常见操作：
 chmod u+rw file.txt        # 给所有者添加读写chmod 760 file.txt         # 所有者 rwx，同组 rw，其他人无权限chmod a-x scripts -R       # 递归取消执行权限chmod -c a-x scripts       # 同时输出权限修改情况
-
 -R 递归、-v 显示详情、-c 仅打印发生变化的条目。
-6. grep：文本搜索grep -n &quot;ERROR&quot; app.loggrep -riw &quot;keyword&quot; src/
-
+6. grep：文本搜索
+grep -n &quot;ERROR&quot; app.loggrep -riw &quot;keyword&quot; src/
 
 
 
 参数
 作用
+
 
 
 
@@ -604,13 +556,16 @@ chmod u+rw file.txt        # 给所有者添加读写chmod 760 file.txt         
 反向匹配（输出不包含的行）
 
 
-多条件搜索：grep -E &#39;hello|today&#39; file.txt
-7. sed：流编辑器常用选项：
+
+多条件搜索：grep -E 'hello|today' file.txt
+7. sed：流编辑器
+常用选项：
 
 
 
 选项
 说明
+
 
 
 
@@ -630,12 +585,14 @@ chmod u+rw file.txt        # 给所有者添加读写chmod 760 file.txt         
 从脚本文件读取命令
 
 
+
 核心命令：
 
 
 
 命令
 功能
+
 
 
 
@@ -663,16 +620,17 @@ p
 打印匹配行
 
 
+
 示例：
 sed -i &#x27;1i\Title: Linux Guide&#x27; README.mdsed -e &#x27;1,3s/foo/bar/g&#x27; file.txtsed -n &#x27;5p&#x27; file.txt
-
 脚本文件（cmd.sed）：
 1a\新增一行2p
-
 执行：sed -f cmd.sed demo.txt
 8. 管道与重定向
+
 管道 |：把前一个命令的标准输出传给下一个命令的标准输入。cat access.log | grep ERROR | wc -l
-输出重定向 &gt; &#x2F; &gt;&gt;：覆盖 &#x2F; 追加到文件。  
+
+输出重定向 &gt; / &gt;&gt;：覆盖 / 追加到文件。
 错误输出重定向 2&gt;，同时重定向输出和错误：command &gt;out.log 2&gt;&amp;1。
 
 
@@ -688,15 +646,52 @@ sed -i &#x27;1i\Title: Linux Guide&#x27; README.mdsed -e &#x27;1,3s/foo/bar/g&#x
       </tags>
   </entry>
   <entry>
+    <title>Markdown 公式与矩阵速查</title>
+    <url>/2023/08/13/2023-08-13-Markdown%E5%85%AC%E5%BC%8F%E4%B8%8E%E7%9F%A9%E9%98%B5%E9%80%9F%E6%9F%A5/</url>
+    <content><![CDATA[记录几个写作中最常用的矩阵与公式排版方式，直接复制即可在支持 KaTeX/MathJax 的博客里使用。
+1. 基础矩阵
+\begin&#123;matrix&#125; a &amp; b \\ c &amp; d\end&#123;matrix&#125;
+效果：
+[
+\begin{matrix}
+a &amp; b \
+c &amp; d
+\end{matrix}
+]
+2. 带分隔符的矩阵
+\begin&#123;bmatrix&#125; a &amp; b \\ c &amp; d\end&#123;bmatrix&#125;
+\begin&#123;pmatrix&#125; a &amp; b \\ c &amp; d\end&#123;pmatrix&#125;
+\begin&#123;Bmatrix&#125; a &amp; b \\ c &amp; d\end&#123;Bmatrix&#125;
+\begin&#123;vmatrix&#125; a &amp; b \\ c &amp; d\end&#123;vmatrix&#125;
+分别对应中括号、圆括号、大括号和行列式格式。
+3. array 自定义列样式
+\begin&#123;array&#125;&#123;cc&#125; a &amp; b \\ c &amp; d\end&#123;array&#125;
+{cc} 表示两列均居中；可改为 {lc}、{rr} 等组合。
+4. 多行公式排版
+在 Hexo + Butterfly 中无需额外添加 $$ 符号，直接用 align 环境即可：
+\begin&#123;align*&#125;f(x) &amp;= ax^2 + bx + c \\f&#x27;(x) &amp;= 2ax + b\end&#123;align*&#125;
+
+建议把这些片段收藏进代码片段工具（如 Raycast、Espanso），写数学公式时就能直接插入，效率大幅提升。*** End Patch
+]]></content>
+      <categories>
+        <category>写作格式</category>
+      </categories>
+      <tags>
+        <tag>Markdown</tag>
+        <tag>LaTeX</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>用 `@property` 优雅管理 Python 属性</title>
     <url>/2023/08/19/2023-08-19-Python%E5%B1%9E%E6%80%A7%E8%A3%85%E9%A5%B0%E5%99%A8%E5%AE%9E%E8%B7%B5/</url>
     <content><![CDATA[@property 让方法看起来像属性，既保留了封装性，又能提供校验逻辑。下面分三部分介绍它的基本概念、两种写法以及常见使用场景。
-1. 为什么要用 @property一个方法一旦加上 @property，就可以在外部通过「属性访问」的语法调用：
+1. 为什么要用 @property
+一个方法一旦加上 @property，就可以在外部通过「属性访问」的语法调用：
 class Goods:    def __init__(self, unit_price, weight):        self.unit_price = unit_price        self.weight = weight    @property    def price(self):        return self.unit_price * self.weightitem = Goods(7, 4)print(item.price)    # 28
-
 注意：被装饰的方法只能接收 self 一个参数，外部访问时不需要加括号。
-2. 两种定义方式2.1 装饰器写法（推荐）class Watermelon:    def __init__(self, price):        self._price = price    @property    def price(self):        return self._price    @price.setter    def price(self, new_price):        if new_price &lt;= 0:            raise ValueError(&quot;价格必须大于 0&quot;)        self._price = new_price    @price.deleter    def price(self):        del self._price
-
+2. 两种定义方式
+2.1 装饰器写法（推荐）
+class Watermelon:    def __init__(self, price):        self._price = price    @property    def price(self):        return self._price    @price.setter    def price(self, new_price):        if new_price &lt;= 0:            raise ValueError(&quot;价格必须大于 0&quot;)        self._price = new_price    @price.deleter    def price(self):        del self._price
 装饰器套装包括：
 
 @property：读取属性时调用；
@@ -704,22 +699,21 @@ class Goods:    def __init__(self, unit_price, weight):        self.unit_price =
 @price.deleter：删除属性时调用；
 price.__doc__：可以写描述字符串，作为文档输出。
 
-2.2 类属性写法（较少用）早期写法是显式创建 property 对象：
+2.2 类属性写法（较少用）
+早期写法是显式创建 property 对象：
 class Lemons:    def __init__(self, unit_price=7):        self._unit_price = unit_price    def get_unit_price(self):        return self._unit_price    def set_unit_price(self, new_unit_price):        self._unit_price = new_unit_price    def del_unit_price(self):        del self._unit_price    unit_price = property(get_unit_price, set_unit_price, del_unit_price,                          doc=&quot;柠檬单价&quot;)
-
 这种形式相当于把 getter / setter / deleter 分别传给 property() 构造函数，不如装饰器直观，但在需要动态创建属性时仍然有用。
-3. 取代传统 getter&#x2F;setter相比手写 get_ &#x2F; set_ 方法，@property 的优势在于：
+3. 取代传统 getter/setter
+相比手写 get_ / set_ 方法，@property 的优势在于：
 
-外部 API 更简洁（obj.price 而不是 obj.get_price()）。  
-可以在 setter 里做合法性校验，保证数据安全。  
+外部 API 更简洁（obj.price 而不是 obj.get_price()）。
+可以在 setter 里做合法性校验，保证数据安全。
 随时可以把内部实现换成计算属性，对使用者透明。
 
 示例对比：
 class Legacy:    def __init__(self, price):        self._price = price    def get_price(self):        return self._price    def set_price(self, new_price):        if new_price &lt;= 0:            raise ValueError        self._price = new_price
-
 vs.
 class Modern:    def __init__(self, price):        self.price = price   # 直接复用 setter 校验    @property    def price(self):        return self._price    @price.setter    def price(self, value):        if value &lt;= 0:            raise ValueError(&quot;价格必须大于 0&quot;)        self._price = value
-
 
 当你需要在属性赋值时加入校验、懒加载或缓存逻辑时，记得优先考虑 @property。它让类的外部接口保持简单，同时保留了内部实现调整的自由度。*** End Patch
 ]]></content>
@@ -732,60 +726,59 @@ class Modern:    def __init__(self, price):        self.price = price   # 直接
       </tags>
   </entry>
   <entry>
-    <title>Git 冲突处理与回滚手册</title>
-    <url>/2023/08/23/2023-08-23-Git%E5%86%B2%E7%AA%81%E4%B8%8E%E5%9B%9E%E6%BB%9A%E6%89%8B%E5%86%8C/</url>
-    <content><![CDATA[Git 的硬核操作其实就几个关键步骤：解决冲突、回滚、修订提交。这里整理我日常最常用的命令，基本能覆盖 80% 的突发状况。
-1. SSH 加速克隆默认 22 端口常被墙，推荐把 GitHub 的 SSH 改到 443：
-Host github.com    HostName ssh.github.com    User git    Port 443
+    <title>网络代理与 GitHub 连接策略</title>
+    <url>/2023/08/13/2023-08-13-%E7%BD%91%E7%BB%9C%E4%BB%A3%E7%90%86%E4%B8%8EGitHub%E8%BF%9E%E6%8E%A5%E7%AD%96%E7%95%A5/</url>
+    <content><![CDATA[与 GitHub 建立稳定的 SSH 连接是折腾服务器的基础。这里整理了我在 Windows 和 Ubuntu 下的几套代理配置方案，并附上包管理器与 Python 的常用加速方式。
+1. Windows：给 GitHub 换端口并走代理
+如果直接使用 git@github.com 出现 kex_exchange_identification: Connection closed by remote host，多数情况是 22 端口被代理软件拦截。把 SSH 连接改到 443 即可。
+编辑 C:\Users\&lt;username&gt;\.ssh\config，没有就新建：
+Host github.com    HostName ssh.github.com    User git    Port 443    ProxyCommand connect -H 127.0.0.1:7890 %h %p   # 根据实际代理端口调整
+说明：
 
-若需要走代理，可在后面加上 ProxyCommand connect -H 127.0.0.1:7890 %h %p。
-2. 解决本地与远程的冲突场景：服务器上有人提交了新代码，而我本地也改动了同一个分支。
+HostName ssh.github.com：GitHub 针对 443 端口提供的 SSH 网关。
+ProxyCommand connect ...：借助代理工具（如 Clash、Surge）转发流量。
 
-拉取远程 master 并存到 tmp 分支：git fetch origin master:tmp
-查看差异：git diff tmp
-合并到当前分支（例如 master）：git merge tmp
-处理完冲突后删除临时分支：git branch -d tmp
-
-这样既能保留本地改动，也能同步远程最新内容。
-3. 三种常用回滚方式
-
-
-命令
-行为描述
-适用场景
-
-
-
-git reset --hard HEAD~1
-丢弃最近一次提交及所有改动
-确定不要那次提交
-
-
-git reset --soft HEAD~1
-保留改动，撤销最近一次提交，改动回到暂存区
-提交信息写错、想重组提交
-
-
-git revert HEAD
-创建新的反向提交，保留历史记录
-已推送到远程，需要可追踪
+保存后执行 ssh -T git@github.com 测试，如果返回 Hi xxx! You've successfully authenticated 即表示成功。
+2. Ubuntu：SSH 代理配置
+Ubuntu 同样可以把 22 改成 443，同时通过 nc 或 connect-proxy 走本机代理端口（默认 7890）。
+vi ~/.ssh/config
+追加：
+ProxyCommand nc -X 5 -x 127.0.0.1:7890 %h %pHost github.com    Hostname ssh.github.com    User git    Port 443    IdentityFile /home/&lt;user&gt;/.ssh/id_rsa    TCPKeepAlive yes
+最后确保权限正确：
+chmod 600 ~/.ssh/configssh -T git@github.com
+若仍旧失败，可以尝试临时断开/重连网络后再次测试。
+3. Apt 代理
+当服务器在受限网络下更新软件包时，需要为 Apt 指定代理：
+sudo nano /etc/apt/apt.conf
+写入：
+Acquire::http::Proxy  &quot;http://127.0.0.1:7890&quot;;Acquire::https::Proxy &quot;http://127.0.0.1:7890&quot;;
+保存后执行：
+sudo apt updatesudo apt upgrade
+4. Python 与 pip
+4.1 在代码里指定代理
+import osos.environ[&quot;http_proxy&quot;] = &quot;http://127.0.0.1:7890&quot;os.environ[&quot;https_proxy&quot;] = &quot;http://127.0.0.1:7890&quot;
+若要全局生效，可写入虚拟环境激活脚本。
+4.2 pip 加速
 
 
-使用 reset 前务必确认工作区干净，避免把未保存内容也回滚掉。
-4. 小技巧
-git stash：遇到紧急切分支时，把当前改动存起来再恢复。
-git log --oneline --graph --decorate：快速查看提交历史。
-提交前习惯 git status → git diff → git diff --cached 三连，让历史更干净。
+单次安装：
+pip install -i https://pypi.tuna.tsinghua.edu.cn/simple torch
 
 
-掌握这几个操作之后，不管是冲突、误提交还是需要回滚，都能在三分钟内恢复状态，不必再恐慌地重建仓库。*** End Patch
+全局配置：
+pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simplepip config set install.trusted-host mirrors.aliyun.com
+
+
+
+通过以上设置，GitHub 拉代码、系统更新以及 Python 依赖安装都能在代理环境中保持高速稳定。建议把这些配置写进 dotfiles 或自动化脚本，换设备时直接复用。*** End Patch
 ]]></content>
       <categories>
-        <category>开发工具</category>
+        <category>网络排障</category>
       </categories>
       <tags>
-        <tag>Git</tag>
-        <tag>工作流</tag>
+        <tag>SSH</tag>
+        <tag>Proxy</tag>
+        <tag>GitHub</tag>
       </tags>
   </entry>
   <entry>
@@ -793,25 +786,29 @@ git log --oneline --graph --decorate：快速查看提交历史。
     <url>/2023/08/23/2023-08-23-%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E5%B7%A5%E4%BD%9C%E7%AB%99%E9%85%8D%E7%BD%AE%E7%AC%94%E8%AE%B0/</url>
     <content><![CDATA[在 Ubuntu 上搭建深度学习工作站时，把系统、驱动、输入法、加速库一次性调通能省掉大量踩坑时间。以下是我的实操笔记。
 1. 系统基础配置
-输入法：推荐 Fcitx5 + 搜狗 / RIME，安装后在「语言支持」里设置默认输入法。参考：在 Ubuntu 安装配置 Fcitx5。
-网络问题：如果装完系统后发现无线网卡&#x2F;有线网卡不工作，可按主板型号寻找驱动，或参考 这篇视频教程。很多时候只需要安装额外的固件包。
 
-2. GPU 驱动与 CUDA&#x2F;cuDNN
+输入法：推荐 Fcitx5 + 搜狗 / RIME，安装后在「语言支持」里设置默认输入法。参考：在 Ubuntu 安装配置 Fcitx5。
+网络问题：如果装完系统后发现无线网卡/有线网卡不工作，可按主板型号寻找驱动，或参考 这篇视频教程。很多时候只需要安装额外的固件包。
+
+2. GPU 驱动与 CUDA/cuDNN
+
 驱动选择：优先使用 Ubuntu 自带的「其他驱动」图形界面安装对应的 NVIDIA 驱动。如果黑屏，可进入恢复模式卸载后换版本，或参考“黑屏 99% 解决方案”。
 CUDA 与 cuDNN：按官方流程逐步安装，注意 CUDA 版本要与驱动兼容。推荐参考 B 站这篇教程。
 验证：nvidia-sminvcc -V
 
-3. TensorRT安装 TensorRT Python Wheel：
-python -m pip install --upgrade tensorrtpython -m pip install --upgrade tensorrt_leanpython -m pip install --upgrade tensorrt_dispatch
 
+3. TensorRT
+安装 TensorRT Python Wheel：
+python -m pip install --upgrade tensorrtpython -m pip install --upgrade tensorrt_leanpython -m pip install --upgrade tensorrt_dispatch
 验证：
 import tensorrtprint(tensorrt.__version__)assert tensorrt.Builder(tensorrt.Logger())
-
-如果断言失败，检查 CUDA&#x2F;cuDNN 是否对应 TensorRT 支持的版本。
+如果断言失败，检查 CUDA/cuDNN 是否对应 TensorRT 支持的版本。
 4. 常见问题集合
+
 Ubuntu 黑屏：多数是因为旧版本驱动残留或 Secure Boot 未关闭。进入 TTY (Ctrl+Alt+F3) 后运行 sudo apt purge nvidia* 清理，再重新安装。
 TensorFlow 在 Windows 上安装失败：从 2.10 起官方不再提供 Windows GPU 版，建议改用 WSL2 或直接在 Linux 环境下运行。
 国内镜像加速：pip 安装大型包时，可以设置清华镜像：pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
+
 
 
 搭建深度学习环境本质是兼容性游戏：驱动 ↔ CUDA ↔ cuDNN ↔ 框架 ↔ TensorRT。建议提前确认项目所需版本，再统一安装，后续维护成本会低很多。*** End Patch
@@ -826,143 +823,34 @@ TensorFlow 在 Windows 上安装失败：从 2.10 起官方不再提供 Windows 
       </tags>
   </entry>
   <entry>
-    <title>Mac 外置硬盘无法弹出的排查手记</title>
-    <url>/2023/08/25/2023-08-25-Mac%E5%A4%96%E7%BD%AE%E7%A1%AC%E7%9B%98%E6%8E%92%E6%9F%A5%E6%89%8B%E8%AE%B0/</url>
-    <content><![CDATA[某次直接拔掉移动硬盘后，再次连接就一直提示“无法正确弹出”。以下是我整理的排查步骤。
-1. 在终端查看磁盘挂载情况diskutil list
-
-输出大致如下：
-/dev/disk0 (internal)/dev/disk1 (synthesized)/dev/disk2 (external, physical)
-
-记住外置磁盘的标识（此处为 /dev/disk2）。
-2. 强制卸载 + 弹出diskutil unmountDisk /dev/disk2diskutil eject /dev/disk2
-
-如果提示某个进程占用，先关闭 Finder 中的所有标签页或重新登录，再执行一次。
-3. 使用磁盘工具修复在「磁盘工具」中选择外置磁盘，点击「急救」进行修复。它会自动执行 fsck 检查文件系统错误。
-4. 预防建议
-习惯使用 Command+E 或 Finder 的「推出」按钮；
-备份关键数据，外置盘建议配置 Time Machine；
-长时间传输大文件时避免直接休眠。
-
-
-掌握 diskutil 的基本命令后，macOS 上的大部分移动磁盘问题都能自己解决。如果命令与磁盘工具都无法修复，记得及时备份并考虑重新格式化。*** End Patch
-]]></content>
-      <categories>
-        <category>故障排查</category>
-      </categories>
-      <tags>
-        <tag>macOS</tag>
-        <tag>外置硬盘</tag>
-        <tag>diskutil</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>PyTorch 模型保存与加载指南</title>
-    <url>/2023/10/28/2023-10-28-PyTorch%E6%A8%A1%E5%9E%8B%E4%BF%9D%E5%AD%98%E4%B8%8E%E5%8A%A0%E8%BD%BD%E6%8C%87%E5%8D%97/</url>
-    <content><![CDATA[state_dict 是 PyTorch 中保存模型参数的核心。本笔记整理了常见的保存&#x2F;加载方式、只保存部分参数的技巧，以及 state_dict()、named_parameters() 等 API 的区别。
-1. 什么是 state_dictstate_dict 是一个 OrderedDict，包含可学习层的参数（如卷积、线性层）。示例：
-import torchimport torch.nn as nnimport torch.optim as optimclass MyModel(nn.Module):    def __init__(self):        super().__init__()        self.conv1 = nn.Conv2d(2, 3, 3)        self.pool = nn.MaxPool2d(2, 2)        self.conv2 = nn.Conv2d(3, 4, 3)    def forward(self, x):        x = self.pool(torch.relu(self.conv1(x)))        x = self.pool(torch.relu(self.conv2(x)))        return xmodel = MyModel()optimizer = optim.SGD(model.parameters(), lr=0.001, momentum=0.9)
-
-打印内容：
-for name, param in model.state_dict().items():    print(name, param.shape)
-
-conv1.weight torch.Size([3, 2, 3, 3])conv1.bias   torch.Size([3])conv2.weight torch.Size([4, 3, 3, 3])conv2.bias   torch.Size([4])
-
-优化器也有自己的 state_dict()，可用于恢复学习率、动量等状态。
-2. 保存与加载2.1 仅保存参数（推荐）PATH = &quot;model_state_dict.pth&quot;torch.save(model.state_dict(), PATH)model = MyModel()model.load_state_dict(torch.load(PATH))model.eval()
-
-注意：
-
-load_state_dict 接受的是字典对象，因此需要先用 torch.load 反序列化。
-如果使用 nn.DataParallel 训练，参数名前会多出 module. 前缀，需要在加载时处理。
-
-2.2 保存完整模型（不够灵活）torch.save(model, &quot;model_full.pt&quot;)model = torch.load(&quot;model_full.pt&quot;)
-
-这种方式依赖 pickle，模型结构发生变化时容易报错，因此更推荐保存 state_dict。
-3. 只保存部分参数可以选取部分键值构造新的 dict：
-subset = &#123;    k: v    for k, v in model.state_dict().items()    if k.startswith(&quot;conv1&quot;)&#125;torch.save(subset, &quot;conv1_only.pth&quot;)
-
-加载到新模型中时使用 strict=False 忽略缺失部分：
-new_model = MyModel()new_model.load_state_dict(torch.load(&quot;conv1_only.pth&quot;), strict=False)
-
-strict=False 会返回 _IncompatibleKeys，提示哪些权重缺失或多余，方便检查。
-4. 常见参数遍历方式比较
-
-
-方法
-返回内容
-用途
-
-
-
-model.state_dict()
-OrderedDict，键为参数名，值为张量
-保存&#x2F;加载、持久化
-
-
-model.named_parameters()
-迭代 (name, Parameter)
-控制某层是否参与训练（设置 requires_grad）
-
-
-model.parameters()
-仅返回 Parameter
-作为优化器输入
-
-
-model.named_modules()
-迭代 (module_name, module)
-遍历网络结构（替换层、注册 hook）
-
-
-例子：冻结 conv1 参数
-for name, param in model.named_parameters():    param.requires_grad = not name.startswith(&quot;conv1&quot;)
-
-5. OrderedDict 的意义state_dict() 返回的是 collections.OrderedDict，会保持插入顺序。这对模型保存和重建非常关键，因为加载时会逐项匹配参数名称。
-import collectionsisinstance(model.state_dict(), collections.OrderedDict)  # True
-
-
-建议始终保存：模型 state_dict + 优化器 state_dict + 训练元信息（epoch、学习率等）。在多任务、多阶段训练或热启动模式下，这样的组织方式最可靠。*** End Patch
-]]></content>
-      <categories>
-        <category>深度学习</category>
-      </categories>
-      <tags>
-        <tag>PyTorch</tag>
-        <tag>state_dict</tag>
-        <tag>模型保存</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>PyTorch + BERT 文本分类实践记录</title>
     <url>/2023/09/23/2023-09-23-PyTorch-BERT%E6%96%87%E6%9C%AC%E5%88%86%E7%B1%BB%E5%AE%9E%E8%B7%B5%E8%AE%B0%E5%BD%95/</url>
     <content><![CDATA[这是一份把 Hugging Face transformers 与 PyTorch 结合起来做新闻分类的实战记录，包含了数据预处理、模型结构、训练循环和一些调参心得。
-1. 环境准备pip install transformers datasets torch tqdm scikit-learn
-
+1. 环境准备
+pip install transformers datasets torch tqdm scikit-learn
 建议梯子网络加速下载预训练模型：
 import osos.environ[&quot;http_proxy&quot;] = &quot;http://127.0.0.1:7890&quot;os.environ[&quot;https_proxy&quot;] = &quot;http://127.0.0.1:7890&quot;
-
-2. 数据与分词以 BBC News 分类数据集为例，标签包括 business / entertainment / sport / tech / politics。先用 BertTokenizer 将文本转成张量：
+2. 数据与分词
+以 BBC News 分类数据集为例，标签包括 business / entertainment / sport / tech / politics。先用 BertTokenizer 将文本转成张量：
 from transformers import BertTokenizertokenizer = BertTokenizer.from_pretrained(&quot;bert-base-cased&quot;)sample = &quot;I will watch Memento tonight&quot;encoding = tokenizer(    sample,    padding=&quot;max_length&quot;,    truncation=True,    max_length=64,    return_tensors=&quot;pt&quot;,)print(tokenizer.decode(encoding[&quot;input_ids&quot;][0]))# [CLS] I will watch Memento tonight [SEP] [PAD] ...
-
 常见张量说明：
 
 input_ids：token 对应的词表索引；
 attention_mask：区分真实 token 与 padding；
 token_type_ids：区分句子对任务，这里全部为 0，可以忽略。
 
-3. 自定义 Datasetimport numpy as npfrom torch.utils.data import Datasetlabel2id = &#123;    &quot;business&quot;: 0,    &quot;entertainment&quot;: 1,    &quot;sport&quot;: 2,    &quot;tech&quot;: 3,    &quot;politics&quot;: 4,&#125;class NewsDataset(Dataset):    def __init__(self, df):        self.labels = [label2id[label] for label in df[&quot;Category&quot;]]        self.encodings = [            tokenizer(                text,                padding=&quot;max_length&quot;,                truncation=True,                max_length=256,                return_tensors=&quot;pt&quot;,            )            for text in df[&quot;Text&quot;]        ]    def __len__(self):        return len(self.labels)    def __getitem__(self, idx):        item = &#123;k: v.squeeze(0) for k, v in self.encodings[idx].items()&#125;        item[&quot;labels&quot;] = np.int64(self.labels[idx])        return item
-
-4. 构建模型直接复用 BertForSequenceClassification：
+3. 自定义 Dataset
+import numpy as npfrom torch.utils.data import Datasetlabel2id = &#123;    &quot;business&quot;: 0,    &quot;entertainment&quot;: 1,    &quot;sport&quot;: 2,    &quot;tech&quot;: 3,    &quot;politics&quot;: 4,&#125;class NewsDataset(Dataset):    def __init__(self, df):        self.labels = [label2id[label] for label in df[&quot;Category&quot;]]        self.encodings = [            tokenizer(                text,                padding=&quot;max_length&quot;,                truncation=True,                max_length=256,                return_tensors=&quot;pt&quot;,            )            for text in df[&quot;Text&quot;]        ]    def __len__(self):        return len(self.labels)    def __getitem__(self, idx):        item = &#123;k: v.squeeze(0) for k, v in self.encodings[idx].items()&#125;        item[&quot;labels&quot;] = np.int64(self.labels[idx])        return item
+4. 构建模型
+直接复用 BertForSequenceClassification：
 from transformers import BertForSequenceClassificationmodel = BertForSequenceClassification.from_pretrained(    &quot;bert-base-cased&quot;,    num_labels=len(label2id),)
-
 优化器与调度器：
 from torch.optim import AdamWfrom transformers import get_linear_schedule_with_warmupoptimizer = AdamW(model.parameters(), lr=2e-5, weight_decay=1e-2)num_epochs = 5total_steps = len(train_loader) * num_epochsscheduler = get_linear_schedule_with_warmup(    optimizer,    num_warmup_steps=int(0.1 * total_steps),    num_training_steps=total_steps,)
-
-5. 训练循环from tqdm.auto import tqdmimport torch.nn.functional as Fdef train_epoch(model, dataloader, device):    model.train()    epoch_loss, correct, total = 0.0, 0, 0    for batch in tqdm(dataloader):        batch = &#123;k: v.to(device) for k, v in batch.items()&#125;        outputs = model(**batch)        loss = outputs.loss        logits = outputs.logits        _, preds = torch.max(logits, dim=1)        correct += torch.sum(preds == batch[&quot;labels&quot;])        total += len(batch[&quot;labels&quot;])        loss.backward()        torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)        optimizer.step()        scheduler.step()        optimizer.zero_grad()        epoch_loss += loss.item()    return epoch_loss / len(dataloader), (correct.double() / total).item()
-
+5. 训练循环
+from tqdm.auto import tqdmimport torch.nn.functional as Fdef train_epoch(model, dataloader, device):    model.train()    epoch_loss, correct, total = 0.0, 0, 0    for batch in tqdm(dataloader):        batch = &#123;k: v.to(device) for k, v in batch.items()&#125;        outputs = model(**batch)        loss = outputs.loss        logits = outputs.logits        _, preds = torch.max(logits, dim=1)        correct += torch.sum(preds == batch[&quot;labels&quot;])        total += len(batch[&quot;labels&quot;])        loss.backward()        torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)        optimizer.step()        scheduler.step()        optimizer.zero_grad()        epoch_loss += loss.item()    return epoch_loss / len(dataloader), (correct.double() / total).item()
 验证阶段类似，记得 model.eval() 并关闭梯度计算。
 6. 训练结果
+
 
 
 Epoch
@@ -970,6 +858,7 @@ Train Loss
 Train Acc
 Val Loss
 Val Acc
+
 
 
 
@@ -994,8 +883,10 @@ Val Acc
 0.98
 
 
+
 在 BBC 数据集上训练 5 个 epoch 就能够超过 0.98 的验证准确率。后续继续训练会轻微过拟合，可以借助 EarlyStopping 或更强的正则化控制。
 7. 调参心得
+
 max_length 过长会显著降低训练速度，建议结合文本长度分布调整到 256 或 128。
 由于类不平衡较轻，可以直接使用交叉熵；如果数据极度偏斜，可引入 WeightedRandomSampler。
 在多卡训练时记得将 pin_memory、num_workers 设置合理，配合混合精度的 torch.cuda.amp 进一步提速。
@@ -1013,60 +904,154 @@ max_length 过长会显著降低训练速度，建议结合文本长度分布调
       </tags>
   </entry>
   <entry>
-    <title>工作环境常备清单</title>
-    <url>/2023/11/11/2023-11-11-%E5%B7%A5%E4%BD%9C%E7%8E%AF%E5%A2%83%E5%B8%B8%E5%A4%87%E6%B8%85%E5%8D%95/</url>
-    <content><![CDATA[写代码时常遇到“网络慢、权限不够、库安装失败”之类的小坑。这里整理我常用的速查清单，包含代理、pip 镜像、环境管理、文件权限以及应急命令。
-1. Python 相关1.1 代理设置import osos.environ[&quot;http_proxy&quot;] = &quot;http://127.0.0.1:7890&quot;os.environ[&quot;https_proxy&quot;] = &quot;http://127.0.0.1:7890&quot;
+    <title>Git 冲突处理与回滚手册</title>
+    <url>/2023/08/23/2023-08-23-Git%E5%86%B2%E7%AA%81%E4%B8%8E%E5%9B%9E%E6%BB%9A%E6%89%8B%E5%86%8C/</url>
+    <content><![CDATA[Git 的硬核操作其实就几个关键步骤：解决冲突、回滚、修订提交。这里整理我日常最常用的命令，基本能覆盖 80% 的突发状况。
+1. SSH 加速克隆
+默认 22 端口常被墙，推荐把 GitHub 的 SSH 改到 443：
+Host github.com    HostName ssh.github.com    User git    Port 443
+若需要走代理，可在后面加上 ProxyCommand connect -H 127.0.0.1:7890 %h %p。
+2. 解决本地与远程的冲突
+场景：服务器上有人提交了新代码，而我本地也改动了同一个分支。
 
-1.2 控制 CPU 线程数避免 NumPy 占满所有核心（需在 import numpy 前设置）：
-import osos.environ[&quot;OMP_NUM_THREADS&quot;] = &quot;8&quot;
+拉取远程 master 并存到 tmp 分支：git fetch origin master:tmp
 
-1.3 pip 下载加速
-单次：pip install -i https://pypi.tuna.tsinghua.edu.cn/simple torch
-全局：pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simplepip config set install.trusted-host mirrors.aliyun.com
+查看差异：git diff tmp
 
-1.4 Apex 安装git clone https://github.com/ptrblck/apex.gitcd apexgit checkout apex_no_distributedpip install -v --no-cache-dir ./
+合并到当前分支（例如 master）：git merge tmp
 
-2. 虚拟环境与依赖conda create -n swin python=3.10conda remove -n swin --allpip install -r requirements.txtpip freeze &gt; requirements.txt# 若项目包含 setup.py，可直接pip install -e .
-
-3. TensorFlow 提醒TensorFlow 官方自 2.10 起不再提供 Windows GPU 版，尽量选择 WSL2 或 Linux 环境，并优先参考官方安装指南。
-4. 操作系统备忘
-可执行文件放到 /usr/local/bin 即可全局访问。
-os.getcwd() 查看当前目录，os.chdir() 更改目录。
-路径以 / 开头表示绝对路径。
-Ubuntu 卡死时可尝试 Alt + B + Fn + PrtSc 强制重启。
-显卡驱动异常常用修复命令：sudo dpkg --configure -a。
-Ubuntu 22.04 安装 libssl1.1：echo &quot;deb http://security.ubuntu.com/ubuntu focal-security main&quot; \  | sudo tee /etc/apt/sources.list.d/focal-security.listsudo apt-get updatesudo apt-get install libssl1.1
-蓝牙问题排查参考：Ubuntu22.04 蓝牙问题解决。
-
-5. 权限 &amp; 文件传输
-目录权限不足时：sudo chmod 755 /path/to/dir   # 或 777（不推荐）
-以 root 权限打开文件管理器：sudo nautilus# 或pkexec nautilus
-上传大文件前先压缩：zip -r project.zip ./project
-
-6. 杂项提示
-大文件一定要压缩再上传，节约时间与空间。
-导包异常时检查 sys.path 顺序，必要时重启 kernel。
-快捷键：Ctrl + Shift + F 快速在简体&#x2F;繁体之间转换。
+处理完冲突后删除临时分支：git branch -d tmp
 
 
-把这些零碎技巧放在一处，换电脑或新装系统时就不用重复查资料了。欢迎继续补充。*** End Patch
+这样既能保留本地改动，也能同步远程最新内容。
+3. 三种常用回滚方式
+
+
+
+命令
+行为描述
+适用场景
+
+
+
+
+git reset --hard HEAD~1
+丢弃最近一次提交及所有改动
+确定不要那次提交
+
+
+git reset --soft HEAD~1
+保留改动，撤销最近一次提交，改动回到暂存区
+提交信息写错、想重组提交
+
+
+git revert HEAD
+创建新的反向提交，保留历史记录
+已推送到远程，需要可追踪
+
+
+
+使用 reset 前务必确认工作区干净，避免把未保存内容也回滚掉。
+4. 小技巧
+
+git stash：遇到紧急切分支时，把当前改动存起来再恢复。
+git log --oneline --graph --decorate：快速查看提交历史。
+提交前习惯 git status → git diff → git diff --cached 三连，让历史更干净。
+
+
+掌握这几个操作之后，不管是冲突、误提交还是需要回滚，都能在三分钟内恢复状态，不必再恐慌地重建仓库。*** End Patch
 ]]></content>
       <categories>
-        <category>效率手册</category>
+        <category>开发工具</category>
       </categories>
       <tags>
-        <tag>Ubuntu</tag>
-        <tag>Python</tag>
-        <tag>环境配置</tag>
+        <tag>Git</tag>
+        <tag>工作流</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>PyTorch 模型保存与加载指南</title>
+    <url>/2023/10/28/2023-10-28-PyTorch%E6%A8%A1%E5%9E%8B%E4%BF%9D%E5%AD%98%E4%B8%8E%E5%8A%A0%E8%BD%BD%E6%8C%87%E5%8D%97/</url>
+    <content><![CDATA[state_dict 是 PyTorch 中保存模型参数的核心。本笔记整理了常见的保存/加载方式、只保存部分参数的技巧，以及 state_dict()、named_parameters() 等 API 的区别。
+1. 什么是 state_dict
+state_dict 是一个 OrderedDict，包含可学习层的参数（如卷积、线性层）。示例：
+import torchimport torch.nn as nnimport torch.optim as optimclass MyModel(nn.Module):    def __init__(self):        super().__init__()        self.conv1 = nn.Conv2d(2, 3, 3)        self.pool = nn.MaxPool2d(2, 2)        self.conv2 = nn.Conv2d(3, 4, 3)    def forward(self, x):        x = self.pool(torch.relu(self.conv1(x)))        x = self.pool(torch.relu(self.conv2(x)))        return xmodel = MyModel()optimizer = optim.SGD(model.parameters(), lr=0.001, momentum=0.9)
+打印内容：
+for name, param in model.state_dict().items():    print(name, param.shape)
+conv1.weight torch.Size([3, 2, 3, 3])conv1.bias   torch.Size([3])conv2.weight torch.Size([4, 3, 3, 3])conv2.bias   torch.Size([4])
+优化器也有自己的 state_dict()，可用于恢复学习率、动量等状态。
+2. 保存与加载
+2.1 仅保存参数（推荐）
+PATH = &quot;model_state_dict.pth&quot;torch.save(model.state_dict(), PATH)model = MyModel()model.load_state_dict(torch.load(PATH))model.eval()
+注意：
+
+load_state_dict 接受的是字典对象，因此需要先用 torch.load 反序列化。
+如果使用 nn.DataParallel 训练，参数名前会多出 module. 前缀，需要在加载时处理。
+
+2.2 保存完整模型（不够灵活）
+torch.save(model, &quot;model_full.pt&quot;)model = torch.load(&quot;model_full.pt&quot;)
+这种方式依赖 pickle，模型结构发生变化时容易报错，因此更推荐保存 state_dict。
+3. 只保存部分参数
+可以选取部分键值构造新的 dict：
+subset = &#123;    k: v    for k, v in model.state_dict().items()    if k.startswith(&quot;conv1&quot;)&#125;torch.save(subset, &quot;conv1_only.pth&quot;)
+加载到新模型中时使用 strict=False 忽略缺失部分：
+new_model = MyModel()new_model.load_state_dict(torch.load(&quot;conv1_only.pth&quot;), strict=False)
+strict=False 会返回 _IncompatibleKeys，提示哪些权重缺失或多余，方便检查。
+4. 常见参数遍历方式比较
+
+
+
+方法
+返回内容
+用途
+
+
+
+
+model.state_dict()
+OrderedDict，键为参数名，值为张量
+保存/加载、持久化
+
+
+model.named_parameters()
+迭代 (name, Parameter)
+控制某层是否参与训练（设置 requires_grad）
+
+
+model.parameters()
+仅返回 Parameter
+作为优化器输入
+
+
+model.named_modules()
+迭代 (module_name, module)
+遍历网络结构（替换层、注册 hook）
+
+
+
+例子：冻结 conv1 参数
+for name, param in model.named_parameters():    param.requires_grad = not name.startswith(&quot;conv1&quot;)
+5. OrderedDict 的意义
+state_dict() 返回的是 collections.OrderedDict，会保持插入顺序。这对模型保存和重建非常关键，因为加载时会逐项匹配参数名称。
+import collectionsisinstance(model.state_dict(), collections.OrderedDict)  # True
+
+建议始终保存：模型 state_dict + 优化器 state_dict + 训练元信息（epoch、学习率等）。在多任务、多阶段训练或热启动模式下，这样的组织方式最可靠。*** End Patch
+]]></content>
+      <categories>
+        <category>深度学习</category>
+      </categories>
+      <tags>
+        <tag>PyTorch</tag>
+        <tag>state_dict</tag>
+        <tag>模型保存</tag>
       </tags>
   </entry>
   <entry>
     <title>Matplotlib 中文字体配置指南</title>
     <url>/2023/10/08/2023-10-08-Matplotlib%E4%B8%AD%E6%96%87%E5%AD%97%E4%BD%93%E9%85%8D%E7%BD%AE/</url>
     <content><![CDATA[Matplotlib 不显示中文通常是因为找不到相应字体。虽然系统已经安装了微软雅黑、黑体等字体，但 Matplotlib 的字体缓存里未必包含它们。以下是检查和设置中文字体的步骤。
-1. 查看 Matplotlib 支持的字体from matplotlib.font_manager import FontManagerfonts = sorted(&#123;f.name for f in FontManager().ttflist&#125;)print(&quot;Matplotlib 当前可用字体：&quot;)for f in fonts:    print(f&quot;  &#123;f&#125;&quot;)
-
+1. 查看 Matplotlib 支持的字体
+from matplotlib.font_manager import FontManagerfonts = sorted(&#123;f.name for f in FontManager().ttflist&#125;)print(&quot;Matplotlib 当前可用字体：&quot;)for f in fonts:    print(f&quot;  &#123;f&#125;&quot;)
 列表中的字体名称多为拼音或英文。例如：
 
 DengXian（等线）
@@ -1076,16 +1061,18 @@ LiSu（隶书）
 YouYuan（幼圆）
 
 只要 Matplotlib 能识别这些名称，就可以直接设置。
-2. 全局设置中文字体import matplotlibmatplotlib.rc(&quot;font&quot;, family=&quot;Microsoft YaHei&quot;, weight=&quot;bold&quot;)matplotlib.rc(&quot;axes&quot;, unicode_minus=False)   # 解决坐标轴负号显示问题
-
+2. 全局设置中文字体
+import matplotlibmatplotlib.rc(&quot;font&quot;, family=&quot;Microsoft YaHei&quot;, weight=&quot;bold&quot;)matplotlib.rc(&quot;axes&quot;, unicode_minus=False)   # 解决坐标轴负号显示问题
 若在列表中找不到对应字体，可以尝试以下方法：
 
 使用系统路径指定字体文件：from matplotlib import font_managerfont_manager.fontManager.addfont(&quot;/Library/Fonts/Arial Unicode.ttf&quot;)matplotlib.rc(&quot;font&quot;, family=&quot;Arial Unicode MS&quot;)
+
 删除 Matplotlib 字体缓存（如 ~/.matplotlib/fontlist-v310.json），重新运行脚本让 Matplotlib 重新扫描字体。
 
 3. 小结
-先确认 Matplotlib 字体列表中是否包含中文字体；  
-使用 matplotlib.rc 设置 family，同时关闭 unicode_minus 处理负号；  
+
+先确认 Matplotlib 字体列表中是否包含中文字体；
+使用 matplotlib.rc 设置 family，同时关闭 unicode_minus 处理负号；
 新字体无法识别时，把字体文件添加到 Matplotlib 的字体管理器中即可。
 
 
@@ -1097,6 +1084,99 @@ YouYuan（幼圆）
       <tags>
         <tag>Matplotlib</tag>
         <tag>字体</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Mac 外置硬盘无法弹出的排查手记</title>
+    <url>/2023/08/25/2023-08-25-Mac%E5%A4%96%E7%BD%AE%E7%A1%AC%E7%9B%98%E6%8E%92%E6%9F%A5%E6%89%8B%E8%AE%B0/</url>
+    <content><![CDATA[某次直接拔掉移动硬盘后，再次连接就一直提示“无法正确弹出”。以下是我整理的排查步骤。
+1. 在终端查看磁盘挂载情况
+diskutil list
+输出大致如下：
+/dev/disk0 (internal)/dev/disk1 (synthesized)/dev/disk2 (external, physical)
+记住外置磁盘的标识（此处为 /dev/disk2）。
+2. 强制卸载 + 弹出
+diskutil unmountDisk /dev/disk2diskutil eject /dev/disk2
+如果提示某个进程占用，先关闭 Finder 中的所有标签页或重新登录，再执行一次。
+3. 使用磁盘工具修复
+在「磁盘工具」中选择外置磁盘，点击「急救」进行修复。它会自动执行 fsck 检查文件系统错误。
+4. 预防建议
+
+习惯使用 Command+E 或 Finder 的「推出」按钮；
+备份关键数据，外置盘建议配置 Time Machine；
+长时间传输大文件时避免直接休眠。
+
+
+掌握 diskutil 的基本命令后，macOS 上的大部分移动磁盘问题都能自己解决。如果命令与磁盘工具都无法修复，记得及时备份并考虑重新格式化。*** End Patch
+]]></content>
+      <categories>
+        <category>故障排查</category>
+      </categories>
+      <tags>
+        <tag>macOS</tag>
+        <tag>外置硬盘</tag>
+        <tag>diskutil</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>工作环境常备清单</title>
+    <url>/2023/11/11/2023-11-11-%E5%B7%A5%E4%BD%9C%E7%8E%AF%E5%A2%83%E5%B8%B8%E5%A4%87%E6%B8%85%E5%8D%95/</url>
+    <content><![CDATA[写代码时常遇到“网络慢、权限不够、库安装失败”之类的小坑。这里整理我常用的速查清单，包含代理、pip 镜像、环境管理、文件权限以及应急命令。
+1. Python 相关
+1.1 代理设置
+import osos.environ[&quot;http_proxy&quot;] = &quot;http://127.0.0.1:7890&quot;os.environ[&quot;https_proxy&quot;] = &quot;http://127.0.0.1:7890&quot;
+1.2 控制 CPU 线程数
+避免 NumPy 占满所有核心（需在 import numpy 前设置）：
+import osos.environ[&quot;OMP_NUM_THREADS&quot;] = &quot;8&quot;
+1.3 pip 下载加速
+
+单次：pip install -i https://pypi.tuna.tsinghua.edu.cn/simple torch
+
+全局：pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simplepip config set install.trusted-host mirrors.aliyun.com
+
+
+1.4 Apex 安装
+git clone https://github.com/ptrblck/apex.gitcd apexgit checkout apex_no_distributedpip install -v --no-cache-dir ./
+2. 虚拟环境与依赖
+conda create -n swin python=3.10conda remove -n swin --allpip install -r requirements.txtpip freeze &gt; requirements.txt# 若项目包含 setup.py，可直接pip install -e .
+3. TensorFlow 提醒
+TensorFlow 官方自 2.10 起不再提供 Windows GPU 版，尽量选择 WSL2 或 Linux 环境，并优先参考官方安装指南。
+4. 操作系统备忘
+
+可执行文件放到 /usr/local/bin 即可全局访问。
+os.getcwd() 查看当前目录，os.chdir() 更改目录。
+路径以 / 开头表示绝对路径。
+Ubuntu 卡死时可尝试 Alt + B + Fn + PrtSc 强制重启。
+显卡驱动异常常用修复命令：sudo dpkg --configure -a。
+Ubuntu 22.04 安装 libssl1.1：echo &quot;deb http://security.ubuntu.com/ubuntu focal-security main&quot; \  | sudo tee /etc/apt/sources.list.d/focal-security.listsudo apt-get updatesudo apt-get install libssl1.1
+
+蓝牙问题排查参考：Ubuntu22.04 蓝牙问题解决。
+
+5. 权限 &amp; 文件传输
+
+目录权限不足时：sudo chmod 755 /path/to/dir   # 或 777（不推荐）
+
+以 root 权限打开文件管理器：sudo nautilus# 或pkexec nautilus
+
+上传大文件前先压缩：zip -r project.zip ./project
+
+
+6. 杂项提示
+
+大文件一定要压缩再上传，节约时间与空间。
+导包异常时检查 sys.path 顺序，必要时重启 kernel。
+快捷键：Ctrl + Shift + F 快速在简体/繁体之间转换。
+
+
+把这些零碎技巧放在一处，换电脑或新装系统时就不用重复查资料了。欢迎继续补充。*** End Patch
+]]></content>
+      <categories>
+        <category>效率手册</category>
+      </categories>
+      <tags>
+        <tag>Ubuntu</tag>
+        <tag>Python</tag>
+        <tag>环境配置</tag>
       </tags>
   </entry>
 </search>
