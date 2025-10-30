@@ -1,0 +1,340 @@
+<!DOCTYPE html><html lang="en" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>用PyTorch和BERT进行文本分类 | REXKEV'S BLOG</title><meta name="author" content="Kevin Tu"><meta name="copyright" content="Kevin Tu"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="ffffff"><meta name="description" content="代码 预处理数据 12345678import osimport pandas as pdimport torch.utils.dataimport torchos.environ[&quot;http_proxy&quot;] &#x3D; &quot;http:&#x2F;&#x2F;127.0.0.1:7890&quot;os.environ[&quot;https_proxy&quot;] &#x3D; &quot;http:&#x2F;">
+<meta property="og:type" content="article">
+<meta property="og:title" content="用PyTorch和BERT进行文本分类">
+<meta property="og:url" content="https://rexkev214.github.io/2023/09/23/%E7%94%A8PyTorch%E5%92%8CBERT%E8%BF%9B%E8%A1%8C%E6%96%87%E6%9C%AC%E5%88%86%E7%B1%BB/index.html">
+<meta property="og:site_name" content="REXKEV&#39;S BLOG">
+<meta property="og:description" content="代码 预处理数据 12345678import osimport pandas as pdimport torch.utils.dataimport torchos.environ[&quot;http_proxy&quot;] &#x3D; &quot;http:&#x2F;&#x2F;127.0.0.1:7890&quot;os.environ[&quot;https_proxy&quot;] &#x3D; &quot;http:&#x2F;">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://source.fomal.cc/img/default_cover_8.webp">
+<meta property="article:published_time" content="2023-09-23T09:54:45.000Z">
+<meta property="article:modified_time" content="2023-09-23T09:54:45.000Z">
+<meta property="article:author" content="Kevin Tu">
+<meta property="article:tag" content="Python">
+<meta property="article:tag" content="Deep Learning">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://source.fomal.cc/img/default_cover_8.webp"><link rel="shortcut icon" href="https://c-ssl.duitang.com/uploads/item/202003/13/20200313165624_qycwp.jpeg"><link rel="canonical" href="https://rexkev214.github.io/2023/09/23/%E7%94%A8PyTorch%E5%92%8CBERT%E8%BF%9B%E8%A1%8C%E6%96%87%E6%9C%AC%E5%88%86%E7%B1%BB/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/legacy/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":true,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found"}},
+  translate: {"defaultEncoding":2,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"简"},
+  noticeOutdate: {"limitDay":600,"position":"top","messagePrev":"It has been","messageNext":"days since the last update, the content of the article may be outdated."},
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":230},
+  copy: {
+    success: 'Copy successfully',
+    error: 'Copy error',
+    noSupport: 'The browser does not support'
+  },
+  relativeDate: {
+    homepage: true,
+    post: true
+  },
+  runtime: '',
+  dateSuffix: {
+    just: 'Just',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: true,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '用PyTorch和BERT进行文本分类',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2023-09-23 17:54:45'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+    win.getCSS = (url,id = false) => new Promise((resolve, reject) => {
+      const link = document.createElement('link')
+      link.rel = 'stylesheet'
+      link.href = url
+      if (id) link.id = id
+      link.onerror = reject
+      link.onload = link.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        link.onload = link.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(link)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 6.3.0"></head><body><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://c-ssl.duitang.com/uploads/item/202003/13/20200313165624_qycwp.jpeg" onerror="onerror=null;src='/legacy/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/legacy/archives/"><div class="headline">Articles</div><div class="length-num">17</div></a><a href="/legacy/tags/"><div class="headline">Tags</div><div class="length-num">13</div></a><a href="/legacy/categories/"><div class="headline">Categories</div><div class="length-num">0</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/legacy/index.html"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/legacy/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/legacy/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/legacy/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('https://source.fomal.cc/img/default_cover_8.webp')"><nav id="nav"><span id="blog-info"><a href="/legacy/index.html" title="REXKEV'S BLOG"><span class="site-name">REXKEV'S BLOG</span></a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search" href="javascript:void(0);"><i class="fas fa-search fa-fw"></i><span> Search</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/legacy/index.html"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/legacy/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/legacy/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/legacy/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">用PyTorch和BERT进行文本分类</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2023-09-23T09:54:45.000Z" title="Created 2023-09-23 17:54:45">2023-09-23</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2023-09-23T09:54:45.000Z" title="Updated 2023-09-23 17:54:45">2023-09-23</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">Word count:</span><span class="word-count">2.4k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">Reading time:</span><span>11min</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="用PyTorch和BERT进行文本分类"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post View:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="代码">代码</h1>
+<h2 id="预处理数据">预处理数据</h2>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> os</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br><span class="line"><span class="keyword">import</span> torch.utils.data</span><br><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"></span><br><span class="line">os.environ[<span class="string">&quot;http_proxy&quot;</span>] = <span class="string">&quot;http://127.0.0.1:7890&quot;</span></span><br><span class="line">os.environ[<span class="string">&quot;https_proxy&quot;</span>] = <span class="string">&quot;http://127.0.0.1:7890&quot;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> transformers <span class="keyword">import</span> BertTokenizer</span><br><span class="line"></span><br><span class="line">tokenizer = BertTokenizer.from_pretrained(<span class="string">&#x27;bert-base-cased&#x27;</span>)</span><br><span class="line">example_text = <span class="string">&#x27;I will watch Memento tonight&#x27;</span></span><br><span class="line">bert_input = tokenizer(example_text, padding=<span class="string">&#x27;max_length&#x27;</span>,</span><br><span class="line">                       max_length=<span class="number">10</span>,</span><br><span class="line">                       truncation=<span class="literal">True</span>,</span><br><span class="line">                       return_tensors=<span class="string">&#x27;pt&#x27;</span>)</span><br><span class="line">bert_input</span><br></pre></td></tr></table></figure>
+<pre><code>&#123;&#39;input_ids&#39;: tensor([[  101,   146,  1209,  2824,  2508, 26173,  3568,   102,     0,     0]]), &#39;token_type_ids&#39;: tensor([[0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]), &#39;attention_mask&#39;: tensor([[1, 1, 1, 1, 1, 1, 1, 1, 0, 0]])&#125;</code></pre>
+<p>面是对上面BertTokenizer参数的解释：</p>
+<ul>
+<li>padding：将每个sequence填充到指定的最大长度。<br />
+</li>
+<li>max_length: 每个sequence的最大长度。本示例中我们使用 10，但对于本文实际数据集，我们将使用 512，这是 BERT 允许的sequence 的最大长度。<br />
+</li>
+<li>truncation：如果为True，则每个序列中超过最大长度的标记将被截断。<br />
+</li>
+<li>return_tensors：将返回的张量类型。由于我们使用的是 Pytorch，所以我们使用pt；如果你使用 Tensorflow，那么你需要使用tf。</li>
+</ul>
+<p>从上面的变量中看到的输出bert_input，是用于稍后的 BERT 模型。但是这些输出是什么意思？</p>
+<p>1.第一行是 input_ids，它是每个 token 的 id 表示。实际上可以将这些输入 id 解码为实际的 token，如下所示：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">example_text = tokenizer.decode(bert_input.input_ids[<span class="number">0</span>])</span><br><span class="line"><span class="built_in">print</span>(example_text)</span><br></pre></td></tr></table></figure>
+<pre><code>[CLS] I will watch Memento tonight [SEP] [PAD] [PAD]</code></pre>
+<p>由上述结果所示，BertTokenizer负责输入文本的所有必要转换，为 BERT 模型的输入做好准备。它会自动添加 [CLS]、[SEP] 和 [PAD] token。由于我们指定最大长度为 10，所以最后只有两个 [PAD] token。</p>
+<p>2.第二行是 token_type_ids，它是一个 binary mask，用于标识 token 属于哪个 sequence。如果我们只有一个 sequence，那么所有的 token 类型 id 都将为 0。对于文本分类任务，token_type_ids是 BERT 模型的可选输入参数。<br />
+例如： tokens：[CLS] is this jack ##son ##ville ? [SEP] no it is not . [SEP] token_type_ids：0 0 0 0 0 0 0 0 1 1 1 1 1 1</p>
+<p>3.第三行是 attention_mask，它是一个 binary mask，用于标识 token 是真实 word 还是只是由填充得到。如果 token 包含 [CLS]、[SEP] 或任何真实单词，则 mask 将为 1。如果 token 只是 [PAD] 填充，则 mask 将为 0。</p>
+<p>注意到，我们使用了一个预训练BertTokenizer的bert-base-cased模型。如果数据集中的文本是英文的，这个预训练的分词器就可以很好地工作。</p>
+<p>如果有来自不同语言的数据集，可能需要使用bert-base-multilingual-cased。具体来说，如果你的数据集是德语、荷兰语、中文、日语或芬兰语，则可能需要使用专门针对这些语言进行预训练的分词器。可以在此处查看相应的预训练标记器的名称。特别地，如果数据集中的文本是中文的，需要使用bert-base-chinese 模型，以及其相应的BertTokenizer等。</p>
+<h2 id="数据集类">数据集类</h2>
+<p>现在我们知道从BertTokenizer中获得什么样的输出，接下来为新闻数据集构建一个Dataset类，该类将作为一个类来将新闻数据转换成模型需要的数据格式。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">from</span> transformers <span class="keyword">import</span> BertTokenizer</span><br><span class="line"><span class="keyword">from</span> torch.utils.data <span class="keyword">import</span> Dataset</span><br><span class="line"></span><br><span class="line">tokenizer = BertTokenizer.from_pretrained(<span class="string">&#x27;bert-base-cased&#x27;</span>)</span><br><span class="line"></span><br><span class="line">labels = &#123;</span><br><span class="line">    <span class="string">&#x27;business&#x27;</span>: <span class="number">0</span>,</span><br><span class="line">    <span class="string">&#x27;entertainment&#x27;</span>: <span class="number">1</span>,</span><br><span class="line">    <span class="string">&#x27;sport&#x27;</span>: <span class="number">2</span>,</span><br><span class="line">    <span class="string">&#x27;tech&#x27;</span>: <span class="number">3</span>,</span><br><span class="line">    <span class="string">&#x27;politics&#x27;</span>: <span class="number">4</span>,</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Dataset</span>(<span class="title class_ inherited__">Dataset</span>):</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, df</span>):</span><br><span class="line">        self.labels = [labels[label] <span class="keyword">for</span> label <span class="keyword">in</span> df[<span class="string">&#x27;Category&#x27;</span>]]</span><br><span class="line">        self.texts = [tokenizer(text,</span><br><span class="line">                                padding=<span class="string">&#x27;max_length&#x27;</span>,</span><br><span class="line">                                max_length=<span class="number">512</span>,</span><br><span class="line">                                truncation=<span class="literal">True</span>,</span><br><span class="line">                                return_tensors=<span class="string">&#x27;pt&#x27;</span>)</span><br><span class="line">                      <span class="keyword">for</span> text <span class="keyword">in</span> df[<span class="string">&#x27;Text&#x27;</span>]]</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">classes</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="keyword">return</span> self.labels</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__len__</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">len</span>(self.labels)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">get_batch_labels</span>(<span class="params">self, idx</span>):</span><br><span class="line">        <span class="keyword">return</span> np.array(self.labels[idx])</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">get_batch_texts</span>(<span class="params">self, idx</span>):</span><br><span class="line">        <span class="keyword">return</span> self.texts[idx]</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__getitem__</span>(<span class="params">self, idx</span>):</span><br><span class="line">        batch_texts = self.get_batch_texts(idx)</span><br><span class="line">        batch_y = self.get_batch_labels(idx)</span><br><span class="line">        <span class="keyword">return</span> batch_texts, batch_y</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 下载数据的地址：https://www.kaggle.com/competitions/learn-ai-bbc/data</span></span><br><span class="line">df = pd.read_csv(<span class="string">r&quot;./BBC_newsData/BBC News Train.csv&quot;</span>)</span><br><span class="line">np.random.seed(<span class="number">112</span>)</span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">简单介绍一下这里的操作，df.sample后面的frac就是取出的信息的比例，np.split就是按照后面列表的两个数字，将整个集合分成三部分——注意，在第一次见这些函数的时候可以先通过源代码中的注释对函数进行一个了解</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line">df_train, df_val, df_test = np.split(df.sample(frac=<span class="number">1</span>, random_state=<span class="number">42</span>), [<span class="built_in">int</span>(<span class="number">.8</span> * <span class="built_in">len</span>(df)), <span class="built_in">int</span>(<span class="number">.9</span> * <span class="built_in">len</span>(df))])</span><br><span class="line"><span class="comment"># df_test = pd.read_csv(r&quot;./BBC_newsData/BBC News Test.csv&quot;)</span></span><br><span class="line"><span class="built_in">len</span>(df_train), <span class="built_in">len</span>(df_val), <span class="built_in">len</span>(df_test)</span><br></pre></td></tr></table></figure>
+<pre><code>(1192, 149, 149)</code></pre>
+<h2 id="构建模型">构建模型</h2>
+<p>至此，我们已经成功构建了一个 Dataset 类来生成模型输入数据。现在使用具有 12 层 Transformer 编码器的预训练 BERT 基础模型构建实际模型。</p>
+<p>如果数据集中的文本是中文的，需要使用bert-base-chinese 模型。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> torch <span class="keyword">import</span> nn</span><br><span class="line"><span class="keyword">from</span> transformers <span class="keyword">import</span> BertModel</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">BertClassifier</span>(nn.Module):</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, dropout=<span class="number">0.5</span></span>):</span><br><span class="line">        <span class="built_in">super</span>(BertClassifier, self).__init__()</span><br><span class="line">        self.bert = BertModel.from_pretrained(<span class="string">&#x27;bert-base-cased&#x27;</span>)</span><br><span class="line">        self.dropout = nn.Dropout(dropout)</span><br><span class="line">        self.linear = nn.Linear(<span class="number">768</span>, <span class="number">5</span>)</span><br><span class="line">        self.relu = nn.ReLU()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">forward</span>(<span class="params">self, input_id, mask</span>):</span><br><span class="line">        _, pooled_output = self.bert(input_ids=input_id, attention_mask=mask, return_dict=<span class="literal">False</span>)</span><br><span class="line">        dropout_output = self.dropout(pooled_output)</span><br><span class="line">        linear_output = self.linear(dropout_output)</span><br><span class="line">        final_layer = self.relu(linear_output)</span><br><span class="line">        <span class="keyword">return</span> final_layer</span><br></pre></td></tr></table></figure>
+<p>从上面的代码可以看出，BERT 模型输出了两个变量：</p>
+<p>在上面的代码中命名的第一个变量_包含sequence中所有 token 的 Embedding 向量层。<br />
+命名的第二个变量pooled_output包含 [CLS] token 的 Embedding 向量。对于文本分类任务，使用这个 Embedding 作为分类器的输入就足够了。<br />
+然后将pooled_output变量传递到具有 ReLU 激活函数的线性层。在线性层中输出一个维度大小为 5 的向量，每个向量对应于标签类别（运动、商业、政治、 娱乐和科技）。</p>
+<h2 id="训练模型">训练模型</h2>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> torch.optim <span class="keyword">import</span> Adam</span><br><span class="line"><span class="keyword">from</span> tqdm <span class="keyword">import</span> tqdm</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">train</span>(<span class="params">model, train_data, val_data, learning_rate, epochs</span>):</span><br><span class="line">    train_data, val_data = Dataset(train_data), Dataset(val_data)</span><br><span class="line">    train_dataloader = torch.utils.data.DataLoader(train_data, batch_size=<span class="number">8</span>, shuffle=<span class="literal">True</span>)</span><br><span class="line">    val_dataloader = torch.utils.data.DataLoader(val_data, batch_size=<span class="number">8</span>)</span><br><span class="line">    use_cuda = torch.cuda.is_available()</span><br><span class="line">    <span class="comment">#判断是否使用GPU</span></span><br><span class="line">    device = torch.device(<span class="string">&quot;cuda&quot;</span> <span class="keyword">if</span> use_cuda <span class="keyword">else</span> <span class="string">&quot;cpu&quot;</span>)</span><br><span class="line">    criterion = nn.CrossEntropyLoss()</span><br><span class="line">    optimizer = Adam(model.parameters(), lr=learning_rate)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> use_cuda:</span><br><span class="line">        model.cuda()</span><br><span class="line">        criterion.cuda()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> epoch_num <span class="keyword">in</span> <span class="built_in">range</span>(epochs):</span><br><span class="line">        total_acc_train = <span class="number">0</span></span><br><span class="line">        total_loss_train = <span class="number">0</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> train_input, train_label <span class="keyword">in</span> tqdm(train_dataloader):</span><br><span class="line">            train_label = train_label.to(device)</span><br><span class="line">            mask = train_input[<span class="string">&#x27;attention_mask&#x27;</span>].to(device)</span><br><span class="line">            input_id = train_input[<span class="string">&#x27;input_ids&#x27;</span>].squeeze(<span class="number">1</span>).to(device)</span><br><span class="line"></span><br><span class="line">            output = model(input_id, mask)</span><br><span class="line"></span><br><span class="line">            batch_loss = criterion(output, train_label)</span><br><span class="line">            total_loss_train += batch_loss.item()</span><br><span class="line"></span><br><span class="line">            acc = (output.argmax(dim=<span class="number">1</span>) == train_label).<span class="built_in">sum</span>().item()</span><br><span class="line">            total_acc_train += acc</span><br><span class="line"></span><br><span class="line">            <span class="comment"># model.zero_gard()</span></span><br><span class="line">            batch_loss.backward()</span><br><span class="line">            optimizer.step()</span><br><span class="line"></span><br><span class="line">        total_acc_val = <span class="number">0</span></span><br><span class="line">        total_loss_val = <span class="number">0</span></span><br><span class="line">        <span class="comment"># 不需要计算梯度</span></span><br><span class="line">        <span class="keyword">with</span> torch.no_grad():</span><br><span class="line">            <span class="keyword">for</span> val_input, val_label <span class="keyword">in</span> val_dataloader:</span><br><span class="line">                val_label = val_label.to(device)</span><br><span class="line">                mask = val_input[<span class="string">&#x27;attention_mask&#x27;</span>].to(device)</span><br><span class="line">                input_id = val_input[<span class="string">&#x27;input_ids&#x27;</span>].squeeze(<span class="number">1</span>).to(device)</span><br><span class="line"></span><br><span class="line">                output = model(input_id, mask)</span><br><span class="line"></span><br><span class="line">                batch_loss = criterion(output, val_label)</span><br><span class="line">                total_loss_val += batch_loss.item()</span><br><span class="line"></span><br><span class="line">                acc = (output.argmax(dim=<span class="number">1</span>) == val_label).<span class="built_in">sum</span>().item()</span><br><span class="line">                total_acc_val += acc</span><br><span class="line">        <span class="built_in">print</span>(</span><br><span class="line">            <span class="string">f&#x27;&#x27;&#x27;Epochs: <span class="subst">&#123;epoch_num + <span class="number">1</span>&#125;</span> </span></span><br><span class="line"><span class="string">              | Train Loss: <span class="subst">&#123;total_loss_train / <span class="built_in">len</span>(train_data): <span class="number">.3</span>f&#125;</span> </span></span><br><span class="line"><span class="string">              | Train Accuracy: <span class="subst">&#123;total_acc_train / <span class="built_in">len</span>(train_data): <span class="number">.3</span>f&#125;</span> </span></span><br><span class="line"><span class="string">              | Val Loss: <span class="subst">&#123;total_loss_val / <span class="built_in">len</span>(val_data): <span class="number">.3</span>f&#125;</span> </span></span><br><span class="line"><span class="string">              | Val Accuracy: <span class="subst">&#123;total_acc_val / <span class="built_in">len</span>(val_data): <span class="number">.3</span>f&#125;</span>&#x27;&#x27;&#x27;</span>)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">model = BertClassifier()</span><br><span class="line"></span><br><span class="line">train(model, df_train, df_val, learning_rate=<span class="number">1e-6</span>, epochs=<span class="number">10</span>)</span><br></pre></td></tr></table></figure>
+<pre><code>Some weights of the model checkpoint at bert-base-cased were not used when initializing BertModel: [&#39;cls.predictions.transform.dense.weight&#39;, &#39;cls.predictions.transform.dense.bias&#39;, &#39;cls.seq_relationship.weight&#39;, &#39;cls.predictions.bias&#39;, &#39;cls.predictions.transform.LayerNorm.weight&#39;, &#39;cls.predictions.transform.LayerNorm.bias&#39;, &#39;cls.seq_relationship.bias&#39;]
+- This IS expected if you are initializing BertModel from the checkpoint of a model trained on another task or with another architecture (e.g. initializing a BertForSequenceClassification model from a BertForPreTraining model).
+- This IS NOT expected if you are initializing BertModel from the checkpoint of a model that you expect to be exactly identical (initializing a BertForSequenceClassification model from a BertForSequenceClassification model).
+100%|██████████| 168/168 [00:17&lt;00:00,  9.70it/s]
+
+
+Epochs: 1 
+              | Train Loss:  0.198 
+              | Train Accuracy:  0.277 
+              | Val Loss:  0.177 
+              | Val Accuracy:  0.470
+
+
+100%|██████████| 168/168 [00:17&lt;00:00,  9.55it/s]
+
+
+Epochs: 2 
+              | Train Loss:  0.146 
+              | Train Accuracy:  0.618 
+              | Val Loss:  0.109 
+              | Val Accuracy:  0.772
+
+
+100%|██████████| 168/168 [00:17&lt;00:00,  9.67it/s]
+
+
+Epochs: 3 
+              | Train Loss:  0.062 
+              | Train Accuracy:  0.925 
+              | Val Loss:  0.053 
+              | Val Accuracy:  0.913
+
+
+100%|██████████| 168/168 [00:17&lt;00:00,  9.71it/s]
+
+
+Epochs: 4 
+              | Train Loss:  0.023 
+              | Train Accuracy:  0.976 
+              | Val Loss:  0.018 
+              | Val Accuracy:  0.987
+
+
+100%|██████████| 168/168 [00:17&lt;00:00,  9.71it/s]
+
+
+Epochs: 5 
+              | Train Loss:  0.012 
+              | Train Accuracy:  0.989 
+              | Val Loss:  0.015 
+              | Val Accuracy:  0.973
+
+
+100%|██████████| 168/168 [00:17&lt;00:00,  9.71it/s]
+
+
+Epochs: 6 
+              | Train Loss:  0.009 
+              | Train Accuracy:  0.990 
+              | Val Loss:  0.025 
+              | Val Accuracy:  0.953
+
+
+100%|██████████| 168/168 [00:17&lt;00:00,  9.76it/s]
+
+
+Epochs: 7 
+              | Train Loss:  0.006 
+              | Train Accuracy:  0.990 
+              | Val Loss:  0.010 
+              | Val Accuracy:  0.973
+
+
+100%|██████████| 168/168 [00:17&lt;00:00,  9.78it/s]
+
+
+Epochs: 8 
+              | Train Loss:  0.006 
+              | Train Accuracy:  0.991 
+              | Val Loss:  0.015 
+              | Val Accuracy:  0.973
+
+
+100%|██████████| 168/168 [00:17&lt;00:00,  9.72it/s]
+
+
+Epochs: 9 
+              | Train Loss:  0.006 
+              | Train Accuracy:  0.993 
+              | Val Loss:  0.011 
+              | Val Accuracy:  0.987
+
+
+100%|██████████| 168/168 [00:17&lt;00:00,  9.71it/s]
+
+
+Epochs: 10 
+              | Train Loss:  0.008 
+              | Train Accuracy:  0.988 
+              | Val Loss:  0.014 
+              | Val Accuracy:  0.980</code></pre>
+<h2 id="在测试数据集上评估模型">在测试数据集上评估模型</h2>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">evaluate</span>(<span class="params">model, test_data</span>):</span><br><span class="line">    test_data = Dataset(df_test)</span><br><span class="line">    test_dataloader = torch.utils.data.DataLoader(test_data, batch_size=<span class="number">1</span>)</span><br><span class="line">    use_cuda = torch.cuda.is_available()</span><br><span class="line">    device = torch.device(<span class="string">&#x27;cuda&#x27;</span> <span class="keyword">if</span> use_cuda <span class="keyword">else</span> <span class="string">&#x27;cpu&#x27;</span>)</span><br><span class="line">    <span class="keyword">if</span> use_cuda:</span><br><span class="line">        model.cuda()</span><br><span class="line"></span><br><span class="line">    total_acc_test = <span class="number">0</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">with</span> torch.no_grad():</span><br><span class="line">        <span class="keyword">for</span> test_input, test_label <span class="keyword">in</span> test_dataloader:</span><br><span class="line">            test_label = test_label.to(device)</span><br><span class="line">            mask = test_input[<span class="string">&#x27;attention_mask&#x27;</span>].to(device)</span><br><span class="line">            input_id = test_input[<span class="string">&#x27;input_ids&#x27;</span>].squeeze(<span class="number">1</span>).to(device)</span><br><span class="line">            output = model(input_id, mask)</span><br><span class="line">            acc = (output.argmax(dim=<span class="number">1</span>) == test_label).<span class="built_in">sum</span>().item()</span><br><span class="line">            total_acc_test += acc</span><br><span class="line"></span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;Test Accuacy:<span class="subst">&#123;total_acc_test / <span class="built_in">len</span>(test_data):<span class="number">.3</span>f&#125;</span>&quot;</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">evaluate(model, df_test)</span><br></pre></td></tr></table></figure>
+<pre><code>Test Accuacy:0.980</code></pre>
+<h2 id="保存模型">保存模型</h2>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">Savemodel</span>(<span class="params">model,modelName</span>):</span><br><span class="line">    save_folder = <span class="string">&#x27;models&#x27;</span></span><br><span class="line">    os.makedirs(save_folder, exist_ok=<span class="literal">True</span>)</span><br><span class="line">    save_path = os.path.join(save_folder, modelName)</span><br><span class="line">    torch.save(model.state_dict(), save_path)</span><br><span class="line"></span><br><span class="line">Savemodel(model, <span class="string">&#x27;Bert.ckpt&#x27;</span>)</span><br></pre></td></tr></table></figure>
+<p>用上面这中方法保存模型后，要先写出模型结构的类，再通过<code>model.load_state_dict()</code>来读取模型的参数</p>
+<h2 id="附">附</h2>
+<h3 id="magic-command">magic command</h3>
+<p>在 Jupyter Notebook 或 Jupyter Lab 中，%%capture 是一个所谓的 "cell magic" 命令，用于捕获和丢弃或存储特定单元格的 stdout、stderr 输出。这在您想要防止某些命令的输出被显示在输出单元格中时非常有用。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">%%capture</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;This won&#x27;t be displayed in the output cell.&quot;</span>)</span><br></pre></td></tr></table></figure>
+<p>执行上面的单元格将不会显示任何输出，尽管 print 语句被执行了。</p>
+<p>参考自: <a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/524487313">用PyTorch和BERT进行文本分类</a></p>
+<h3 id="jupyter转markdown">jupyter转markdown</h3>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jupyter nbconvert --to markdown &#123;notebook_path&#125; --output &#123;output_path&#125;</span><br></pre></td></tr></table></figure>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">Author: </span><span class="post-copyright-info"><a href="https://rexkev214.github.io">Kevin Tu</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">Link: </span><span class="post-copyright-info"><a href="https://rexkev214.github.io/2023/09/23/%E7%94%A8PyTorch%E5%92%8CBERT%E8%BF%9B%E8%A1%8C%E6%96%87%E6%9C%AC%E5%88%86%E7%B1%BB/">https://rexkev214.github.io/2023/09/23/%E7%94%A8PyTorch%E5%92%8CBERT%E8%BF%9B%E8%A1%8C%E6%96%87%E6%9C%AC%E5%88%86%E7%B1%BB/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">Copyright Notice: </span><span class="post-copyright-info">All articles in this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless stating additionally.</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/legacy/tags/Python/">Python</a><a class="post-meta__tags" href="/legacy/tags/Deep-Learning/">Deep Learning</a></div><div class="post_share"><div class="social-share" data-image="https://source.fomal.cc/img/default_cover_8.webp" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/legacy/2023/10/08/matplotlib/" title="matplotlib"><img class="cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://source.fomal.cc/img/default_cover_4.webp" onerror="onerror=null;src='/legacy/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">Previous Post</div><div class="prev_info">matplotlib</div></div></a></div><div class="next-post pull-right"><a href="/legacy/2023/08/25/debug-macbook/" title="Debug Macbook"><img class="cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://source.fomal.cc/img/default_cover_4.webp" onerror="onerror=null;src='/legacy/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">Next Post</div><div class="next_info">Debug Macbook</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>Related Articles</span></div><div class="relatedPosts-list"><div><a href="/legacy/2023/11/11/%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9/" title="注意事项"><img class="cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://source.fomal.cc/img/default_cover_8.webp" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-11-11</div><div class="title">注意事项</div></div></a></div><div><a href="/legacy/2023/08/19/Python%E8%A3%85%E9%A5%B0%E5%99%A8/" title="Python装饰器"><img class="cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://source.fomal.cc/img/default_cover_3.webp" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-08-19</div><div class="title">Python装饰器</div></div></a></div><div><a href="/legacy/2023/10/28/Pytorch_model_save/" title="Pytorch Model Save"><img class="cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://source.fomal.cc/img/default_cover_7.webp" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-10-28</div><div class="title">Pytorch Model Save</div></div></a></div><div><a href="/legacy/2023/08/08/collections/" title="collections"><img class="cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://source.fomal.cc/img/default_cover_2.webp" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-08-08</div><div class="title">collections</div></div></a></div><div><a href="/legacy/2023/10/08/matplotlib/" title="matplotlib"><img class="cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://source.fomal.cc/img/default_cover_4.webp" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-10-08</div><div class="title">matplotlib</div></div></a></div><div><a href="/legacy/2023/08/08/pathlib/" title="pathlib"><img class="cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://source.fomal.cc/img/default_cover_10.webp" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-08-08</div><div class="title">pathlib</div></div></a></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://c-ssl.duitang.com/uploads/item/202003/13/20200313165624_qycwp.jpeg" onerror="this.onerror=null;this.src='/legacy/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">Kevin Tu</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/legacy/archives/"><div class="headline">Articles</div><div class="length-num">17</div></a><a href="/legacy/tags/"><div class="headline">Tags</div><div class="length-num">13</div></a><a href="/legacy/categories/"><div class="headline">Categories</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/REXKEV214"><i class="fab fa-github"></i><span>My Github</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/REXKEV214" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="/k15257703775@gmail.com" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">Welcome to my Blog!</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Catalog</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BB%A3%E7%A0%81"><span class="toc-text">代码</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%A2%84%E5%A4%84%E7%90%86%E6%95%B0%E6%8D%AE"><span class="toc-text">预处理数据</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E9%9B%86%E7%B1%BB"><span class="toc-text">数据集类</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9E%84%E5%BB%BA%E6%A8%A1%E5%9E%8B"><span class="toc-text">构建模型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AE%AD%E7%BB%83%E6%A8%A1%E5%9E%8B"><span class="toc-text">训练模型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9C%A8%E6%B5%8B%E8%AF%95%E6%95%B0%E6%8D%AE%E9%9B%86%E4%B8%8A%E8%AF%84%E4%BC%B0%E6%A8%A1%E5%9E%8B"><span class="toc-text">在测试数据集上评估模型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BF%9D%E5%AD%98%E6%A8%A1%E5%9E%8B"><span class="toc-text">保存模型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%99%84"><span class="toc-text">附</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#magic-command"><span class="toc-text">magic command</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#jupyter%E8%BD%ACmarkdown"><span class="toc-text">jupyter转markdown</span></a></li></ol></li></ol></li></ol></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2023 By Kevin Tu</div><div class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Read Mode"><i class="fas fa-book-open"></i></button><button id="translateLink" type="button" title="Switch Between Traditional Chinese And Simplified Chinese">繁</button><button id="darkmode" type="button" title="Switch Between Light And Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle between single-column and double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="Setting"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table Of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back To Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/legacy/js/utils.js"></script><script src="/legacy/js/main.js"></script><script src="/legacy/js/tw_cn.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js"></script><script>function panguFn () {
+  if (typeof pangu === 'object') pangu.autoSpacingPage()
+  else {
+    getScript('https://cdn.jsdelivr.net/npm/pangu/dist/browser/pangu.min.js')
+      .then(() => {
+        pangu.autoSpacingPage()
+      })
+  }
+}
+
+function panguInit () {
+  if (false){
+    GLOBAL_CONFIG_SITE.isPost && panguFn()
+  } else {
+    panguFn()
+  }
+}
+
+document.addEventListener('DOMContentLoaded', panguInit)</script><div class="js-pjax"></div><script id="canvas_nest" defer="defer" color="0,0,255" opacity="0.7" zIndex="-1" count="25" mobile="false" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/canvas-nest.min.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">Search</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  Loading the Database</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="Search for Posts" type="text"/></div></div><hr/><div class="no-result" id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/legacy/js/search/local-search.js"></script></div></div><script src="/legacy/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"legacy/live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/legacy/live2dw/assets/koharu.model.json"},"display":{"position":"left","width":150,"height":300},"mobile":{"show":false},"log":false});</script></body></html>

@@ -1,0 +1,366 @@
+<!DOCTYPE html><html lang="en" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Pytorch Model Save | REXKEV'S BLOG</title><meta name="author" content="Kevin Tu"><meta name="copyright" content="Kevin Tu"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="ffffff"><meta name="description" content="state_dict state_dict简介 state_dict是Python的字典对象，可用于保存模型参数、超参数以及优化器（torch.optim）的状态信息。需要注意的是，只有具有可学习参数的层（如卷积层、线性层等）才有state_dict 12345678910111213141516171819202122import torchimport torch.nn as nnimport">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Pytorch Model Save">
+<meta property="og:url" content="https://rexkev214.github.io/2023/10/28/Pytorch_model_save/index.html">
+<meta property="og:site_name" content="REXKEV&#39;S BLOG">
+<meta property="og:description" content="state_dict state_dict简介 state_dict是Python的字典对象，可用于保存模型参数、超参数以及优化器（torch.optim）的状态信息。需要注意的是，只有具有可学习参数的层（如卷积层、线性层等）才有state_dict 12345678910111213141516171819202122import torchimport torch.nn as nnimport">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://source.fomal.cc/img/default_cover_7.webp">
+<meta property="article:published_time" content="2023-10-28T07:57:44.000Z">
+<meta property="article:modified_time" content="2023-10-28T07:57:44.000Z">
+<meta property="article:author" content="Kevin Tu">
+<meta property="article:tag" content="Python">
+<meta property="article:tag" content="Pytorch">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://source.fomal.cc/img/default_cover_7.webp"><link rel="shortcut icon" href="https://c-ssl.duitang.com/uploads/item/202003/13/20200313165624_qycwp.jpeg"><link rel="canonical" href="https://rexkev214.github.io/2023/10/28/Pytorch_model_save/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/legacy/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":true,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found"}},
+  translate: {"defaultEncoding":2,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"简"},
+  noticeOutdate: {"limitDay":600,"position":"top","messagePrev":"It has been","messageNext":"days since the last update, the content of the article may be outdated."},
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":230},
+  copy: {
+    success: 'Copy successfully',
+    error: 'Copy error',
+    noSupport: 'The browser does not support'
+  },
+  relativeDate: {
+    homepage: true,
+    post: true
+  },
+  runtime: '',
+  dateSuffix: {
+    just: 'Just',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: true,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Pytorch Model Save',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2023-10-28 15:57:44'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+    win.getCSS = (url,id = false) => new Promise((resolve, reject) => {
+      const link = document.createElement('link')
+      link.rel = 'stylesheet'
+      link.href = url
+      if (id) link.id = id
+      link.onerror = reject
+      link.onload = link.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        link.onload = link.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(link)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 6.3.0"></head><body><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://c-ssl.duitang.com/uploads/item/202003/13/20200313165624_qycwp.jpeg" onerror="onerror=null;src='/legacy/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/legacy/archives/"><div class="headline">Articles</div><div class="length-num">17</div></a><a href="/legacy/tags/"><div class="headline">Tags</div><div class="length-num">13</div></a><a href="/legacy/categories/"><div class="headline">Categories</div><div class="length-num">0</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/legacy/index.html"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/legacy/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/legacy/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/legacy/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('https://source.fomal.cc/img/default_cover_7.webp')"><nav id="nav"><span id="blog-info"><a href="/legacy/index.html" title="REXKEV'S BLOG"><span class="site-name">REXKEV'S BLOG</span></a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search" href="javascript:void(0);"><i class="fas fa-search fa-fw"></i><span> Search</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/legacy/index.html"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/legacy/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/legacy/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/legacy/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">Pytorch Model Save</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2023-10-28T07:57:44.000Z" title="Created 2023-10-28 15:57:44">2023-10-28</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2023-10-28T07:57:44.000Z" title="Updated 2023-10-28 15:57:44">2023-10-28</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">Word count:</span><span class="word-count">2.6k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">Reading time:</span><span>12min</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="Pytorch Model Save"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post View:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="state_dict">state_dict</h1>
+<h2 id="state_dict简介">state_dict简介</h2>
+<p>state_dict是Python的字典对象，可用于保存模型参数、超参数以及优化器（torch.optim）的状态信息。需要注意的是，只有具有可学习参数的层（如卷积层、线性层等）才有state_dict</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"><span class="keyword">import</span> torch.nn <span class="keyword">as</span> nn</span><br><span class="line"><span class="keyword">import</span> torch.nn.functional <span class="keyword">as</span> F</span><br><span class="line"><span class="keyword">import</span> torch.optim <span class="keyword">as</span> optim</span><br><span class="line"> </span><br><span class="line"><span class="comment"># 定义模型</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">MyModel</span>(nn.Module):</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="built_in">super</span>(MyModel, self).__init__()</span><br><span class="line">        self.conv1 = nn.Conv2d(<span class="number">2</span>, <span class="number">3</span>, <span class="number">3</span>)</span><br><span class="line">        self.pool = nn.MaxPool2d(<span class="number">2</span>, <span class="number">2</span>)</span><br><span class="line">        self.conv2 = nn.Conv2d(<span class="number">3</span>, <span class="number">4</span>, <span class="number">3</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">forward</span>(<span class="params">self, x</span>):</span><br><span class="line">        x = self.pool(F.relu(self.conv1(x)))</span><br><span class="line">        x = self.pool(F.relu(self.conv2(x)))</span><br><span class="line">        <span class="keyword">return</span> x</span><br><span class="line"> </span><br><span class="line"><span class="comment"># 初始化模型</span></span><br><span class="line">model = MyModel()</span><br><span class="line"><span class="comment"># 初始化优化器</span></span><br><span class="line">optimizer = optim.SGD(model.parameters(), lr=<span class="number">0.001</span>, momentum=<span class="number">0.9</span>)</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 打印模型的状态字典</span></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;Model&#x27;s state_dict:&quot;</span>)</span><br><span class="line"><span class="keyword">for</span> param_tensor <span class="keyword">in</span> model.state_dict():</span><br><span class="line">    <span class="built_in">print</span>(param_tensor, <span class="string">&quot;\t&quot;</span>, model.state_dict()[param_tensor].size())</span><br></pre></td></tr></table></figure>
+<pre><code>Model&#39;s state_dict:
+conv1.weight     torch.Size([3, 2, 3, 3])
+conv1.bias   torch.Size([3])
+conv2.weight     torch.Size([4, 3, 3, 3])
+conv2.bias   torch.Size([4])</code></pre>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 打印优化器的状态字典</span></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;Optimizer&#x27;s state_dict:&quot;</span>)</span><br><span class="line"><span class="keyword">for</span> var_name <span class="keyword">in</span> optimizer.state_dict():</span><br><span class="line">    <span class="built_in">print</span>(var_name, <span class="string">&quot;\t&quot;</span>, optimizer.state_dict()[var_name])</span><br></pre></td></tr></table></figure>
+<pre><code>Optimizer&#39;s state_dict:
+state    &#123;&#125;
+param_groups     [&#123;&#39;lr&#39;: 0.001, &#39;momentum&#39;: 0.9, &#39;dampening&#39;: 0, &#39;weight_decay&#39;: 0, &#39;nesterov&#39;: False, &#39;maximize&#39;: False, &#39;foreach&#39;: None, &#39;differentiable&#39;: False, &#39;params&#39;: [0, 1, 2, 3]&#125;]</code></pre>
+<h2 id="state_dict保存与加载">state_dict保存与加载</h2>
+<p>可以通过torch.save()来保存模型的state_dict，即只保存学习到的模型参数，并通过load_state_dict()来加载并恢复模型参数。PyTorch中最常见的模型保存扩展名为’.pt’或’.pth’。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">PATH = <span class="string">&#x27;./test_state_dict.pth&#x27;</span></span><br><span class="line">torch.save(model.state_dict(), PATH)</span><br><span class="line"> </span><br><span class="line">model = MyModel()    <span class="comment"># 首先通过代码获取模型结构</span></span><br><span class="line">model.load_state_dict(torch.load(PATH))   <span class="comment"># 然后加载模型的state_dict</span></span><br></pre></td></tr></table></figure>
+<pre><code>&lt;All keys matched successfully&gt;</code></pre>
+<blockquote>
+<p>注意：load_state_dict()函数只接受字典对象，不可直接传入模型路径，所以需要先使用torch.load()反序列化已保存的state_dict。<br />
+注意：nn.DataParallel会自动在模型的参数名称前添加"module."，以表示这些参数属于模块。这是因为在多GPU训练时，模型会被复制到不同的GPU上，每个GPU上都有一份模型的副本，因此需要明确标识哪些参数属于哪个模块。这就有可能会导致模型无法加载入参数</p>
+</blockquote>
+<h2 id="保存和加载完整模型">保存和加载完整模型</h2>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 保存完整模型</span></span><br><span class="line">PATH = <span class="string">&#x27;./test_total_model.pt&#x27;</span></span><br><span class="line">torch.save(model, PATH)</span><br><span class="line"> </span><br><span class="line"><span class="comment"># 加载完整模型</span></span><br><span class="line">model = torch.load(PATH)</span><br></pre></td></tr></table></figure>
+<p>这种方式虽然代码看起来较state_dict方式要简洁，但是灵活性会差一些。因为torch.save()函数使用Python的pickle模块进行序列化，但pickle无法保存模型本身，而是保存包含类的文件路径，该文件会在模型加载时使用。所以当在其他项目对模型进行重构之后，就可能会出现意想不到的错误。</p>
+<blockquote>
+<p>注意：用load_state_dict()函数的时候，模型state_dict与pt文件的state_dict的key必须要完全一样才会加载进去，所以有时候我们需要对pt文件state_dict的值进行相应的调整</p>
+</blockquote>
+<h1 id="ordereddict">OrderedDict</h1>
+<p>如果我们打印一下state_dict的数据类型，我们会得到如下的输出：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">type</span>(model.state_dict())</span><br></pre></td></tr></table></figure>
+<pre><code>collections.OrderedDict</code></pre>
+<p>collections 模块实现了特定目标的容器，以提供Python标准内建容器 dict , list , set , 和 tuple 的替代选择。<br />
+collections 模块中的 OrderedDict 是一个有序字典，它与普通的 dict 不同之处在于它会记住键值对的插入顺序。 一些与dict 的不同：<br />
+1. 常规的 dict 被设计为非常擅长映射操作。跟踪插入顺序是次要的；<br />
+2. OrderedDict 旨在擅长重新排序操作。空间效率、迭代速度和更新操作的性能是次要的；<br />
+3. 算法上， OrderedDict 可以比 dict 更好地处理频繁的重新排序操作。这使其适用于跟踪最近的访问（例如在 LRU cache 中；</p>
+<h2 id="保存部分模型参数并在新的模型中加载">保存部分模型参数，并在新的模型中加载</h2>
+<p>如果我们只想保存conv1的训练完成的参数，我们可以这样操作：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">save_state = &#123;&#125;</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;Model&#x27;s state_dict:&quot;</span>)</span><br><span class="line"><span class="keyword">for</span> param_tensor <span class="keyword">in</span> model.state_dict():</span><br><span class="line">    <span class="comment"># 找到layer_name中有conv1的地方保存</span></span><br><span class="line">    <span class="keyword">if</span> <span class="string">&#x27;conv1&#x27;</span> <span class="keyword">in</span> param_tensor:</span><br><span class="line">        save_state.update(&#123;param_tensor:torch.ones((model.state_dict()[param_tensor].size()))&#125;)</span><br><span class="line">        <span class="built_in">print</span>(param_tensor, <span class="string">&quot;\t&quot;</span>, model.state_dict()[param_tensor].size())</span><br></pre></td></tr></table></figure>
+<pre><code>Model&#39;s state_dict:
+conv1.weight     torch.Size([3, 2, 3, 3])
+conv1.bias   torch.Size([3])</code></pre>
+<p>这里为了方便后续的演示，我们关键的一句话是这样的写的：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">dict对象的update()方法用于将一个字典的键值对添加到另一个字典中或更新一个字典中已存在的键的值。</span></span><br><span class="line"><span class="string">这个方法接受一个字典作为参数，并将这个字典的键值对合并到调用该方法的字典中。如果有重复的键，新值将覆盖旧值。</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line">save_state.update(&#123;param_tensor:torch.ones((model.state_dict()[param_tensor].size()))&#125;) <span class="comment"># conv1就是将参数全置为1</span></span><br></pre></td></tr></table></figure>
+<p>但是在实际保存的时候，我们应该这样写：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">save_state.update(&#123;param_tensor:model.state_dict()[param_tensor]&#125;)</span><br></pre></td></tr></table></figure>
+<p>然后加载新的模型，并将保存的参数赋给新的模型：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">model = MyModel()    <span class="comment"># 首先通过代码获取模型结构</span></span><br><span class="line">model.load_state_dict(save_state, strict=<span class="literal">False</span>)   <span class="comment"># 不严格加载可以忽略缺失的值</span></span><br></pre></td></tr></table></figure>
+<pre><code>_IncompatibleKeys(missing_keys=[&#39;conv2.weight&#39;, &#39;conv2.bias&#39;], unexpected_keys=[])</code></pre>
+<p>这里为热启动模式，通过在load_state_dict()函数中将strict参数设置为False来忽略非匹配键的参数。<br />
+我们再查看一下新的模型的参数：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> n, p <span class="keyword">in</span> model.named_parameters(): <span class="comment"># 我们上面将kernelsize设置成3，inchannel和outchannel设置成了2,3</span></span><br><span class="line">    <span class="keyword">if</span> <span class="string">&#x27;conv1&#x27;</span> <span class="keyword">in</span> n:</span><br><span class="line">        <span class="built_in">print</span>(p)</span><br></pre></td></tr></table></figure>
+<pre><code>Parameter containing:
+tensor([[[[1., 1., 1.],
+          [1., 1., 1.],
+          [1., 1., 1.]],
+
+         [[1., 1., 1.],
+          [1., 1., 1.],
+          [1., 1., 1.]]],
+
+
+        [[[1., 1., 1.],
+          [1., 1., 1.],
+          [1., 1., 1.]],
+
+         [[1., 1., 1.],
+          [1., 1., 1.],
+          [1., 1., 1.]]],
+
+
+        [[[1., 1., 1.],
+          [1., 1., 1.],
+          [1., 1., 1.]],
+
+         [[1., 1., 1.],
+          [1., 1., 1.],
+          [1., 1., 1.]]]], requires_grad=True)
+Parameter containing:
+tensor([1., 1., 1.], requires_grad=True)</code></pre>
+<p>再看一下模型中的其他参数：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">model.state_dict()[<span class="string">&#x27;conv2.bias&#x27;</span>] <span class="comment"># 可以看到没有变化</span></span><br></pre></td></tr></table></figure>
+<pre><code>tensor([-0.1684, -0.1891, -0.1000, -0.0915])</code></pre>
+<h1 id="state_dictnamed_parametersmodel.parameternamed_modules-的区别">state_dict()、named_parameters()、model.parameter()、named_modules() 的区别</h1>
+<h2 id="model.state_dict">model.state_dict()</h2>
+<p>state_dict()是将 layer_name 与 layer_param 以键的形式存储为 dict 。输出的值不包括 require_grad 。在固定某层时不能采用 model.state_dict() 来获取参数设置 require_grad 属性。</p>
+<h2 id="model.named_parameters">model.named_parameters()</h2>
+<p>named_parameters()是将 layer_name 与 layer_param 以打包成一个元组然后再存到 list 当中。 只保存可学习、可被更新的参数。model.named_parameters() 所存储的模型参数 tensor 的 require_grad 属性都是默认为True。常用于固定某层的参数是否被训练，通常是通过 model.named_parameters() 来获取参数设置 require_grad 属性。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"><span class="keyword">import</span> torch.nn <span class="keyword">as</span> nn</span><br><span class="line"><span class="keyword">import</span> torch.optim <span class="keyword">as</span> optim</span><br><span class="line"> </span><br><span class="line"><span class="comment"># 定义模型</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">TheModelClass</span>(nn.Module):</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="built_in">super</span>(TheModelClass, self).__init__()</span><br><span class="line">        self.conv1 = nn.Conv2d(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>)</span><br><span class="line">        self.bn = nn.BatchNorm2d(num_features=<span class="number">2</span>)</span><br><span class="line">        self.act = nn.ReLU()</span><br><span class="line">        self.pool = nn.MaxPool2d(<span class="number">2</span>, <span class="number">2</span>)</span><br><span class="line">        self.fc1 = nn.Linear(<span class="number">8</span>, <span class="number">4</span>)</span><br><span class="line">        self.softmax = nn.Softmax(dim=-<span class="number">1</span>)</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">forward</span>(<span class="params">self, x</span>):</span><br><span class="line">        x = self.conv1(x)</span><br><span class="line">        x = self.bn(x)</span><br><span class="line">        x = self.act(x)</span><br><span class="line">        x = self.pool(x)</span><br><span class="line">        x = x.view(-<span class="number">1</span>, <span class="number">8</span>)</span><br><span class="line">        x = self.fc1(x)</span><br><span class="line">        x = self.softmax(x)</span><br><span class="line">        <span class="keyword">return</span> x</span><br><span class="line"> </span><br><span class="line"><span class="comment"># 初始化模型</span></span><br><span class="line">model = TheModelClass()</span><br><span class="line"> </span><br><span class="line"><span class="comment"># 初始化优化器</span></span><br><span class="line">optimizer = optim.SGD(model.parameters(), lr=<span class="number">0.001</span>, momentum=<span class="number">0.9</span>)</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> layer_name, layer_param <span class="keyword">in</span> model.named_parameters():</span><br><span class="line">    <span class="built_in">print</span>(layer_name, <span class="string">&quot;\n&quot;</span>, layer_param)</span><br></pre></td></tr></table></figure>
+<pre><code>conv1.weight 
+ Parameter containing:
+tensor([[[[-0.1057,  0.0993,  0.0687],
+          [-0.2232, -0.0912,  0.0515],
+          [-0.0758, -0.3306,  0.2587]]],
+
+
+        [[[ 0.0357,  0.1247,  0.1937],
+          [-0.1526,  0.2632, -0.1273],
+          [-0.2205,  0.2305, -0.0460]]]], requires_grad=True)
+conv1.bias 
+ Parameter containing:
+tensor([ 0.1786, -0.0278], requires_grad=True)
+bn.weight 
+ Parameter containing:
+tensor([1., 1.], requires_grad=True)
+bn.bias 
+ Parameter containing:
+tensor([0., 0.], requires_grad=True)
+fc1.weight 
+ Parameter containing:
+tensor([[-0.2401, -0.2905,  0.1927,  0.0429,  0.3074,  0.2779, -0.1469,  0.3467],
+        [-0.1879,  0.0466,  0.1249, -0.2596, -0.1794,  0.3399, -0.1363,  0.0404],
+        [ 0.3511, -0.0246, -0.1646,  0.2226, -0.1836, -0.1917, -0.3264,  0.2842],
+        [-0.3279,  0.1204, -0.0360,  0.1502, -0.3035, -0.3031,  0.1071,  0.0294]],
+       requires_grad=True)
+fc1.bias 
+ Parameter containing:
+tensor([ 0.2755,  0.0264, -0.2187, -0.0648], requires_grad=True)</code></pre>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;Unfrozen_Parameters：<span class="subst">&#123;<span class="built_in">sum</span>([p.numel() <span class="keyword">for</span> p <span class="keyword">in</span> model.parameters() <span class="keyword">if</span> p.requires_grad==<span class="literal">True</span>])&#125;</span>&quot;</span>)</span><br></pre></td></tr></table></figure>
+<pre><code>Unfrozen_Parameters：60</code></pre>
+<p>我们通过named_parameters来冻结卷积层的参数</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> n, p <span class="keyword">in</span> model.named_parameters():</span><br><span class="line">    <span class="keyword">if</span> <span class="string">&#x27;conv&#x27;</span> <span class="keyword">in</span> n:</span><br><span class="line">        <span class="built_in">print</span>(n)</span><br><span class="line">        p.requires_grad=<span class="literal">False</span></span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;Unfrozen_Parameters：<span class="subst">&#123;<span class="built_in">sum</span>([p.numel() <span class="keyword">for</span> p <span class="keyword">in</span> model.parameters() <span class="keyword">if</span> p.requires_grad==<span class="literal">True</span>])&#125;</span>&quot;</span>)</span><br></pre></td></tr></table></figure>
+<pre><code>conv1.weight
+conv1.bias
+Unfrozen_Parameters：40</code></pre>
+<p>我们可以看到没有冻结的参数量减少了</p>
+<blockquote>
+<p>注： 此刻被冻结的参数在进行反向传播时依旧进行求导，只是参数没有更新。我们也可以采用在优化器中不传入冻结参数且同时冻结参数的办法使资源减少消耗。</p>
+</blockquote>
+<h2 id="model.parameter">model.parameter()</h2>
+<p>parameter()返回的只是参数，不包括 layer_name 。返回结果包含 require_grad，如果没有修改则默认为 Ture。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"><span class="keyword">import</span> torch.nn <span class="keyword">as</span> nn</span><br><span class="line"><span class="keyword">import</span> torch.optim <span class="keyword">as</span> optim</span><br><span class="line"> </span><br><span class="line"><span class="comment"># 定义模型</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">TheModelClass</span>(nn.Module):</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="built_in">super</span>(TheModelClass, self).__init__()</span><br><span class="line">        self.conv1 = nn.Conv2d(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>)</span><br><span class="line">        self.bn = nn.BatchNorm2d(num_features=<span class="number">2</span>)</span><br><span class="line">        self.act = nn.ReLU()</span><br><span class="line">        self.pool = nn.MaxPool2d(<span class="number">2</span>, <span class="number">2</span>)</span><br><span class="line">        self.fc1 = nn.Linear(<span class="number">8</span>, <span class="number">4</span>)</span><br><span class="line">        self.softmax = nn.Softmax(dim=-<span class="number">1</span>)</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">forward</span>(<span class="params">self, x</span>):</span><br><span class="line">        x = self.conv1(x)</span><br><span class="line">        x = self.bn(x)</span><br><span class="line">        x = self.act(x)</span><br><span class="line">        x = self.pool(x)</span><br><span class="line">        x = x.view(-<span class="number">1</span>, <span class="number">8</span>)</span><br><span class="line">        x = self.fc1(x)</span><br><span class="line">        x = self.softmax(x)</span><br><span class="line">        <span class="keyword">return</span> x</span><br><span class="line"> </span><br><span class="line"><span class="comment"># 初始化模型</span></span><br><span class="line">model = TheModelClass()</span><br><span class="line"> </span><br><span class="line"><span class="comment"># 初始化优化器</span></span><br><span class="line">optimizer = optim.SGD(model.parameters(), lr=<span class="number">0.001</span>, momentum=<span class="number">0.9</span>)</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> layer_param <span class="keyword">in</span> model.parameters():</span><br><span class="line">    <span class="built_in">print</span>(layer_param)</span><br></pre></td></tr></table></figure>
+<pre><code>Parameter containing:
+tensor([[[[ 0.2674,  0.0372, -0.0216],
+          [ 0.2953,  0.0751,  0.0727],
+          [-0.2018, -0.1860, -0.3286]]],
+
+
+        [[[-0.3124,  0.3087, -0.0310],
+          [ 0.1500, -0.2332,  0.0454],
+          [-0.1980, -0.2644, -0.1480]]]], requires_grad=True)
+Parameter containing:
+tensor([0.2166, 0.1575], requires_grad=True)
+Parameter containing:
+tensor([1., 1.], requires_grad=True)
+Parameter containing:
+tensor([0., 0.], requires_grad=True)
+Parameter containing:
+tensor([[-0.3116,  0.1185, -0.1725,  0.1541, -0.1431, -0.0970, -0.0413, -0.0950],
+        [ 0.0391,  0.2460,  0.1450,  0.1834,  0.3273,  0.2182,  0.3023,  0.0531],
+        [ 0.0548,  0.3145, -0.3225, -0.1229, -0.0785,  0.1050,  0.2095,  0.1562],
+        [-0.1588, -0.3408, -0.0009,  0.2991, -0.2878,  0.2652,  0.0463,  0.2734]],
+       requires_grad=True)
+Parameter containing:
+tensor([-0.1301,  0.1449, -0.1081, -0.2999], requires_grad=True)</code></pre>
+<h2 id="model.named_modules">model.named_modules()</h2>
+<p>返回每一层模型的名字和结构</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"><span class="keyword">import</span> torch.nn <span class="keyword">as</span> nn</span><br><span class="line"><span class="keyword">import</span> torch.optim <span class="keyword">as</span> optim</span><br><span class="line"> </span><br><span class="line"><span class="comment"># 定义模型</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">TheModelClass</span>(nn.Module):</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="built_in">super</span>(TheModelClass, self).__init__()</span><br><span class="line">        self.conv1 = nn.Conv2d(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>)</span><br><span class="line">        self.bn = nn.BatchNorm2d(num_features=<span class="number">2</span>)</span><br><span class="line">        self.act = nn.ReLU()</span><br><span class="line">        self.pool = nn.MaxPool2d(<span class="number">2</span>, <span class="number">2</span>)</span><br><span class="line">        self.fc1 = nn.Linear(<span class="number">8</span>, <span class="number">4</span>)</span><br><span class="line">        self.softmax = nn.Softmax(dim=-<span class="number">1</span>)</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">forward</span>(<span class="params">self, x</span>):</span><br><span class="line">        x = self.conv1(x)</span><br><span class="line">        x = self.bn(x)</span><br><span class="line">        x = self.act(x)</span><br><span class="line">        x = self.pool(x)</span><br><span class="line">        x = x.view(-<span class="number">1</span>, <span class="number">8</span>)</span><br><span class="line">        x = self.fc1(x)</span><br><span class="line">        x = self.softmax(x)</span><br><span class="line">        <span class="keyword">return</span> x</span><br><span class="line"> </span><br><span class="line"><span class="comment"># 初始化模型</span></span><br><span class="line">model = TheModelClass()</span><br><span class="line"> </span><br><span class="line"><span class="comment"># 初始化优化器</span></span><br><span class="line">optimizer = optim.SGD(model.parameters(), lr=<span class="number">0.001</span>, momentum=<span class="number">0.9</span>)</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> name, module <span class="keyword">in</span> model.named_modules():</span><br><span class="line">    <span class="built_in">print</span>(name,<span class="string">&#x27;\n&#x27;</span>, module)</span><br></pre></td></tr></table></figure>
+<pre><code> TheModelClass(
+  (conv1): Conv2d(1, 2, kernel_size=(3, 3), stride=(1, 1))
+  (bn): BatchNorm2d(2, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+  (act): ReLU()
+  (pool): MaxPool2d(kernel_size=2, stride=2, padding=0, dilation=1, ceil_mode=False)
+  (fc1): Linear(in_features=8, out_features=4, bias=True)
+  (softmax): Softmax(dim=-1)
+)
+conv1 
+ Conv2d(1, 2, kernel_size=(3, 3), stride=(1, 1))
+bn 
+ BatchNorm2d(2, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+act 
+ ReLU()
+pool 
+ MaxPool2d(kernel_size=2, stride=2, padding=0, dilation=1, ceil_mode=False)
+fc1 
+ Linear(in_features=8, out_features=4, bias=True)
+softmax 
+ Softmax(dim=-1)</code></pre>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">Author: </span><span class="post-copyright-info"><a href="https://rexkev214.github.io">Kevin Tu</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">Link: </span><span class="post-copyright-info"><a href="https://rexkev214.github.io/2023/10/28/Pytorch_model_save/">https://rexkev214.github.io/2023/10/28/Pytorch_model_save/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">Copyright Notice: </span><span class="post-copyright-info">All articles in this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless stating additionally.</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/legacy/tags/Python/">Python</a><a class="post-meta__tags" href="/legacy/tags/Pytorch/">Pytorch</a></div><div class="post_share"><div class="social-share" data-image="https://source.fomal.cc/img/default_cover_7.webp" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/legacy/2023/11/11/%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9/" title="注意事项"><img class="cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://source.fomal.cc/img/default_cover_8.webp" onerror="onerror=null;src='/legacy/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">Previous Post</div><div class="prev_info">注意事项</div></div></a></div><div class="next-post pull-right"><a href="/legacy/2023/10/08/matplotlib/" title="matplotlib"><img class="cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://source.fomal.cc/img/default_cover_4.webp" onerror="onerror=null;src='/legacy/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">Next Post</div><div class="next_info">matplotlib</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>Related Articles</span></div><div class="relatedPosts-list"><div><a href="/legacy/2023/08/19/Python%E8%A3%85%E9%A5%B0%E5%99%A8/" title="Python装饰器"><img class="cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://source.fomal.cc/img/default_cover_3.webp" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-08-19</div><div class="title">Python装饰器</div></div></a></div><div><a href="/legacy/2023/08/08/collections/" title="collections"><img class="cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://source.fomal.cc/img/default_cover_2.webp" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-08-08</div><div class="title">collections</div></div></a></div><div><a href="/legacy/2023/10/08/matplotlib/" title="matplotlib"><img class="cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://source.fomal.cc/img/default_cover_4.webp" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-10-08</div><div class="title">matplotlib</div></div></a></div><div><a href="/legacy/2023/08/08/pathlib/" title="pathlib"><img class="cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://source.fomal.cc/img/default_cover_10.webp" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-08-08</div><div class="title">pathlib</div></div></a></div><div><a href="/legacy/2023/11/11/%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9/" title="注意事项"><img class="cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://source.fomal.cc/img/default_cover_8.webp" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-11-11</div><div class="title">注意事项</div></div></a></div><div><a href="/legacy/2023/09/23/%E7%94%A8PyTorch%E5%92%8CBERT%E8%BF%9B%E8%A1%8C%E6%96%87%E6%9C%AC%E5%88%86%E7%B1%BB/" title="用PyTorch和BERT进行文本分类"><img class="cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://source.fomal.cc/img/default_cover_8.webp" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-09-23</div><div class="title">用PyTorch和BERT进行文本分类</div></div></a></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://c-ssl.duitang.com/uploads/item/202003/13/20200313165624_qycwp.jpeg" onerror="this.onerror=null;this.src='/legacy/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">Kevin Tu</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/legacy/archives/"><div class="headline">Articles</div><div class="length-num">17</div></a><a href="/legacy/tags/"><div class="headline">Tags</div><div class="length-num">13</div></a><a href="/legacy/categories/"><div class="headline">Categories</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/REXKEV214"><i class="fab fa-github"></i><span>My Github</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/REXKEV214" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="/k15257703775@gmail.com" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">Welcome to my Blog!</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Catalog</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#state_dict"><span class="toc-text">state_dict</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#state_dict%E7%AE%80%E4%BB%8B"><span class="toc-text">state_dict简介</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#state_dict%E4%BF%9D%E5%AD%98%E4%B8%8E%E5%8A%A0%E8%BD%BD"><span class="toc-text">state_dict保存与加载</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BF%9D%E5%AD%98%E5%92%8C%E5%8A%A0%E8%BD%BD%E5%AE%8C%E6%95%B4%E6%A8%A1%E5%9E%8B"><span class="toc-text">保存和加载完整模型</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#ordereddict"><span class="toc-text">OrderedDict</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BF%9D%E5%AD%98%E9%83%A8%E5%88%86%E6%A8%A1%E5%9E%8B%E5%8F%82%E6%95%B0%E5%B9%B6%E5%9C%A8%E6%96%B0%E7%9A%84%E6%A8%A1%E5%9E%8B%E4%B8%AD%E5%8A%A0%E8%BD%BD"><span class="toc-text">保存部分模型参数，并在新的模型中加载</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#state_dictnamed_parametersmodel.parameternamed_modules-%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-text">state_dict()、named_parameters()、model.parameter()、named_modules() 的区别</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#model.state_dict"><span class="toc-text">model.state_dict()</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#model.named_parameters"><span class="toc-text">model.named_parameters()</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#model.parameter"><span class="toc-text">model.parameter()</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#model.named_modules"><span class="toc-text">model.named_modules()</span></a></li></ol></li></ol></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2023 By Kevin Tu</div><div class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Read Mode"><i class="fas fa-book-open"></i></button><button id="translateLink" type="button" title="Switch Between Traditional Chinese And Simplified Chinese">繁</button><button id="darkmode" type="button" title="Switch Between Light And Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle between single-column and double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="Setting"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table Of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back To Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/legacy/js/utils.js"></script><script src="/legacy/js/main.js"></script><script src="/legacy/js/tw_cn.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js"></script><script>function panguFn () {
+  if (typeof pangu === 'object') pangu.autoSpacingPage()
+  else {
+    getScript('https://cdn.jsdelivr.net/npm/pangu/dist/browser/pangu.min.js')
+      .then(() => {
+        pangu.autoSpacingPage()
+      })
+  }
+}
+
+function panguInit () {
+  if (false){
+    GLOBAL_CONFIG_SITE.isPost && panguFn()
+  } else {
+    panguFn()
+  }
+}
+
+document.addEventListener('DOMContentLoaded', panguInit)</script><div class="js-pjax"></div><script id="canvas_nest" defer="defer" color="0,0,255" opacity="0.7" zIndex="-1" count="25" mobile="false" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/canvas-nest.min.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">Search</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  Loading the Database</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="Search for Posts" type="text"/></div></div><hr/><div class="no-result" id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/legacy/js/search/local-search.js"></script></div></div><script src="/legacy/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"legacy/live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/legacy/live2dw/assets/koharu.model.json"},"display":{"position":"left","width":150,"height":300},"mobile":{"show":false},"log":false});</script></body></html>
