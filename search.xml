@@ -1,85 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>从零搭建 Hexo 博客</title>
-    <url>/2023/08/06/2023-08-06-%E4%BB%8E%E9%9B%B6%E6%90%AD%E5%BB%BAHexo%E5%8D%9A%E5%AE%A2/</url>
-    <content><![CDATA[构建一个稳定的写作环境并不难，关键是把「环境准备 → 本地预览 → 部署上线 → 问题排查」这四个环节串起来。下面是我整理的完整流程，照着做就能在一小时内把 Hexo 博客搭起来。
-1. 环境准备
-1.1 安装 Node.js
-Hexo 基于 Node.js 运行，版本至少要 12。可以通过包管理器直接安装：
-# macOS / Linuxnode -v              # 检查是否已安装sudo apt-get install nodejs npm# Windows 推荐使用 nvm-windows
-升级 Node.js 时可以借助 n 工具：
-sudo npm install -g nsudo n stable         # 升级到最新稳定版sudo n 18.17.1        # 或者指定版本hash -r               # zsh/bash 需要刷新缓存
-1.2 安装 Git
-Git 负责把静态资源推送到 GitHub Pages：
-# macOSbrew install git# Ubuntu / Debiansudo apt-get install git
-配置基本信息：
-git config --global user.name &quot;Kevin Tu&quot;git config --global user.email &quot;k15257703775@gmail.com&quot;
-2. 初始化 Hexo 项目
-npm install -g hexo-cli     # 安装脚手架hexo init my-blog           # 初始化项目cd my-blognpm install                 # 安装依赖
-常用脚本梳理如下：
-
-
-
-命令
-作用
-
-
-
-
-hexo clean
-清缓存、清理 public/
-
-
-hexo generate
-生成静态文件
-
-
-hexo server
-启动本地预览（默认 4000）
-
-
-hexo deploy
-部署到远程（需配置 deploy）
-
-
-
-本地开发时建议使用组合命令：
-hexo clean &amp;&amp; hexo generate &amp;&amp; hexo server
-3. 部署到 GitHub Pages
-3.1 准备仓库
-
-在 GitHub 创建名为 username.github.io 的仓库。
-配置 SSH 公钥，确保可以通过 git@github.com:username/username.github.io.git 推送。
-
-3.2 修改 Hexo 配置
-在根目录的 _config.yml 中追加：
-deploy:  type: git  repo: git@github.com:REXKEV214/REXKEV214.github.io.git  branch: master
-若是第一次部署，请先安装部署插件：
-npm install hexo-deployer-git --save
-3.3 正式部署
-hexo cleanhexo generatehexo deploy
-部署过程中一定不要加 sudo，否则会切换到 root 用户导致 Git 凭证丢失。如果遇到权限报错，可以用下列命令修复所有权：
-sudo chown -R &quot;$USER&quot;:&quot;$USER&quot; /path/to/your/blog
-4. 常见问题速查
-
-Permission denied (publickey)：确认 SSH 公钥已经添加到 GitHub，并在当前终端中能通过 ssh -T git@github.com 成功握手。
-部署后页面不更新：检查是否执行了 hexo clean，以及 GitHub Pages 是否仍指向正确的分支。
-Hexo 命令失效或版本不对：使用 npm ls -g --depth=0 检查是否存在多个 Hexo 版本，必要时卸载重装。
-
-
-做到这里，一个可写、可预览、可部署的博客就准备就绪了。后续可以继续折腾主题（比如 Butterfly）、CDN、评论系统等扩展功能，但核心流程就是上面这套。祝写作顺利。*** End Patch Wait: Need to ensure patch ending. Need to correct apply_patch syntax. We have to ensure patch ends with `*** End Patch`. The posted patch has trailing `***`? we already had &quot;—&quot; etc. Need to ensure not messing. Let's re-run with proper patch. Copy patch but start again paying attention to `*** Begin Patch` etc. We'll run command. to=functions.apply_patch to=functions.apply_patch code? above attempt may have error due to ***? we need to check output. We’ll run actual apply patch. We’ll include entire patch again. Let’s re-run.》
-]]></content>
-      <categories>
-        <category>博客搭建</category>
-      </categories>
-      <tags>
-        <tag>Hexo</tag>
-        <tag>Node.js</tag>
-        <tag>GitHub Pages</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Pathlib 路径管理指南</title>
     <url>/2023/08/08/2023-08-08-Pathlib%E8%B7%AF%E5%BE%84%E7%AE%A1%E7%90%86%E6%8C%87%E5%8D%97/</url>
     <content><![CDATA[pathlib 是 Python 3 自带的现代化路径库，它把路径当成对象来操作，比 os.path 少了很多字符串拼接的心智负担。下面分三块整理：创建与判断、常用属性、文件/目录操作。
@@ -235,115 +156,82 @@ pip 下载慢
       </tags>
   </entry>
   <entry>
-    <title>Markdown 公式与矩阵速查</title>
-    <url>/2023/08/13/2023-08-13-Markdown%E5%85%AC%E5%BC%8F%E4%B8%8E%E7%9F%A9%E9%98%B5%E9%80%9F%E6%9F%A5/</url>
-    <content><![CDATA[记录几个写作中最常用的矩阵与公式排版方式，直接复制即可在支持 KaTeX/MathJax 的博客里使用。
-1. 基础矩阵
-\begin&#123;matrix&#125; a &amp; b \\ c &amp; d\end&#123;matrix&#125;
-效果：
-[
-\begin{matrix}
-a &amp; b \
-c &amp; d
-\end{matrix}
-]
-2. 带分隔符的矩阵
-\begin&#123;bmatrix&#125; a &amp; b \\ c &amp; d\end&#123;bmatrix&#125;
-\begin&#123;pmatrix&#125; a &amp; b \\ c &amp; d\end&#123;pmatrix&#125;
-\begin&#123;Bmatrix&#125; a &amp; b \\ c &amp; d\end&#123;Bmatrix&#125;
-\begin&#123;vmatrix&#125; a &amp; b \\ c &amp; d\end&#123;vmatrix&#125;
-分别对应中括号、圆括号、大括号和行列式格式。
-3. array 自定义列样式
-\begin&#123;array&#125;&#123;cc&#125; a &amp; b \\ c &amp; d\end&#123;array&#125;
-{cc} 表示两列均居中；可改为 {lc}、{rr} 等组合。
-4. 多行公式排版
-在 Hexo + Butterfly 中无需额外添加 $$ 符号，直接用 align 环境即可：
-\begin&#123;align*&#125;f(x) &amp;= ax^2 + bx + c \\f&#x27;(x) &amp;= 2ax + b\end&#123;align*&#125;
+    <title>从零搭建 Hexo 博客</title>
+    <url>/2023/08/06/2023-08-06-%E4%BB%8E%E9%9B%B6%E6%90%AD%E5%BB%BAHexo%E5%8D%9A%E5%AE%A2/</url>
+    <content><![CDATA[构建一个稳定的写作环境并不难，关键是把「环境准备 → 本地预览 → 部署上线 → 问题排查」这四个环节串起来。下面是我整理的完整流程，照着做就能在一小时内把 Hexo 博客搭起来。
+1. 环境准备
+1.1 安装 Node.js
+Hexo 基于 Node.js 运行，版本至少要 12。可以通过包管理器直接安装：
+# macOS / Linuxnode -v              # 检查是否已安装sudo apt-get install nodejs npm# Windows 推荐使用 nvm-windows
+升级 Node.js 时可以借助 n 工具：
+sudo npm install -g nsudo n stable         # 升级到最新稳定版sudo n 18.17.1        # 或者指定版本hash -r               # zsh/bash 需要刷新缓存
+1.2 安装 Git
+Git 负责把静态资源推送到 GitHub Pages：
+# macOSbrew install git# Ubuntu / Debiansudo apt-get install git
+配置基本信息：
+git config --global user.name &quot;Kevin Tu&quot;git config --global user.email &quot;k15257703775@gmail.com&quot;
+2. 初始化 Hexo 项目
+npm install -g hexo-cli     # 安装脚手架hexo init my-blog           # 初始化项目cd my-blognpm install                 # 安装依赖
+常用脚本梳理如下：
 
-建议把这些片段收藏进代码片段工具（如 Raycast、Espanso），写数学公式时就能直接插入，效率大幅提升。*** End Patch
+
+
+命令
+作用
+
+
+
+
+hexo clean
+清缓存、清理 public/
+
+
+hexo generate
+生成静态文件
+
+
+hexo server
+启动本地预览（默认 4000）
+
+
+hexo deploy
+部署到远程（需配置 deploy）
+
+
+
+本地开发时建议使用组合命令：
+hexo clean &amp;&amp; hexo generate &amp;&amp; hexo server
+3. 部署到 GitHub Pages
+3.1 准备仓库
+
+在 GitHub 创建名为 username.github.io 的仓库。
+配置 SSH 公钥，确保可以通过 git@github.com:username/username.github.io.git 推送。
+
+3.2 修改 Hexo 配置
+在根目录的 _config.yml 中追加：
+deploy:  type: git  repo: git@github.com:REXKEV214/REXKEV214.github.io.git  branch: master
+若是第一次部署，请先安装部署插件：
+npm install hexo-deployer-git --save
+3.3 正式部署
+hexo cleanhexo generatehexo deploy
+部署过程中一定不要加 sudo，否则会切换到 root 用户导致 Git 凭证丢失。如果遇到权限报错，可以用下列命令修复所有权：
+sudo chown -R &quot;$USER&quot;:&quot;$USER&quot; /path/to/your/blog
+4. 常见问题速查
+
+Permission denied (publickey)：确认 SSH 公钥已经添加到 GitHub，并在当前终端中能通过 ssh -T git@github.com 成功握手。
+部署后页面不更新：检查是否执行了 hexo clean，以及 GitHub Pages 是否仍指向正确的分支。
+Hexo 命令失效或版本不对：使用 npm ls -g --depth=0 检查是否存在多个 Hexo 版本，必要时卸载重装。
+
+
+做到这里，一个可写、可预览、可部署的博客就准备就绪了。后续可以继续折腾主题（比如 Butterfly）、CDN、评论系统等扩展功能，但核心流程就是上面这套。祝写作顺利。*** End Patch Wait: Need to ensure patch ending. Need to correct apply_patch syntax. We have to ensure patch ends with `*** End Patch`. The posted patch has trailing `***`? we already had &quot;—&quot; etc. Need to ensure not messing. Let's re-run with proper patch. Copy patch but start again paying attention to `*** Begin Patch` etc. We'll run command. to=functions.apply_patch to=functions.apply_patch code? above attempt may have error due to ***? we need to check output. We’ll run actual apply patch. We’ll include entire patch again. Let’s re-run.》
 ]]></content>
       <categories>
-        <category>写作格式</category>
+        <category>博客搭建</category>
       </categories>
       <tags>
-        <tag>Markdown</tag>
-        <tag>LaTeX</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>层次分析法（AHP）快速入门</title>
-    <url>/2023/08/13/2023-08-13-%E5%B1%82%E6%AC%A1%E5%88%86%E6%9E%90%E6%B3%95%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/</url>
-    <content><![CDATA[层次分析法（Analytic Hierarchy Process，AHP）擅长解决「难以直接量化、却需要做选择」的问题，例如：选校、选址、评估环境指标权重等。要用好 AHP，可以按「建立层次 → 构造判断矩阵 → 做一致性检验 → 得到最终权重」的节奏来推进。
-1. 哪些问题适合用 AHP？
-
-选优类：在多个方案中选最优（优秀运动员、最合适的办公地址）。
-评价类：评价某个对象的优劣程度（水质、环境、客户满意度）。
-指标优选：建立权重体系，让指标既科学又易操作。
-
-2. 搭建层次结构
-通常包含三层：
-
-目标层（Top）：最终要达成的目的，只保留一个总体目标。
-准则层 / 指标层（Middle）：影响目标的关键因素，可以按准则、策略、约束等再细分。
-方案层（Bottom）：待比较的候选方案，往往有多个。
-
-层次图示例如下：
-       目标     /  |  \  准则1 准则2 ... /  |  \        \方案A 方案B ... 方案N
-3. 构造判断矩阵
-针对同一层中的因素，两两比较其对上一层目标的相对重要性。比较结果用 Saaty 1–9 标度填写矩阵：
-[
-A =
-\begin{bmatrix}
-1 &amp; \tfrac{1}{2} &amp; 4 &amp; 3 &amp; 3 \
-2 &amp; 1 &amp; 7 &amp; 5 &amp; 5 \
-\tfrac{1}{4} &amp; \tfrac{1}{7} &amp; 1 &amp; \tfrac{1}{2} &amp; \tfrac{1}{3} \
-\tfrac{1}{3} &amp; \tfrac{1}{5} &amp; 2 &amp; 1 &amp; 1 \
-\tfrac{1}{3} &amp; \tfrac{1}{5} &amp; 3 &amp; 1 &amp; 1
-\end{bmatrix},
-\quad a_{ji} = \frac{1}{a_{ij}}
-]
-注意：矩阵允许存在一定程度的不一致（例如 C₂:C₁ = 2，C₁:C₃ = 4，理论上 C₂:C₃ 应为 8，但实际可能不一致），但必须通过一致性检验控制误差。
-4. 一致性检验
-求出判断矩阵的最大特征值 (\lambda_\text{max}) 及对应特征向量（即各因素权重），然后计算一致性指标：
-[
-CI = \frac{\lambda_\text{max} - n}{n - 1}
-]
-
-当 CI = 0 时，完全一致。
-CI 越接近 0，判断越可靠；越大代表矛盾越严重。
-
-为衡量 CI 是否足够小，引入随机一致性指标 RI（根据大量随机矩阵统计得到）：
-[
-RI =
-\begin{array}{c|ccccccccccc}
-n &amp; 1 &amp; 2 &amp; 3 &amp; 4 &amp; 5 &amp; 6 &amp; 7 &amp; 8 &amp; 9 &amp; 10 &amp; 11 \
-\hline
-RI &amp; 0 &amp; 0 &amp; 0.58 &amp; 0.90 &amp; 1.12 &amp; 1.24 &amp; 1.32 &amp; 1.41 &amp; 1.45 &amp; 1.49 &amp; 1.51
-\end{array}
-]
-最终计算一致性比率：
-[
-CR = \frac{CI}{RI}
-]
-
-CR &lt; 0.1（有时取 0.08）认为判断可接受；
-如果 CR 超过阈值，则需回头调整判断矩阵中的对比值。
-
-5. 小结
-
-明确目标，搭建三层结构；
-使用 1–9 标度两两比较，构造判断矩阵；
-算出特征向量并进行一致性检验，保证 CR &lt; 0.1；
-结合权重得到最终方案排序。
-
-这种结构化思考方式可以把“拍脑袋”变成“有依据的主观判断”，特别适合决策前期需要拉通多方意见的场景。*** End Patch
-]]></content>
-      <categories>
-        <category>数学建模</category>
-      </categories>
-      <tags>
-        <tag>AHP</tag>
-        <tag>决策分析</tag>
+        <tag>Hexo</tag>
+        <tag>Node.js</tag>
+        <tag>GitHub Pages</tag>
       </tags>
   </entry>
   <entry>
@@ -387,6 +275,174 @@ which pandoc         # 或 where pandoc (Windows)
         <tag>Hexo</tag>
         <tag>MathJax</tag>
         <tag>Pandoc</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Markdown 公式与矩阵速查</title>
+    <url>/2023/08/13/2023-08-13-Markdown%E5%85%AC%E5%BC%8F%E4%B8%8E%E7%9F%A9%E9%98%B5%E9%80%9F%E6%9F%A5/</url>
+    <content><![CDATA[记录几个写作中最常用的矩阵与公式排版方式，直接复制即可在支持 KaTeX/MathJax 的博客里使用。
+1. 基础矩阵
+\begin&#123;matrix&#125; a &amp; b \\ c &amp; d\end&#123;matrix&#125;
+效果：
+abcd
+\begin{matrix}
+ a &amp; b \\
+ c &amp; d
+\end{matrix}
+ac​bd​
+2. 带分隔符的矩阵
+\begin&#123;bmatrix&#125; a &amp; b \\ c &amp; d\end&#123;bmatrix&#125;
+\begin&#123;pmatrix&#125; a &amp; b \\ c &amp; d\end&#123;pmatrix&#125;
+\begin&#123;Bmatrix&#125; a &amp; b \\ c &amp; d\end&#123;Bmatrix&#125;
+\begin&#123;vmatrix&#125; a &amp; b \\ c &amp; d\end&#123;vmatrix&#125;
+分别对应中括号、圆括号、大括号和行列式格式。
+3. array 自定义列样式
+\begin&#123;array&#125;&#123;cc&#125; a &amp; b \\ c &amp; d\end&#123;array&#125;
+&#123;cc&#125; 表示两列均居中；可改为 &#123;lc&#125;、&#123;rr&#125; 等组合。
+4. 多行公式排版
+在 Hexo + Butterfly 中无需额外添加 $$ 符号，直接用 align 环境即可：
+\begin&#123;align*&#125;f(x) &amp;= ax^2 + bx + c \\f&#x27;(x) &amp;= 2ax + b\end&#123;align*&#125;
+
+建议把这些片段收藏进代码片段工具（如 Raycast、Espanso），写数学公式时就能直接插入，效率大幅提升。*** End Patch
+]]></content>
+      <categories>
+        <category>写作格式</category>
+      </categories>
+      <tags>
+        <tag>Markdown</tag>
+        <tag>LaTeX</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>层次分析法（AHP）快速入门</title>
+    <url>/2023/08/13/2023-08-13-%E5%B1%82%E6%AC%A1%E5%88%86%E6%9E%90%E6%B3%95%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/</url>
+    <content><![CDATA[层次分析法（Analytic Hierarchy Process，AHP）擅长解决「难以直接量化、却需要做选择」的问题，例如：选校、选址、评估环境指标权重等。要用好 AHP，可以按「建立层次 → 构造判断矩阵 → 做一致性检验 → 得到最终权重」的节奏来推进。
+1. 哪些问题适合用 AHP？
+
+选优类：在多个方案中选最优（优秀运动员、最合适的办公地址）。
+评价类：评价某个对象的优劣程度（水质、环境、客户满意度）。
+指标优选：建立权重体系，让指标既科学又易操作。
+
+2. 搭建层次结构
+通常包含三层：
+
+目标层（Top）：最终要达成的目的，只保留一个总体目标。
+准则层 / 指标层（Middle）：影响目标的关键因素，可以按准则、策略、约束等再细分。
+方案层（Bottom）：待比较的候选方案，往往有多个。
+
+层次图示例如下：
+       目标     /  |  \  准则1 准则2 ... /  |  \        \方案A 方案B ... 方案N
+3. 构造判断矩阵
+针对同一层中的因素，两两比较其对上一层目标的相对重要性。比较结果用 Saaty 1–9 标度填写矩阵：
+A=[1124332175514171121313152111315311],aji=1aij
+A =
+\begin{bmatrix}
+1 &amp; \tfrac{1}{2} &amp; 4 &amp; 3 &amp; 3 \\
+2 &amp; 1 &amp; 7 &amp; 5 &amp; 5 \\
+\tfrac{1}{4} &amp; \tfrac{1}{7} &amp; 1 &amp; \tfrac{1}{2} &amp; \tfrac{1}{3} \\
+\tfrac{1}{3} &amp; \tfrac{1}{5} &amp; 2 &amp; 1 &amp; 1 \\
+\tfrac{1}{3} &amp; \tfrac{1}{5} &amp; 3 &amp; 1 &amp; 1
+\end{bmatrix},
+\quad a_{ji} = \frac{1}{a_{ij}}
+A=​1241​31​31​​21​171​51​51​​47123​3521​11​3531​11​​,aji​=aij​1​
+注意：矩阵允许存在一定程度的不一致（例如 C₂:C₁ = 2，C₁:C₃ = 4，理论上 C₂:C₃ 应为 8，但实际可能不一致），但必须通过一致性检验控制误差。
+4. 一致性检验
+求出判断矩阵的最大特征值 (\lambda_\text{max}) 及对应特征向量（即各因素权重），然后计算一致性指标：
+CI=λmax−nn−1
+CI = \frac{\lambda_\text{max} - n}{n - 1}
+CI=n−1λmax​−n​
+
+当 CI = 0 时，完全一致。
+CI 越接近 0，判断越可靠；越大代表矛盾越严重。
+
+为衡量 CI 是否足够小，引入随机一致性指标 RI（根据大量随机矩阵统计得到）：
+RI=n1234567891011RI000.580.901.121.241.321.411.451.491.51
+RI =
+\begin{array}{c|ccccccccccc}
+n &amp; 1 &amp; 2 &amp; 3 &amp; 4 &amp; 5 &amp; 6 &amp; 7 &amp; 8 &amp; 9 &amp; 10 &amp; 11 \\
+\hline
+RI &amp; 0 &amp; 0 &amp; 0.58 &amp; 0.90 &amp; 1.12 &amp; 1.24 &amp; 1.32 &amp; 1.41 &amp; 1.45 &amp; 1.49 &amp; 1.51
+\end{array}
+RI=nRI​10​20​30.58​40.90​51.12​61.24​71.32​81.41​91.45​101.49​111.51​​
+最终计算一致性比率：
+CR=CIRI
+CR = \frac{CI}{RI}
+CR=RICI​
+
+CR &lt; 0.1（有时取 0.08）认为判断可接受；
+如果 CR 超过阈值，则需回头调整判断矩阵中的对比值。
+
+5. 小结
+
+明确目标，搭建三层结构；
+使用 1–9 标度两两比较，构造判断矩阵；
+算出特征向量并进行一致性检验，保证 CR &lt; 0.1；
+结合权重得到最终方案排序。
+
+这种结构化思考方式可以把“拍脑袋”变成“有依据的主观判断”，特别适合决策前期需要拉通多方意见的场景。*** End Patch
+]]></content>
+      <categories>
+        <category>数学建模</category>
+      </categories>
+      <tags>
+        <tag>AHP</tag>
+        <tag>决策分析</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>网络代理与 GitHub 连接策略</title>
+    <url>/2023/08/13/2023-08-13-%E7%BD%91%E7%BB%9C%E4%BB%A3%E7%90%86%E4%B8%8EGitHub%E8%BF%9E%E6%8E%A5%E7%AD%96%E7%95%A5/</url>
+    <content><![CDATA[与 GitHub 建立稳定的 SSH 连接是折腾服务器的基础。这里整理了我在 Windows 和 Ubuntu 下的几套代理配置方案，并附上包管理器与 Python 的常用加速方式。
+1. Windows：给 GitHub 换端口并走代理
+如果直接使用 git@github.com 出现 kex_exchange_identification: Connection closed by remote host，多数情况是 22 端口被代理软件拦截。把 SSH 连接改到 443 即可。
+编辑 C:\Users\&lt;username&gt;\.ssh\config，没有就新建：
+Host github.com    HostName ssh.github.com    User git    Port 443    ProxyCommand connect -H 127.0.0.1:7890 %h %p   # 根据实际代理端口调整
+说明：
+
+HostName ssh.github.com：GitHub 针对 443 端口提供的 SSH 网关。
+ProxyCommand connect ...：借助代理工具（如 Clash、Surge）转发流量。
+
+保存后执行 ssh -T git@github.com 测试，如果返回 Hi xxx! You've successfully authenticated 即表示成功。
+2. Ubuntu：SSH 代理配置
+Ubuntu 同样可以把 22 改成 443，同时通过 nc 或 connect-proxy 走本机代理端口（默认 7890）。
+vi ~/.ssh/config
+追加：
+ProxyCommand nc -X 5 -x 127.0.0.1:7890 %h %pHost github.com    Hostname ssh.github.com    User git    Port 443    IdentityFile /home/&lt;user&gt;/.ssh/id_rsa    TCPKeepAlive yes
+最后确保权限正确：
+chmod 600 ~/.ssh/configssh -T git@github.com
+若仍旧失败，可以尝试临时断开/重连网络后再次测试。
+3. Apt 代理
+当服务器在受限网络下更新软件包时，需要为 Apt 指定代理：
+sudo nano /etc/apt/apt.conf
+写入：
+Acquire::http::Proxy  &quot;http://127.0.0.1:7890&quot;;Acquire::https::Proxy &quot;http://127.0.0.1:7890&quot;;
+保存后执行：
+sudo apt updatesudo apt upgrade
+4. Python 与 pip
+4.1 在代码里指定代理
+import osos.environ[&quot;http_proxy&quot;] = &quot;http://127.0.0.1:7890&quot;os.environ[&quot;https_proxy&quot;] = &quot;http://127.0.0.1:7890&quot;
+若要全局生效，可写入虚拟环境激活脚本。
+4.2 pip 加速
+
+
+单次安装：
+pip install -i https://pypi.tuna.tsinghua.edu.cn/simple torch
+
+
+全局配置：
+pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simplepip config set install.trusted-host mirrors.aliyun.com
+
+
+
+通过以上设置，GitHub 拉代码、系统更新以及 Python 依赖安装都能在代理环境中保持高速稳定。建议把这些配置写进 dotfiles 或自动化脚本，换设备时直接复用。*** End Patch
+]]></content>
+      <categories>
+        <category>网络排障</category>
+      </categories>
+      <tags>
+        <tag>SSH</tag>
+        <tag>Proxy</tag>
+        <tag>GitHub</tag>
       </tags>
   </entry>
   <entry>
@@ -682,62 +738,6 @@ sed -i &#x27;1i\Title: Linux Guide&#x27; README.mdsed -e &#x27;1,3s/foo/bar/g&#x
       </tags>
   </entry>
   <entry>
-    <title>网络代理与 GitHub 连接策略</title>
-    <url>/2023/08/13/2023-08-13-%E7%BD%91%E7%BB%9C%E4%BB%A3%E7%90%86%E4%B8%8EGitHub%E8%BF%9E%E6%8E%A5%E7%AD%96%E7%95%A5/</url>
-    <content><![CDATA[与 GitHub 建立稳定的 SSH 连接是折腾服务器的基础。这里整理了我在 Windows 和 Ubuntu 下的几套代理配置方案，并附上包管理器与 Python 的常用加速方式。
-1. Windows：给 GitHub 换端口并走代理
-如果直接使用 git@github.com 出现 kex_exchange_identification: Connection closed by remote host，多数情况是 22 端口被代理软件拦截。把 SSH 连接改到 443 即可。
-编辑 C:\Users\&lt;username&gt;\.ssh\config，没有就新建：
-Host github.com    HostName ssh.github.com    User git    Port 443    ProxyCommand connect -H 127.0.0.1:7890 %h %p   # 根据实际代理端口调整
-说明：
-
-HostName ssh.github.com：GitHub 针对 443 端口提供的 SSH 网关。
-ProxyCommand connect ...：借助代理工具（如 Clash、Surge）转发流量。
-
-保存后执行 ssh -T git@github.com 测试，如果返回 Hi xxx! You've successfully authenticated 即表示成功。
-2. Ubuntu：SSH 代理配置
-Ubuntu 同样可以把 22 改成 443，同时通过 nc 或 connect-proxy 走本机代理端口（默认 7890）。
-vi ~/.ssh/config
-追加：
-ProxyCommand nc -X 5 -x 127.0.0.1:7890 %h %pHost github.com    Hostname ssh.github.com    User git    Port 443    IdentityFile /home/&lt;user&gt;/.ssh/id_rsa    TCPKeepAlive yes
-最后确保权限正确：
-chmod 600 ~/.ssh/configssh -T git@github.com
-若仍旧失败，可以尝试临时断开/重连网络后再次测试。
-3. Apt 代理
-当服务器在受限网络下更新软件包时，需要为 Apt 指定代理：
-sudo nano /etc/apt/apt.conf
-写入：
-Acquire::http::Proxy  &quot;http://127.0.0.1:7890&quot;;Acquire::https::Proxy &quot;http://127.0.0.1:7890&quot;;
-保存后执行：
-sudo apt updatesudo apt upgrade
-4. Python 与 pip
-4.1 在代码里指定代理
-import osos.environ[&quot;http_proxy&quot;] = &quot;http://127.0.0.1:7890&quot;os.environ[&quot;https_proxy&quot;] = &quot;http://127.0.0.1:7890&quot;
-若要全局生效，可写入虚拟环境激活脚本。
-4.2 pip 加速
-
-
-单次安装：
-pip install -i https://pypi.tuna.tsinghua.edu.cn/simple torch
-
-
-全局配置：
-pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simplepip config set install.trusted-host mirrors.aliyun.com
-
-
-
-通过以上设置，GitHub 拉代码、系统更新以及 Python 依赖安装都能在代理环境中保持高速稳定。建议把这些配置写进 dotfiles 或自动化脚本，换设备时直接复用。*** End Patch
-]]></content>
-      <categories>
-        <category>网络排障</category>
-      </categories>
-      <tags>
-        <tag>SSH</tag>
-        <tag>Proxy</tag>
-        <tag>GitHub</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>用 `@property` 优雅管理 Python 属性</title>
     <url>/2023/08/19/2023-08-19-Python%E5%B1%9E%E6%80%A7%E8%A3%85%E9%A5%B0%E5%99%A8%E5%AE%9E%E8%B7%B5/</url>
     <content><![CDATA[@property 让方法看起来像属性，既保留了封装性，又能提供校验逻辑。下面分三部分介绍它的基本概念、两种写法以及常见使用场景。
@@ -848,6 +848,47 @@ git log --oneline --graph --decorate：快速查看提交历史。
       </tags>
   </entry>
   <entry>
+    <title>深度学习工作站配置笔记</title>
+    <url>/2023/08/23/2023-08-23-%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E5%B7%A5%E4%BD%9C%E7%AB%99%E9%85%8D%E7%BD%AE%E7%AC%94%E8%AE%B0/</url>
+    <content><![CDATA[在 Ubuntu 上搭建深度学习工作站时，把系统、驱动、输入法、加速库一次性调通能省掉大量踩坑时间。以下是我的实操笔记。
+1. 系统基础配置
+
+输入法：推荐 Fcitx5 + 搜狗 / RIME，安装后在「语言支持」里设置默认输入法。参考：在 Ubuntu 安装配置 Fcitx5。
+网络问题：如果装完系统后发现无线网卡/有线网卡不工作，可按主板型号寻找驱动，或参考 这篇视频教程。很多时候只需要安装额外的固件包。
+
+2. GPU 驱动与 CUDA/cuDNN
+
+驱动选择：优先使用 Ubuntu 自带的「其他驱动」图形界面安装对应的 NVIDIA 驱动。如果黑屏，可进入恢复模式卸载后换版本，或参考“黑屏 99% 解决方案”。
+CUDA 与 cuDNN：按官方流程逐步安装，注意 CUDA 版本要与驱动兼容。推荐参考 B 站这篇教程。
+验证：nvidia-sminvcc -V
+
+
+3. TensorRT
+安装 TensorRT Python Wheel：
+python -m pip install --upgrade tensorrtpython -m pip install --upgrade tensorrt_leanpython -m pip install --upgrade tensorrt_dispatch
+验证：
+import tensorrtprint(tensorrt.__version__)assert tensorrt.Builder(tensorrt.Logger())
+如果断言失败，检查 CUDA/cuDNN 是否对应 TensorRT 支持的版本。
+4. 常见问题集合
+
+Ubuntu 黑屏：多数是因为旧版本驱动残留或 Secure Boot 未关闭。进入 TTY (Ctrl+Alt+F3) 后运行 sudo apt purge nvidia* 清理，再重新安装。
+TensorFlow 在 Windows 上安装失败：从 2.10 起官方不再提供 Windows GPU 版，建议改用 WSL2 或直接在 Linux 环境下运行。
+国内镜像加速：pip 安装大型包时，可以设置清华镜像：pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
+
+
+
+搭建深度学习环境本质是兼容性游戏：驱动 ↔ CUDA ↔ cuDNN ↔ 框架 ↔ TensorRT。建议提前确认项目所需版本，再统一安装，后续维护成本会低很多。*** End Patch
+]]></content>
+      <categories>
+        <category>深度学习</category>
+      </categories>
+      <tags>
+        <tag>CUDA</tag>
+        <tag>TensorRT</tag>
+        <tag>Ubuntu</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>PyTorch + BERT 文本分类实践记录</title>
     <url>/2023/09/23/2023-09-23-PyTorch-BERT%E6%96%87%E6%9C%AC%E5%88%86%E7%B1%BB%E5%AE%9E%E8%B7%B5%E8%AE%B0%E5%BD%95/</url>
     <content><![CDATA[这是一份把 Hugging Face transformers 与 PyTorch 结合起来做新闻分类的实战记录，包含了数据预处理、模型结构、训练循环和一些调参心得。
@@ -929,44 +970,35 @@ max_length 过长会显著降低训练速度，建议结合文本长度分布调
       </tags>
   </entry>
   <entry>
-    <title>深度学习工作站配置笔记</title>
-    <url>/2023/08/23/2023-08-23-%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E5%B7%A5%E4%BD%9C%E7%AB%99%E9%85%8D%E7%BD%AE%E7%AC%94%E8%AE%B0/</url>
-    <content><![CDATA[在 Ubuntu 上搭建深度学习工作站时，把系统、驱动、输入法、加速库一次性调通能省掉大量踩坑时间。以下是我的实操笔记。
-1. 系统基础配置
+    <title>Mac 外置硬盘无法弹出的排查手记</title>
+    <url>/2023/08/25/2023-08-25-Mac%E5%A4%96%E7%BD%AE%E7%A1%AC%E7%9B%98%E6%8E%92%E6%9F%A5%E6%89%8B%E8%AE%B0/</url>
+    <content><![CDATA[某次直接拔掉移动硬盘后，再次连接就一直提示“无法正确弹出”。以下是我整理的排查步骤。
+1. 在终端查看磁盘挂载情况
+diskutil list
+输出大致如下：
+/dev/disk0 (internal)/dev/disk1 (synthesized)/dev/disk2 (external, physical)
+记住外置磁盘的标识（此处为 /dev/disk2）。
+2. 强制卸载 + 弹出
+diskutil unmountDisk /dev/disk2diskutil eject /dev/disk2
+如果提示某个进程占用，先关闭 Finder 中的所有标签页或重新登录，再执行一次。
+3. 使用磁盘工具修复
+在「磁盘工具」中选择外置磁盘，点击「急救」进行修复。它会自动执行 fsck 检查文件系统错误。
+4. 预防建议
 
-输入法：推荐 Fcitx5 + 搜狗 / RIME，安装后在「语言支持」里设置默认输入法。参考：在 Ubuntu 安装配置 Fcitx5。
-网络问题：如果装完系统后发现无线网卡/有线网卡不工作，可按主板型号寻找驱动，或参考 这篇视频教程。很多时候只需要安装额外的固件包。
-
-2. GPU 驱动与 CUDA/cuDNN
-
-驱动选择：优先使用 Ubuntu 自带的「其他驱动」图形界面安装对应的 NVIDIA 驱动。如果黑屏，可进入恢复模式卸载后换版本，或参考“黑屏 99% 解决方案”。
-CUDA 与 cuDNN：按官方流程逐步安装，注意 CUDA 版本要与驱动兼容。推荐参考 B 站这篇教程。
-验证：nvidia-sminvcc -V
-
-
-3. TensorRT
-安装 TensorRT Python Wheel：
-python -m pip install --upgrade tensorrtpython -m pip install --upgrade tensorrt_leanpython -m pip install --upgrade tensorrt_dispatch
-验证：
-import tensorrtprint(tensorrt.__version__)assert tensorrt.Builder(tensorrt.Logger())
-如果断言失败，检查 CUDA/cuDNN 是否对应 TensorRT 支持的版本。
-4. 常见问题集合
-
-Ubuntu 黑屏：多数是因为旧版本驱动残留或 Secure Boot 未关闭。进入 TTY (Ctrl+Alt+F3) 后运行 sudo apt purge nvidia* 清理，再重新安装。
-TensorFlow 在 Windows 上安装失败：从 2.10 起官方不再提供 Windows GPU 版，建议改用 WSL2 或直接在 Linux 环境下运行。
-国内镜像加速：pip 安装大型包时，可以设置清华镜像：pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
+习惯使用 Command+E 或 Finder 的「推出」按钮；
+备份关键数据，外置盘建议配置 Time Machine；
+长时间传输大文件时避免直接休眠。
 
 
-
-搭建深度学习环境本质是兼容性游戏：驱动 ↔ CUDA ↔ cuDNN ↔ 框架 ↔ TensorRT。建议提前确认项目所需版本，再统一安装，后续维护成本会低很多。*** End Patch
+掌握 diskutil 的基本命令后，macOS 上的大部分移动磁盘问题都能自己解决。如果命令与磁盘工具都无法修复，记得及时备份并考虑重新格式化。*** End Patch
 ]]></content>
       <categories>
-        <category>深度学习</category>
+        <category>故障排查</category>
       </categories>
       <tags>
-        <tag>CUDA</tag>
-        <tag>TensorRT</tag>
-        <tag>Ubuntu</tag>
+        <tag>macOS</tag>
+        <tag>外置硬盘</tag>
+        <tag>diskutil</tag>
       </tags>
   </entry>
   <entry>
@@ -1007,38 +1039,6 @@ import matplotlibmatplotlib.rc(&quot;font&quot;, family=&quot;Microsoft YaHei&qu
       <tags>
         <tag>Matplotlib</tag>
         <tag>字体</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Mac 外置硬盘无法弹出的排查手记</title>
-    <url>/2023/08/25/2023-08-25-Mac%E5%A4%96%E7%BD%AE%E7%A1%AC%E7%9B%98%E6%8E%92%E6%9F%A5%E6%89%8B%E8%AE%B0/</url>
-    <content><![CDATA[某次直接拔掉移动硬盘后，再次连接就一直提示“无法正确弹出”。以下是我整理的排查步骤。
-1. 在终端查看磁盘挂载情况
-diskutil list
-输出大致如下：
-/dev/disk0 (internal)/dev/disk1 (synthesized)/dev/disk2 (external, physical)
-记住外置磁盘的标识（此处为 /dev/disk2）。
-2. 强制卸载 + 弹出
-diskutil unmountDisk /dev/disk2diskutil eject /dev/disk2
-如果提示某个进程占用，先关闭 Finder 中的所有标签页或重新登录，再执行一次。
-3. 使用磁盘工具修复
-在「磁盘工具」中选择外置磁盘，点击「急救」进行修复。它会自动执行 fsck 检查文件系统错误。
-4. 预防建议
-
-习惯使用 Command+E 或 Finder 的「推出」按钮；
-备份关键数据，外置盘建议配置 Time Machine；
-长时间传输大文件时避免直接休眠。
-
-
-掌握 diskutil 的基本命令后，macOS 上的大部分移动磁盘问题都能自己解决。如果命令与磁盘工具都无法修复，记得及时备份并考虑重新格式化。*** End Patch
-]]></content>
-      <categories>
-        <category>故障排查</category>
-      </categories>
-      <tags>
-        <tag>macOS</tag>
-        <tag>外置硬盘</tag>
-        <tag>diskutil</tag>
       </tags>
   </entry>
   <entry>
