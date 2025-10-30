@@ -278,6 +278,42 @@ which pandoc         # 或 where pandoc (Windows)
       </tags>
   </entry>
   <entry>
+    <title>Markdown 公式与矩阵速查</title>
+    <url>/2023/08/13/2023-08-13-Markdown%E5%85%AC%E5%BC%8F%E4%B8%8E%E7%9F%A9%E9%98%B5%E9%80%9F%E6%9F%A5/</url>
+    <content><![CDATA[记录几个写作中最常用的矩阵与公式排版方式，直接复制即可在支持 KaTeX/MathJax 的博客里使用。
+1. 基础矩阵
+\begin&#123;matrix&#125; a &amp; b \\ c &amp; d\end&#123;matrix&#125;
+效果：
+[
+\begin{matrix}
+a &amp; b \
+c &amp; d
+\end{matrix}
+]
+2. 带分隔符的矩阵
+\begin&#123;bmatrix&#125; a &amp; b \\ c &amp; d\end&#123;bmatrix&#125;
+\begin&#123;pmatrix&#125; a &amp; b \\ c &amp; d\end&#123;pmatrix&#125;
+\begin&#123;Bmatrix&#125; a &amp; b \\ c &amp; d\end&#123;Bmatrix&#125;
+\begin&#123;vmatrix&#125; a &amp; b \\ c &amp; d\end&#123;vmatrix&#125;
+分别对应中括号、圆括号、大括号和行列式格式。
+3. array 自定义列样式
+\begin&#123;array&#125;&#123;cc&#125; a &amp; b \\ c &amp; d\end&#123;array&#125;
+{cc} 表示两列均居中；可改为 {lc}、{rr} 等组合。
+4. 多行公式排版
+在 Hexo + Butterfly 中无需额外添加 $$ 符号，直接用 align 环境即可：
+\begin&#123;align*&#125;f(x) &amp;= ax^2 + bx + c \\f&#x27;(x) &amp;= 2ax + b\end&#123;align*&#125;
+
+建议把这些片段收藏进代码片段工具（如 Raycast、Espanso），写数学公式时就能直接插入，效率大幅提升。*** End Patch
+]]></content>
+      <categories>
+        <category>写作格式</category>
+      </categories>
+      <tags>
+        <tag>Markdown</tag>
+        <tag>LaTeX</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>层次分析法（AHP）快速入门</title>
     <url>/2023/08/13/2023-08-13-%E5%B1%82%E6%AC%A1%E5%88%86%E6%9E%90%E6%B3%95%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/</url>
     <content><![CDATA[层次分析法（Analytic Hierarchy Process，AHP）擅长解决「难以直接量化、却需要做选择」的问题，例如：选校、选址、评估环境指标权重等。要用好 AHP，可以按「建立层次 → 构造判断矩阵 → 做一致性检验 → 得到最终权重」的节奏来推进。
@@ -351,6 +387,62 @@ CR &lt; 0.1（有时取 0.08）认为判断可接受；
       <tags>
         <tag>AHP</tag>
         <tag>决策分析</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>网络代理与 GitHub 连接策略</title>
+    <url>/2023/08/13/2023-08-13-%E7%BD%91%E7%BB%9C%E4%BB%A3%E7%90%86%E4%B8%8EGitHub%E8%BF%9E%E6%8E%A5%E7%AD%96%E7%95%A5/</url>
+    <content><![CDATA[与 GitHub 建立稳定的 SSH 连接是折腾服务器的基础。这里整理了我在 Windows 和 Ubuntu 下的几套代理配置方案，并附上包管理器与 Python 的常用加速方式。
+1. Windows：给 GitHub 换端口并走代理
+如果直接使用 git@github.com 出现 kex_exchange_identification: Connection closed by remote host，多数情况是 22 端口被代理软件拦截。把 SSH 连接改到 443 即可。
+编辑 C:\Users\&lt;username&gt;\.ssh\config，没有就新建：
+Host github.com    HostName ssh.github.com    User git    Port 443    ProxyCommand connect -H 127.0.0.1:7890 %h %p   # 根据实际代理端口调整
+说明：
+
+HostName ssh.github.com：GitHub 针对 443 端口提供的 SSH 网关。
+ProxyCommand connect ...：借助代理工具（如 Clash、Surge）转发流量。
+
+保存后执行 ssh -T git@github.com 测试，如果返回 Hi xxx! You've successfully authenticated 即表示成功。
+2. Ubuntu：SSH 代理配置
+Ubuntu 同样可以把 22 改成 443，同时通过 nc 或 connect-proxy 走本机代理端口（默认 7890）。
+vi ~/.ssh/config
+追加：
+ProxyCommand nc -X 5 -x 127.0.0.1:7890 %h %pHost github.com    Hostname ssh.github.com    User git    Port 443    IdentityFile /home/&lt;user&gt;/.ssh/id_rsa    TCPKeepAlive yes
+最后确保权限正确：
+chmod 600 ~/.ssh/configssh -T git@github.com
+若仍旧失败，可以尝试临时断开/重连网络后再次测试。
+3. Apt 代理
+当服务器在受限网络下更新软件包时，需要为 Apt 指定代理：
+sudo nano /etc/apt/apt.conf
+写入：
+Acquire::http::Proxy  &quot;http://127.0.0.1:7890&quot;;Acquire::https::Proxy &quot;http://127.0.0.1:7890&quot;;
+保存后执行：
+sudo apt updatesudo apt upgrade
+4. Python 与 pip
+4.1 在代码里指定代理
+import osos.environ[&quot;http_proxy&quot;] = &quot;http://127.0.0.1:7890&quot;os.environ[&quot;https_proxy&quot;] = &quot;http://127.0.0.1:7890&quot;
+若要全局生效，可写入虚拟环境激活脚本。
+4.2 pip 加速
+
+
+单次安装：
+pip install -i https://pypi.tuna.tsinghua.edu.cn/simple torch
+
+
+全局配置：
+pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simplepip config set install.trusted-host mirrors.aliyun.com
+
+
+
+通过以上设置，GitHub 拉代码、系统更新以及 Python 依赖安装都能在代理环境中保持高速稳定。建议把这些配置写进 dotfiles 或自动化脚本，换设备时直接复用。*** End Patch
+]]></content>
+      <categories>
+        <category>网络排障</category>
+      </categories>
+      <tags>
+        <tag>SSH</tag>
+        <tag>Proxy</tag>
+        <tag>GitHub</tag>
       </tags>
   </entry>
   <entry>
@@ -646,42 +738,6 @@ sed -i &#x27;1i\Title: Linux Guide&#x27; README.mdsed -e &#x27;1,3s/foo/bar/g&#x
       </tags>
   </entry>
   <entry>
-    <title>Markdown 公式与矩阵速查</title>
-    <url>/2023/08/13/2023-08-13-Markdown%E5%85%AC%E5%BC%8F%E4%B8%8E%E7%9F%A9%E9%98%B5%E9%80%9F%E6%9F%A5/</url>
-    <content><![CDATA[记录几个写作中最常用的矩阵与公式排版方式，直接复制即可在支持 KaTeX/MathJax 的博客里使用。
-1. 基础矩阵
-\begin&#123;matrix&#125; a &amp; b \\ c &amp; d\end&#123;matrix&#125;
-效果：
-[
-\begin{matrix}
-a &amp; b \
-c &amp; d
-\end{matrix}
-]
-2. 带分隔符的矩阵
-\begin&#123;bmatrix&#125; a &amp; b \\ c &amp; d\end&#123;bmatrix&#125;
-\begin&#123;pmatrix&#125; a &amp; b \\ c &amp; d\end&#123;pmatrix&#125;
-\begin&#123;Bmatrix&#125; a &amp; b \\ c &amp; d\end&#123;Bmatrix&#125;
-\begin&#123;vmatrix&#125; a &amp; b \\ c &amp; d\end&#123;vmatrix&#125;
-分别对应中括号、圆括号、大括号和行列式格式。
-3. array 自定义列样式
-\begin&#123;array&#125;&#123;cc&#125; a &amp; b \\ c &amp; d\end&#123;array&#125;
-{cc} 表示两列均居中；可改为 {lc}、{rr} 等组合。
-4. 多行公式排版
-在 Hexo + Butterfly 中无需额外添加 $$ 符号，直接用 align 环境即可：
-\begin&#123;align*&#125;f(x) &amp;= ax^2 + bx + c \\f&#x27;(x) &amp;= 2ax + b\end&#123;align*&#125;
-
-建议把这些片段收藏进代码片段工具（如 Raycast、Espanso），写数学公式时就能直接插入，效率大幅提升。*** End Patch
-]]></content>
-      <categories>
-        <category>写作格式</category>
-      </categories>
-      <tags>
-        <tag>Markdown</tag>
-        <tag>LaTeX</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>用 `@property` 优雅管理 Python 属性</title>
     <url>/2023/08/19/2023-08-19-Python%E5%B1%9E%E6%80%A7%E8%A3%85%E9%A5%B0%E5%99%A8%E5%AE%9E%E8%B7%B5/</url>
     <content><![CDATA[@property 让方法看起来像属性，既保留了封装性，又能提供校验逻辑。下面分三部分介绍它的基本概念、两种写法以及常见使用场景。
@@ -723,6 +779,47 @@ class Modern:    def __init__(self, price):        self.price = price   # 直接
       <tags>
         <tag>property</tag>
         <tag>封装</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>深度学习工作站配置笔记</title>
+    <url>/2023/08/23/2023-08-23-%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E5%B7%A5%E4%BD%9C%E7%AB%99%E9%85%8D%E7%BD%AE%E7%AC%94%E8%AE%B0/</url>
+    <content><![CDATA[在 Ubuntu 上搭建深度学习工作站时，把系统、驱动、输入法、加速库一次性调通能省掉大量踩坑时间。以下是我的实操笔记。
+1. 系统基础配置
+
+输入法：推荐 Fcitx5 + 搜狗 / RIME，安装后在「语言支持」里设置默认输入法。参考：在 Ubuntu 安装配置 Fcitx5。
+网络问题：如果装完系统后发现无线网卡/有线网卡不工作，可按主板型号寻找驱动，或参考 这篇视频教程。很多时候只需要安装额外的固件包。
+
+2. GPU 驱动与 CUDA/cuDNN
+
+驱动选择：优先使用 Ubuntu 自带的「其他驱动」图形界面安装对应的 NVIDIA 驱动。如果黑屏，可进入恢复模式卸载后换版本，或参考“黑屏 99% 解决方案”。
+CUDA 与 cuDNN：按官方流程逐步安装，注意 CUDA 版本要与驱动兼容。推荐参考 B 站这篇教程。
+验证：nvidia-sminvcc -V
+
+
+3. TensorRT
+安装 TensorRT Python Wheel：
+python -m pip install --upgrade tensorrtpython -m pip install --upgrade tensorrt_leanpython -m pip install --upgrade tensorrt_dispatch
+验证：
+import tensorrtprint(tensorrt.__version__)assert tensorrt.Builder(tensorrt.Logger())
+如果断言失败，检查 CUDA/cuDNN 是否对应 TensorRT 支持的版本。
+4. 常见问题集合
+
+Ubuntu 黑屏：多数是因为旧版本驱动残留或 Secure Boot 未关闭。进入 TTY (Ctrl+Alt+F3) 后运行 sudo apt purge nvidia* 清理，再重新安装。
+TensorFlow 在 Windows 上安装失败：从 2.10 起官方不再提供 Windows GPU 版，建议改用 WSL2 或直接在 Linux 环境下运行。
+国内镜像加速：pip 安装大型包时，可以设置清华镜像：pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
+
+
+
+搭建深度学习环境本质是兼容性游戏：驱动 ↔ CUDA ↔ cuDNN ↔ 框架 ↔ TensorRT。建议提前确认项目所需版本，再统一安装，后续维护成本会低很多。*** End Patch
+]]></content>
+      <categories>
+        <category>深度学习</category>
+      </categories>
+      <tags>
+        <tag>CUDA</tag>
+        <tag>TensorRT</tag>
+        <tag>Ubuntu</tag>
       </tags>
   </entry>
   <entry>
@@ -789,103 +886,6 @@ git log --oneline --graph --decorate：快速查看提交历史。
       <tags>
         <tag>Git</tag>
         <tag>工作流</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>网络代理与 GitHub 连接策略</title>
-    <url>/2023/08/13/2023-08-13-%E7%BD%91%E7%BB%9C%E4%BB%A3%E7%90%86%E4%B8%8EGitHub%E8%BF%9E%E6%8E%A5%E7%AD%96%E7%95%A5/</url>
-    <content><![CDATA[与 GitHub 建立稳定的 SSH 连接是折腾服务器的基础。这里整理了我在 Windows 和 Ubuntu 下的几套代理配置方案，并附上包管理器与 Python 的常用加速方式。
-1. Windows：给 GitHub 换端口并走代理
-如果直接使用 git@github.com 出现 kex_exchange_identification: Connection closed by remote host，多数情况是 22 端口被代理软件拦截。把 SSH 连接改到 443 即可。
-编辑 C:\Users\&lt;username&gt;\.ssh\config，没有就新建：
-Host github.com    HostName ssh.github.com    User git    Port 443    ProxyCommand connect -H 127.0.0.1:7890 %h %p   # 根据实际代理端口调整
-说明：
-
-HostName ssh.github.com：GitHub 针对 443 端口提供的 SSH 网关。
-ProxyCommand connect ...：借助代理工具（如 Clash、Surge）转发流量。
-
-保存后执行 ssh -T git@github.com 测试，如果返回 Hi xxx! You've successfully authenticated 即表示成功。
-2. Ubuntu：SSH 代理配置
-Ubuntu 同样可以把 22 改成 443，同时通过 nc 或 connect-proxy 走本机代理端口（默认 7890）。
-vi ~/.ssh/config
-追加：
-ProxyCommand nc -X 5 -x 127.0.0.1:7890 %h %pHost github.com    Hostname ssh.github.com    User git    Port 443    IdentityFile /home/&lt;user&gt;/.ssh/id_rsa    TCPKeepAlive yes
-最后确保权限正确：
-chmod 600 ~/.ssh/configssh -T git@github.com
-若仍旧失败，可以尝试临时断开/重连网络后再次测试。
-3. Apt 代理
-当服务器在受限网络下更新软件包时，需要为 Apt 指定代理：
-sudo nano /etc/apt/apt.conf
-写入：
-Acquire::http::Proxy  &quot;http://127.0.0.1:7890&quot;;Acquire::https::Proxy &quot;http://127.0.0.1:7890&quot;;
-保存后执行：
-sudo apt updatesudo apt upgrade
-4. Python 与 pip
-4.1 在代码里指定代理
-import osos.environ[&quot;http_proxy&quot;] = &quot;http://127.0.0.1:7890&quot;os.environ[&quot;https_proxy&quot;] = &quot;http://127.0.0.1:7890&quot;
-若要全局生效，可写入虚拟环境激活脚本。
-4.2 pip 加速
-
-
-单次安装：
-pip install -i https://pypi.tuna.tsinghua.edu.cn/simple torch
-
-
-全局配置：
-pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simplepip config set install.trusted-host mirrors.aliyun.com
-
-
-
-通过以上设置，GitHub 拉代码、系统更新以及 Python 依赖安装都能在代理环境中保持高速稳定。建议把这些配置写进 dotfiles 或自动化脚本，换设备时直接复用。*** End Patch
-]]></content>
-      <categories>
-        <category>网络排障</category>
-      </categories>
-      <tags>
-        <tag>SSH</tag>
-        <tag>Proxy</tag>
-        <tag>GitHub</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>深度学习工作站配置笔记</title>
-    <url>/2023/08/23/2023-08-23-%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E5%B7%A5%E4%BD%9C%E7%AB%99%E9%85%8D%E7%BD%AE%E7%AC%94%E8%AE%B0/</url>
-    <content><![CDATA[在 Ubuntu 上搭建深度学习工作站时，把系统、驱动、输入法、加速库一次性调通能省掉大量踩坑时间。以下是我的实操笔记。
-1. 系统基础配置
-
-输入法：推荐 Fcitx5 + 搜狗 / RIME，安装后在「语言支持」里设置默认输入法。参考：在 Ubuntu 安装配置 Fcitx5。
-网络问题：如果装完系统后发现无线网卡/有线网卡不工作，可按主板型号寻找驱动，或参考 这篇视频教程。很多时候只需要安装额外的固件包。
-
-2. GPU 驱动与 CUDA/cuDNN
-
-驱动选择：优先使用 Ubuntu 自带的「其他驱动」图形界面安装对应的 NVIDIA 驱动。如果黑屏，可进入恢复模式卸载后换版本，或参考“黑屏 99% 解决方案”。
-CUDA 与 cuDNN：按官方流程逐步安装，注意 CUDA 版本要与驱动兼容。推荐参考 B 站这篇教程。
-验证：nvidia-sminvcc -V
-
-
-3. TensorRT
-安装 TensorRT Python Wheel：
-python -m pip install --upgrade tensorrtpython -m pip install --upgrade tensorrt_leanpython -m pip install --upgrade tensorrt_dispatch
-验证：
-import tensorrtprint(tensorrt.__version__)assert tensorrt.Builder(tensorrt.Logger())
-如果断言失败，检查 CUDA/cuDNN 是否对应 TensorRT 支持的版本。
-4. 常见问题集合
-
-Ubuntu 黑屏：多数是因为旧版本驱动残留或 Secure Boot 未关闭。进入 TTY (Ctrl+Alt+F3) 后运行 sudo apt purge nvidia* 清理，再重新安装。
-TensorFlow 在 Windows 上安装失败：从 2.10 起官方不再提供 Windows GPU 版，建议改用 WSL2 或直接在 Linux 环境下运行。
-国内镜像加速：pip 安装大型包时，可以设置清华镜像：pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
-
-
-
-搭建深度学习环境本质是兼容性游戏：驱动 ↔ CUDA ↔ cuDNN ↔ 框架 ↔ TensorRT。建议提前确认项目所需版本，再统一安装，后续维护成本会低很多。*** End Patch
-]]></content>
-      <categories>
-        <category>深度学习</category>
-      </categories>
-      <tags>
-        <tag>CUDA</tag>
-        <tag>TensorRT</tag>
-        <tag>Ubuntu</tag>
       </tags>
   </entry>
   <entry>
@@ -999,6 +999,46 @@ max_length 过长会显著降低训练速度，建议结合文本长度分布调
         <tag>PyTorch</tag>
         <tag>BERT</tag>
         <tag>NLP</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Matplotlib 中文字体配置指南</title>
+    <url>/2023/10/08/2023-10-08-Matplotlib%E4%B8%AD%E6%96%87%E5%AD%97%E4%BD%93%E9%85%8D%E7%BD%AE/</url>
+    <content><![CDATA[Matplotlib 不显示中文通常是因为找不到相应字体。虽然系统已经安装了微软雅黑、黑体等字体，但 Matplotlib 的字体缓存里未必包含它们。以下是检查和设置中文字体的步骤。
+1. 查看 Matplotlib 支持的字体
+from matplotlib.font_manager import FontManagerfonts = sorted(&#123;f.name for f in FontManager().ttflist&#125;)print(&quot;Matplotlib 当前可用字体：&quot;)for f in fonts:    print(f&quot;  &#123;f&#125;&quot;)
+列表中的字体名称多为拼音或英文。例如：
+
+DengXian（等线）
+FangSong（仿宋）
+KaiTi（楷体）
+LiSu（隶书）
+YouYuan（幼圆）
+
+只要 Matplotlib 能识别这些名称，就可以直接设置。
+2. 全局设置中文字体
+import matplotlibmatplotlib.rc(&quot;font&quot;, family=&quot;Microsoft YaHei&quot;, weight=&quot;bold&quot;)matplotlib.rc(&quot;axes&quot;, unicode_minus=False)   # 解决坐标轴负号显示问题
+若在列表中找不到对应字体，可以尝试以下方法：
+
+使用系统路径指定字体文件：from matplotlib import font_managerfont_manager.fontManager.addfont(&quot;/Library/Fonts/Arial Unicode.ttf&quot;)matplotlib.rc(&quot;font&quot;, family=&quot;Arial Unicode MS&quot;)
+
+删除 Matplotlib 字体缓存（如 ~/.matplotlib/fontlist-v310.json），重新运行脚本让 Matplotlib 重新扫描字体。
+
+3. 小结
+
+先确认 Matplotlib 字体列表中是否包含中文字体；
+使用 matplotlib.rc 设置 family，同时关闭 unicode_minus 处理负号；
+新字体无法识别时，把字体文件添加到 Matplotlib 的字体管理器中即可。
+
+
+设置好字体后，中文标题、标签和注释就能正常显示了，也无需在每张图里重复指定。*** End Patch
+]]></content>
+      <categories>
+        <category>可视化</category>
+      </categories>
+      <tags>
+        <tag>Matplotlib</tag>
+        <tag>字体</tag>
       </tags>
   </entry>
   <entry>
@@ -1137,46 +1177,6 @@ Ubuntu 22.04 安装 libssl1.1：echo &quot;deb http://security.ubuntu.com/ubuntu
         <tag>Ubuntu</tag>
         <tag>Python</tag>
         <tag>环境配置</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Matplotlib 中文字体配置指南</title>
-    <url>/2023/10/08/2023-10-08-Matplotlib%E4%B8%AD%E6%96%87%E5%AD%97%E4%BD%93%E9%85%8D%E7%BD%AE/</url>
-    <content><![CDATA[Matplotlib 不显示中文通常是因为找不到相应字体。虽然系统已经安装了微软雅黑、黑体等字体，但 Matplotlib 的字体缓存里未必包含它们。以下是检查和设置中文字体的步骤。
-1. 查看 Matplotlib 支持的字体
-from matplotlib.font_manager import FontManagerfonts = sorted(&#123;f.name for f in FontManager().ttflist&#125;)print(&quot;Matplotlib 当前可用字体：&quot;)for f in fonts:    print(f&quot;  &#123;f&#125;&quot;)
-列表中的字体名称多为拼音或英文。例如：
-
-DengXian（等线）
-FangSong（仿宋）
-KaiTi（楷体）
-LiSu（隶书）
-YouYuan（幼圆）
-
-只要 Matplotlib 能识别这些名称，就可以直接设置。
-2. 全局设置中文字体
-import matplotlibmatplotlib.rc(&quot;font&quot;, family=&quot;Microsoft YaHei&quot;, weight=&quot;bold&quot;)matplotlib.rc(&quot;axes&quot;, unicode_minus=False)   # 解决坐标轴负号显示问题
-若在列表中找不到对应字体，可以尝试以下方法：
-
-使用系统路径指定字体文件：from matplotlib import font_managerfont_manager.fontManager.addfont(&quot;/Library/Fonts/Arial Unicode.ttf&quot;)matplotlib.rc(&quot;font&quot;, family=&quot;Arial Unicode MS&quot;)
-
-删除 Matplotlib 字体缓存（如 ~/.matplotlib/fontlist-v310.json），重新运行脚本让 Matplotlib 重新扫描字体。
-
-3. 小结
-
-先确认 Matplotlib 字体列表中是否包含中文字体；
-使用 matplotlib.rc 设置 family，同时关闭 unicode_minus 处理负号；
-新字体无法识别时，把字体文件添加到 Matplotlib 的字体管理器中即可。
-
-
-设置好字体后，中文标题、标签和注释就能正常显示了，也无需在每张图里重复指定。*** End Patch
-]]></content>
-      <categories>
-        <category>可视化</category>
-      </categories>
-      <tags>
-        <tag>Matplotlib</tag>
-        <tag>字体</tag>
       </tags>
   </entry>
 </search>
